@@ -2,25 +2,38 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --secondary: #171717;
 }
 
 @theme inline {
   --color-background: var(--background);
-  --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  /* blue */
+  --color-primary-blue: #3d8fbe;
+  --color-blue-50: #EBF2F8;
+  --color-blue-500: #337BB6;
+  --color-blue-900: #15344C;
+  /* black */
+  --color-primary-black: #333333;
+  --color-black-50: #ebebeb;
+  --color-black-300: #767676;
+  --color-black-400: #5c5c5c;
+  --color-black-500: #222222;
+  /* gray */
+  --color-primary-gray: #a1a1a1;
+  --color-gray-300: #767676;
+  /* white */
+  --color-white-50: #fefefe;
+  --color-white-500: #f5f5f5;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: var(--background);
+}
+
+@layer base {
+  .form-input {
+    @apply p-4 w-full flex items-center justify-between gap-5 rounded-2xl border border-black-50 bg-white-500 focus:outline-1 focus:outline-primary-blue;
+  }
 }
