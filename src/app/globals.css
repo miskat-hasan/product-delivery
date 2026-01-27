@@ -12,11 +12,12 @@
   /* blue */
   --color-primary-blue: #3d8fbe;
   --color-blue-50: #EBF2F8;
-  --color-blue-500: #337BB6;
+  --color-blue-500: #3D8FBE;
   --color-blue-900: #15344C;
   /* black */
   --color-primary-black: #333333;
   --color-black-50: #ebebeb;
+  --color-black-100: #C0C0C0;
   --color-black-300: #767676;
   --color-black-400: #5c5c5c;
   --color-black-500: #222222;
