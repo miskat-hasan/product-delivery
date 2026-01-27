@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
 @import "tailwindcss";
 
 :root {
@@ -11,12 +13,13 @@
   --font-mono: var(--font-geist-mono);
   /* blue */
   --color-primary-blue: #3d8fbe;
-  --color-blue-50: #EBF2F8;
-  --color-blue-500: #337BB6;
-  --color-blue-900: #15344C;
+  --color-blue-50: #ebf2f8;
+  --color-blue-500: #3d8fbe;
+  --color-blue-900: #15344c;
   /* black */
   --color-primary-black: #333333;
   --color-black-50: #ebebeb;
+  --color-black-100: #c0c0c0;
   --color-black-300: #767676;
   --color-black-400: #5c5c5c;
   --color-black-500: #222222;
@@ -30,10 +33,20 @@
 
 body {
   background-color: var(--background);
+   font-family: "Inter", sans-serif;
 }
 
 @layer base {
   .form-input {
     @apply p-4 w-full flex items-center justify-between gap-5 rounded-2xl border border-black-50 bg-white-500 focus:outline-1 focus:outline-primary-blue;
+  }
+  .left-side {
+    @apply w-[680.417px];
+  }
+  .right-side {
+    @apply w-[738.299px];
+  }
+  .mini-left-side {
+    @apply w-[533.151px];
   }
 }

@@ -6,7 +6,7 @@ import { useState } from "react";
 const Topbar = () => {
   const [openNotificationBar, setOpenNotificationBar] = useState(false);
   return (
-    <div className="bg-[#FEFEFE] h-[100px] shadow-[0_4px_4px_0_rgba(0,0,0,0.04)] w-full pl-6 pr-[80px] py-7 flex items-center justify-between relative">
+    <div className="bg-[#FEFEFE] h-[100px] sticky top-0 shadow-[0_4px_4px_0_rgba(0,0,0,0.04)] w-full pl-6 pr-[80px] py-7 flex items-center justify-between relative">
       <h6 className="text-xl font-medium text-black-500">
         Welcome Back, James!
       </h6>

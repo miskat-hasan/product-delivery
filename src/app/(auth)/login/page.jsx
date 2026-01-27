@@ -25,7 +25,6 @@ const Login = () => {
       email: data.email,
       password: data.password,
     };
-
   };
 
   return (
@@ -55,9 +54,7 @@ const Login = () => {
               })}
               type="text"
               placeholder="Enter Email"
-              className={`form-input ${
-                errors.email ? "border-red-500" : ""
-              }`}
+              className={`form-input ${errors.email ? "border-red-500" : ""}`}
             />
             {errors.email && (
               <p className="text-red-500 text-sm">{errors.email.message}</p>
@@ -104,7 +101,10 @@ const Login = () => {
               <input {...register("remember-me")} type="checkbox" />
               Remember me
             </label>
-            <Link href={"/forgot-password"} className="font-medium underline text-primary-blue">
+            <Link
+              href={"/forgot-password"}
+              className="font-medium underline text-primary-blue"
+            >
               Forget Password?
             </Link>
           </div>
@@ -118,7 +118,10 @@ const Login = () => {
 
           <div className="text-black-400 font-medium text-center">
             Do not have an account?{" "}
-            <Link href={"/register"} className="text-primary-blue underline font-semibold">
+            <Link
+              href={"/register"}
+              className="text-primary-blue underline font-semibold"
+            >
               Signup
             </Link>
           </div>

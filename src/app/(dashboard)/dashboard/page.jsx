@@ -1,7 +1,11 @@
+"use client"
+import { useState } from "react";
 import ShipmentsTable from "../../../components/dashboard/ShipmentsTable";
 import { PackageSvg } from "../../../components/svg/Svg";
+import AddCollaboratorsModal from "@/components/dashboard/AddCollaboratorsModal";
 
 const Dashboard = () => {
+const [isAddCollaboratorsModalOpen, setIsAddCollaboratorsModalOpen] = useState(false)
   return (
     <div className="space-y-7">
       <div className="flex items-center justify-between">
@@ -38,8 +42,8 @@ const Dashboard = () => {
       <div className="bg-[#FEFEFE] rounded-2xl p-6">
         <div className="flex items-center justify-between mb-6">
           <h6 className="text-2xl text-[#111827] font-medium">Collaborators</h6>
-          <button className="flex items-center justify-center px-6 py-2.5 gap-2.5 rounded-lg border border-blue-500 bg-[#ECF4F9] text-blue-500 font-medium">
-            Add New Contacts +
+          <button onClick={() => setIsAddCollaboratorsModalOpen(true)} className="flex items-center justify-center cursor-pointer hover:bg-white px-6 py-2.5 gap-2.5 rounded-lg border border-blue-500 bg-[#ECF4F9] text-blue-500 font-medium">
+            Add New Collaborators +
           </button>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-3">
@@ -63,6 +67,9 @@ const Dashboard = () => {
       </div>
       {/* shipments */}
       <ShipmentsTable />
+      {isAddCollaboratorsModalOpen && (
+        <AddCollaboratorsModal onClose={()=> setIsAddCollaboratorsModalOpen(false)} />
+      )}
     </div>
   );
 };
