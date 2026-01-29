@@ -3,7 +3,7 @@ import ContactFinder from "@/components/dashboard/ContactFinder";
 import { FilePlusSvg } from "@/components/svg/Svg";
 import React, { useState } from "react";
 
-const AirWaybillForm = () => {
+const AirWaybillPreview = () => {
   const [isContactFinderOpen, setIsContactFinderOpen] = useState(false);
   return (
     <div className="w-full max-w-[1418px] mx-auto py-10">
@@ -97,39 +97,28 @@ const AirWaybillForm = () => {
             <div className="left-side border-r-2">
               <div className="px-[10px] pb-[10px] border-b-2">
                 <div className="my-[8px] flex items-center justify-between">
-                  <p className="text-[19.688px]">
-                    Issuing Carrier&rsquo;s Agent Name and City
-                  </p>
+                  <p>Issuing Carrier&rsquo;s Agent Name and City</p>
                   <div
                     onClick={() => setIsContactFinderOpen(true)}
-                    className="flex items-center justify-center size-[30px] bg-[#F5F5F5] hover:bg-[#e6e2e2] transition-colors rounded-full mt-[10px] self-end cursor-pointer"
+                    className="flex items-center justify-center size-[44px] bg-[#F5F5F5] hover:bg-[#e6e2e2] transition-colors rounded-full mt-[10px] self-end cursor-pointer"
                   >
-                    <FilePlusSvg className={"size-4"} />
+                    <FilePlusSvg />
                   </div>
                 </div>
                 <textarea className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[94px]"></textarea>
               </div>
               <div className="grid grid-cols-2 border-b-2">
-                <div className="text-black text-xl flex flex-col px-2.5 pb-2.5 pt-1.5 pt-3 min-h-[94.502px]">
+                <div className="p-2 flex flex-col text-xl">
                   Agent&rsquo;s IATA Code
-                  <input
-                    type="text"
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
-                  />
                 </div>
-                <div className="text-black text-xl border-l-2 flex flex-col px-2.5 pb-2.5 pt-1.5 pt-3 min-h-[94.502px]">
+                <div className="text-black text-xl border-l-2 flex justify-center pt-3 min-h-[94.502px]">
                   Account No.
-                  <input
-                    type="text"
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
-                  />
                 </div>
               </div>
             </div>
             {/* right */}
             <div className="right-side text-xl px-2 py-3 border-b-2">
               Accounting Information
-              <textarea className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 mt-3 min-h-[192px]"></textarea>
             </div>
           </div>
           {/* separator */}
@@ -181,33 +170,25 @@ const AirWaybillForm = () => {
               <div className="w-[74.814px] text-xl p-2.5 h-full border-r-2">
                 To
               </div>
-              <div>
-                <div className="flex pr-2">
-                  <p className="ml-0.5 mt-1">By First Carrier</p>
-                  <div className="relative flex">
-                    <p className="absolute text-nowrap text-[11.813px] top-0.5 left-1/2 -translate-x-1/2">
-                      Routing and Destination
-                    </p>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="211"
-                      height="28"
-                      viewBox="0 0 211 28"
-                      fill="none"
-                    >
-                      <path
-                        d="M0.711914 0.683594L25.6997 26.8686H184.194L209.404 0.683594"
-                        stroke="black"
-                        stroke-width="1.9688"
-                      />
-                    </svg>
-                  </div>
-                </div>
-                <div className="pt-3 px-2">
-                  <input
-                    type="text"
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[42px]"
-                  />
+              <div className="flex pr-2">
+                <p className="ml-0.5 mt-1">By First Carrier</p>
+                <div className="relative flex">
+                  <p className="absolute text-nowrap text-[11.813px] top-0.5 left-1/2 -translate-x-1/2">
+                    Routing and Destination
+                  </p>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="211"
+                    height="28"
+                    viewBox="0 0 211 28"
+                    fill="none"
+                  >
+                    <path
+                      d="M0.711914 0.683594L25.6997 26.8686H184.194L209.404 0.683594"
+                      stroke="black"
+                      stroke-width="1.9688"
+                    />
+                  </svg>
                 </div>
               </div>
               <div className="w-[70.877px] text-xl p-2.5 h-full border-l-2">
@@ -269,14 +250,10 @@ const AirWaybillForm = () => {
             <div className="left-side border-r-2 grid grid-cols-2">
               <div className="border-2 text-xl text-center p-2">
                 Airport of Destination
-                <input
-                  type="text"
-                  className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[42px] mt-2.5"
-                />
               </div>
               <div className="border-l-2">
                 <div className="relative flex">
-                  <p className="absolute top-2 left-1/2 -translate-x-1/2 text-nowrap">
+                  <p className="absolute top-2 left-1/2 -translate-x-1/2">
                     Requested Flight/Date
                   </p>
                   <svg
@@ -296,18 +273,8 @@ const AirWaybillForm = () => {
                 </div>
 
                 <div className="grid grid-cols-2">
-                  <div className="border-r-2 h-[47.785px] px-2 py-1">
-                    <input
-                      type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
-                    />
-                  </div>
-                  <div className="px-2 py-1">
-                    <input
-                      type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
-                    />
-                  </div>
+                  <div className="border-r-2 h-[47.785px]" />
+                  <div />
                 </div>
               </div>
             </div>
@@ -325,42 +292,23 @@ const AirWaybillForm = () => {
             </div>
           </div>
           {/* separator */}
-          <div className="w-full h-[170.104px] border-y-2 flex justify-between">
-            <div className="flex-1 mt-3 mx-2.5">
-              <p className="text-xl">Handling Information</p>
-              <textarea className="bg-[#F5F5F5] text-[#222222] w-full text-xs w-full border border-black-100 px-2 py-3 min-h-[116px]"></textarea>
-            </div>
-            <div className="h-[75.602px] w-[226.806px] border-l-2 border-t-2 ml-auto text-center self-end-safe text-xl p-1">
+          <div className="w-full h-[170.104px] border-y-2 flex flex-col justify-between">
+            <p className="text-xl mt-3 ml-2.5">Handling Information</p>
+            <div className="h-[75.602px] w-[226.806px] border-l-2 border-t-2 ml-auto text-center text-xl p-1">
               SCI
             </div>
           </div>
           {/* separator */}
           <div className="h-[553.626px] border-b-2 flex">
             <div className="w-[75.602px] border-r-2 flex justify-between flex-col">
-              <div>
-                <div className="px-2 py-1 border-b-2 h-[68px] leading-none">
-                  No. of RCP Pieces
-                </div>
-                <div className="p-1">
-                  <input
-                    type="text"
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
-                  />
-                </div>
+              <div className="px-2 py-1 border-b-2 h-[68px] leading-none">
+                No. of RCP Pieces
               </div>
               <div className="w-full h-[68px] border-t-2" />
             </div>
             <div className="w-[132.303px] border-r-2 flex justify-between flex-col">
-              <div>
-                <div className="px-2 py-1 border-b-2 h-[68px] text-center">
-                  Gross <br /> Weight
-                </div>
-                <div className="p-1">
-                  <input
-                    type="text"
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
-                  />
-                </div>
+              <div className="px-2 py-1 border-b-2 h-[68px] text-center">
+                Gross <br /> Weight
               </div>
               <div className="w-full h-[68px] border-t-2" />
             </div>
@@ -380,29 +328,15 @@ const AirWaybillForm = () => {
                     Commodity <br />
                     Item No.
                   </p>
-                  <div className="p-1 border-l-2">
-                    <input
-                      type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
-                    />
-                  </div>
                 </div>
                 <div className="flex-1 border-l-2" />
               </div>
             </div>
             <div className="w-[18.9px] bg-[#D9D9D9] border-r-2" />
             <div className="w-[132.303px] border-r-2">
-              <div>
-                <div className="text-center h-[68px] border-b-2 text-xl flex items-center justify-center">
-                  Chargeable
-                  <br /> Weight
-                </div>
-                <div className="p-1">
-                  <input
-                    type="text"
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
-                  />
-                </div>
+              <div className="text-center h-[68px] border-b-2 text-xl flex items-center justify-center">
+                Chargeable
+                <br /> Weight
               </div>
             </div>
             <div className="w-[18.9px] bg-[#D9D9D9] border-r-2" />
@@ -412,25 +346,11 @@ const AirWaybillForm = () => {
                 <div className="w-[77.976px] bg-black h-[1px] -rotate-45" />
                 <p className="self-end">Charge</p>
               </div>
-              <div className="p-1">
-                <input
-                  type="text"
-                  className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
-                />
-              </div>
             </div>
             <div className="w-[18.9px] bg-[#D9D9D9] border-r-2" />
             <div className="w-[226.806px] border-r-2 flex flex-col justify-between">
-              <div>
-                <div className="text-center h-[68px] text-xl border-b-2 flex items-center justify-center">
-                  Total
-                </div>
-                <div className="p-1">
-                  <input
-                    type="text"
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
-                  />
-                </div>
+              <div className="text-center h-[68px] text-xl border-b-2 flex items-center justify-center">
+                Total
               </div>
               <div className="w-full h-[68px] border-t-2" />
             </div>
@@ -504,18 +424,8 @@ const AirWaybillForm = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-2">
-                  <div className="border-r-2 h-[40.557px] p-1">
-                    <input
-                      type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
-                    />
-                  </div>
-                  <div className="p-1">
-                    <input
-                      type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
-                    />
-                  </div>
+                  <div className="border-r-2 h-[40.557px]" />
+                  <div />
                 </div>
               </div>
               {/* Valuation Charge */}
@@ -541,18 +451,8 @@ const AirWaybillForm = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-2">
-                  <div className="border-r-2 h-[49.023px] p-1">
-                    <input
-                      type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
-                    />
-                  </div>
-                  <div className="p-1">
-                    <input
-                      type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
-                    />
-                  </div>
+                  <div className="border-r-2 h-[49.023px]" />
+                  <div />
                 </div>
               </div>
               {/* Tax */}
@@ -578,25 +478,14 @@ const AirWaybillForm = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-2">
-                  <div className="border-r-2 h-[49.023px] p-1">
-                    <input
-                      type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
-                    />
-                  </div>
-                  <div className="p-1">
-                    <input
-                      type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
-                    />
-                  </div>
+                  <div className="border-r-2 h-[49.023px]" />
+                  <div />
                 </div>
               </div>
             </div>
             {/* right */}
-            <div className="py-[2px] px-1.5 border-b-2 w-full flex flex-col">
+            <div className="py-[2px] px-1.5 border-b-2 w-full">
               Other Charges
-              <textarea className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 my-3 px-2 py-3 flex-1"></textarea>
             </div>
           </div>
           {/* separator */}
@@ -626,18 +515,8 @@ const AirWaybillForm = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-2">
-                  <div className="border-r-2 h-[49.023px] p-1">
-                    <input
-                      type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
-                    />
-                  </div>
-                  <div className="p-1">
-                    <input
-                      type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
-                    />
-                  </div>
+                  <div className="border-r-2 h-[49.023px]" />
+                  <div />
                 </div>
               </div>
               {/* Total Other Charges Due Carrier */}
@@ -663,18 +542,8 @@ const AirWaybillForm = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-2">
-                  <div className="border-r-2 h-[49.023px] p-1">
-                    <input
-                      type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
-                    />
-                  </div>
-                  <div className="p-1">
-                    <input
-                      type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
-                    />
-                  </div>
+                  <div className="border-r-2 h-[49.023px]" />
+                  <div />
                 </div>
               </div>
               <div className="grid grid-cols-2 divide-x-2 border-b-2">
@@ -705,59 +574,43 @@ const AirWaybillForm = () => {
             <div className="mini-left-side shrink-0 border-r-2">
               {/* Total prepaid & total collect */}
               <div className="grid grid-cols-2 divide-x-2 border-b-2 h-[75.602px]">
-                <div className="flex flex-col">
-                  <div className="relative w-full">
-                    <p className="absolute top-[2px] left-1/2 -translate-x-1/2 text-nowrap">
-                      Total Prepaid
-                    </p>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="229"
-                      height="29"
-                      viewBox="0 0 229 29"
-                      fill="none"
-                      className="mx-auto"
-                    >
-                      <path
-                        d="M0.803711 0.583984L19.6273 27.1628H207.982L227.609 0.583984"
-                        stroke="black"
-                        stroke-width="1.9688"
-                      />
-                    </svg>
-                  </div>
-                  <div className="p-1">
-                    <input
-                      type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                <div className="relative w-full">
+                  <p className="absolute top-[2px] left-1/2 -translate-x-1/2 text-nowrap">
+                    Total Prepaid
+                  </p>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="229"
+                    height="29"
+                    viewBox="0 0 229 29"
+                    fill="none"
+                    className="mx-auto"
+                  >
+                    <path
+                      d="M0.803711 0.583984L19.6273 27.1628H207.982L227.609 0.583984"
+                      stroke="black"
+                      stroke-width="1.9688"
                     />
-                  </div>
+                  </svg>
                 </div>
-                <div className="flex flex-col">
-                  <div className="relative w-full">
-                    <p className="absolute top-[2px] left-1/2 -translate-x-1/2 text-nowrap">
-                      Total Collect
-                    </p>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="229"
-                      height="29"
-                      viewBox="0 0 229 29"
-                      fill="none"
-                      className="mx-auto"
-                    >
-                      <path
-                        d="M0.803711 0.583984L19.6273 27.1628H207.982L227.609 0.583984"
-                        stroke="black"
-                        stroke-width="1.9688"
-                      />
-                    </svg>
-                  </div>
-                  <div className="p-1">
-                    <input
-                      type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                <div className="relative w-full">
+                  <p className="absolute top-[2px] left-1/2 -translate-x-1/2 text-nowrap">
+                    Total Collect
+                  </p>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="229"
+                    height="29"
+                    viewBox="0 0 229 29"
+                    fill="none"
+                    className="mx-auto"
+                  >
+                    <path
+                      d="M0.803711 0.583984L19.6273 27.1628H207.982L227.609 0.583984"
+                      stroke="black"
+                      stroke-width="1.9688"
                     />
-                  </div>
+                  </svg>
                 </div>
               </div>
               {/* Currency */}
@@ -869,10 +722,10 @@ const AirWaybillForm = () => {
           ORIGINAL 3 (FOR SHIPPER)
         </div>
         <div className="flex items-center gap-5">
-          <button className="text-lg font-medium text-blue-500 w-[300px] cursor-pointer border border-blue-500 rounded-2xl bg-[#C3DCEB] hover:bg-[#bad2e0] py-4 px-4 ">
+          <button className="text-lg font-medium text-blue-500 w-[300px] border border-blue-500 rounded-2xl bg-[#C3DCEB] py-4 px-4 ">
             Continue to dashboard
           </button>
-          <button className="text-lg font-medium text-black-300 w-[300px] cursor-pointer rounded-2xl bg-black-100 hover:bg-black-50 py-4 px-4 ">
+          <button className="text-lg font-medium text-black-300 w-[300px] rounded-2xl bg-black-100 py-4 px-4 ">
             Continue to dashboard
           </button>
         </div>
@@ -884,4 +737,4 @@ const AirWaybillForm = () => {
   );
 };
 
-export default AirWaybillForm;
+export default AirWaybillPreview;
