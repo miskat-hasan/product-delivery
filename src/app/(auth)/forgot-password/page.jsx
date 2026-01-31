@@ -24,11 +24,11 @@ const ForgetPassword = () => {
 
   return (
     <section className="w-full min-h-screen flex items-center justify-center px-4 py-5 bg-[#F9F5EE]">
-      <div className="max-w-[592px] w-full p-6 flex flex-col justify-center items-center gap-6 shrink-0 rounded-3xl border border-primary-blue bg-white-50">
-        <div className="text-[60px] font-bold text-primary-black uppercase">
+      <div className="max-w-[592px] w-full px-3 py-4 xs:p-6 flex flex-col justify-center items-center gap-6 shrink-0 rounded-3xl border border-primary-blue bg-white-50">
+        <div className="text-4xl xs:text-5xl sm:text-[60px] font-bold text-primary-black uppercase">
           logo
         </div>
-        <p className="text-2xl font-bold text-primary-black text-center">
+        <p className="sm:text-2xl font-bold text-primary-black text-center">
           Please enter the email address you used during registration.
         </p>
         <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-5">
@@ -51,7 +51,7 @@ const ForgetPassword = () => {
           </div>
           <button
             type="submit"
-            className="p-4 rounded-2xl bg-primary-blue shadow-[0_0_8px_2px_rgba(1,216,255,0.16),0_0_8px_2px_rgba(1,216,255,0.16)] text-white text-lg font-medium w-full cursor-pointer hover:bg-primary-blue/85 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2.5 sm:p-4 rounded-2xl bg-primary-blue shadow-[0_0_8px_2px_rgba(1,216,255,0.16),0_0_8px_2px_rgba(1,216,255,0.16)] text-white text-lg font-medium w-full cursor-pointer hover:bg-primary-blue/85 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Continue
           </button>

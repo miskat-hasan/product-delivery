@@ -15,7 +15,7 @@ const AddCollaboratorsModal = ({ onClose }) => {
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#333333CC]">
       <div className="absolute inset-0" onClick={onClose} />
       <div
-        className={`relative z-10 w-full bg-[#FEFEFE] max-w-[581px] max-h-[calc(100vh-50px)] overflow-y-auto p-6 rounded-3xl border border-[#3D8FBE] mx-3`}
+        className={`relative z-10 w-full bg-[#FEFEFE] max-w-[581px] max-h-[calc(100vh-50px)] overflow-y-auto p-2 sm:p-6 rounded-xl [&::-webkit-scrollbar]:hidden [scrollbar-width:none] sm:rounded-3xl border border-[#3D8FBE] mx-3`}
       >
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2 text-primary-black text-2xl font-medium">
@@ -113,7 +113,7 @@ const AddCollaboratorsModal = ({ onClose }) => {
               <DownArrowSvg />
             </button>
             {openEmailInvitation && (
-              <div className="p-6 rounded-2xl border border-black-100 space-y-4">
+              <div className="p-2 sm:p-6 rounded-xl sm:rounded-2xl border border-black-100 space-y-4">
                 <div className="space-y-3">
                   <div>
                     <p className="text-xs text-[#6A7282]">To: </p>
@@ -147,7 +147,7 @@ const AddCollaboratorsModal = ({ onClose }) => {
                       • View shipment details and documents
                     </p>
                   </div>
-                  <button className="py-4 px-8 text-blue-500 text-white rounded-2xl bg-blue-500 text-lg font-medium cursor-pointer hover:bg-blue-500/85">
+                  <button className="py-2.5 sm:py-4 px-4 sm:px-8 text-blue-500 text-white rounded-2xl bg-blue-500 text-lg font-medium cursor-pointer hover:bg-blue-500/85">
                     Create New
                   </button>
                 </div>
@@ -157,11 +157,11 @@ const AddCollaboratorsModal = ({ onClose }) => {
           <div className="flex items-center gap-3">
             <button
               onClick={onClose}
-              className="flex cursor-pointer items-center justify-center p-4 rounded-2xl border text-lg flex-1 border-blue-500 bg-[#ECF4F9] text-blue-500 font-medium"
+              className="flex cursor-pointer items-center justify-center py-2 px-4 sm:p-4 rounded-xl sm:rounded-2xl border text-sm sm:text-lg sm:flex-1 border-blue-500 bg-[#ECF4F9] text-blue-500 font-medium"
             >
               Cancel
             </button>
-            <button className="p-4 flex items-center gap-1 text-blue-500 text-white rounded-2xl flex-1 justify-center border bg-blue-500 text-lg font-medium cursor-pointer hover:bg-blue-500/85">
+            <button className="py-2 px-4 sm:p-4 flex items-center gap-1 text-blue-500 text-white rounded-xl sm:rounded-2xl flex-1 justify-center border bg-blue-500 text-sm sm:text-lg font-medium cursor-pointer hover:bg-blue-500/85">
               <MailSvg className={"text-white"} />
               Send Invitation
             </button>
