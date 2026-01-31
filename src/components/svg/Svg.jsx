@@ -508,3 +508,46 @@ export const SearchSvg = ({ className, ...props }) => {
     </svg>
   );
 };
+
+export const DownloadSvg = ({ className, ...props }) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn("w-4 h-4 text-[#3d8fbe]", className)}
+      viewBox="0 0 16 16"
+      fill="none"
+      {...props}
+    >
+      <path d="M8 10V2" stroke="currentColor" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>  <path d="M14 10V12.6667C14 13.0203 13.8595 13.3594 13.6095 13.6095C13.3594 13.8595 13.0203 14 12.6667 14H3.33333C2.97971 14 2.64057 13.8595 2.39052 13.6095C2.14048 13.3594 2 13.0203 2 12.6667V10" stroke="currentColor" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>  <path d="M4.66699 6.66602L8.00033 9.99935L11.3337 6.66602" stroke="currentColor" strokeWidth="1.33333" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+};
+
+export const LocationSvg = ({ className, ...props }) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn("w-6 h-6 text-[#0a0a0a]", className)}
+      viewBox="0 0 24 24"
+      fill="none"
+      {...props}
+    >
+      <path d="M19.9995 9.99902C19.9995 14.992 14.4605 20.192 12.6005 21.798C12.4272 21.9283 12.2163 21.9988 11.9995 21.9988C11.7827 21.9988 11.5718 21.9283 11.3985 21.798C9.53851 20.192 3.99951 14.992 3.99951 9.99902C3.99951 7.87729 4.84237 5.84246 6.34266 4.34217C7.84295 2.84188 9.87778 1.99902 11.9995 1.99902C14.1212 1.99902 16.1561 2.84188 17.6564 4.34217C19.1567 5.84246 19.9995 7.87729 19.9995 9.99902Z" stroke="currentColor" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>  <path d="M12 13.001C13.6569 13.001 15 11.6578 15 10.001C15 8.34412 13.6569 7.00098 12 7.00098C10.3431 7.00098 9 8.34412 9 10.001C9 11.6578 10.3431 13.001 12 13.001Z" stroke="currentColor" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+};
+
+export const PlaneSvg = ({ className, ...props }) => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={cn("w-8 h-8 text-[#767676]", className)}
+      viewBox="0 0 32 32"
+      fill="none"
+      {...props}
+    >
+      <path d="M23.7333 25.6L21.3333 14.6667L26 10C28 8 28.6667 5.33333 28 4C26.6667 3.33333 24 4 22 6L17.3333 10.6667L6.4 8.26667C5.73333 8.13333 5.2 8.4 4.93333 8.93333L4.53333 9.6C4.26667 10.2667 4.4 10.9333 4.93333 11.3333L12 16L9.33333 20H5.33333L4 21.3333L8 24L10.6667 28L12 26.6667V22.6667L16 20L20.6667 27.0667C21.0667 27.6 21.7333 27.7333 22.4 27.4667L23.0667 27.2C23.6 26.8 23.8667 26.2667 23.7333 25.6Z" stroke="currentColor" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+  );
+};
+

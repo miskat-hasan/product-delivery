@@ -1,6 +1,9 @@
+import { useState } from "react";
 import { CheckMarkSvg, ThreeDotSvg } from "../svg/Svg";
+import Link from "next/link";
 
 const ShipmentsTable = () => {
+  const [openActionBar, setOpenActionBar] = useState(null);
   return (
     <div className="bg-[#FEFEFE] rounded-2xl p-6">
       <div className="flex items-center justify-between mb-6">
@@ -56,10 +59,27 @@ const ShipmentsTable = () => {
                       <CheckMarkSvg className="size-4" /> Complete
                     </div>
                   </td>
-                  <td className="py-3.5">
+                  <td className="py-3.5 relative">
                     <div className="flex items-center justify-center">
-                      <ThreeDotSvg />
+                      <button
+                        onClick={() =>
+                          setOpenActionBar((prev) =>
+                            prev == null || prev !== idx ? idx : null,
+                          )
+                        }
+                        className="cursor-pointer"
+                      >
+                        <ThreeDotSvg />
+                      </button>
                     </div>
+                    {openActionBar == idx && (
+                      <div className="bg-white z-[10] absolute w-[120px] right-0 border border-[#EBEBEB] divide-y divide-[#EBEBEB]">
+                        <button className="px-4 py-2.5 text-black-500 cursor-pointer w-full">Deleted</button>
+                        <Link href={"/shipment-status"}>
+                        <button className="px-4 py-2.5 text-black-500 cursor-pointer w-full">Status</button>
+                        </Link>
+                      </div>
+                    )}
                   </td>
                 </tr>
               ))}

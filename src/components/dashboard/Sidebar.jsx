@@ -42,8 +42,8 @@ const sidebarNavItem = [
 
 const Sidebar = () => {
   return (
-    <div className="w-[416px] h-screen flex flex-col shrink-0 sticky top-0 left-0">
-      <div className="text-[60px] font-bold text-black-500 text-center my-5">
+    <div className="w-[80%] xs:w-[60%] sm:w-[280px] xl:w-[316px] 2xl:w-[416px] h-screen flex flex-col shrink-0 top-0 sm:left-0  ">
+      <div className="text-[60px] font-bold text-black-500 text-left px-4 lg:px-8 xl:px-12 2xl:text-center my-5">
         LOGO
       </div>
 

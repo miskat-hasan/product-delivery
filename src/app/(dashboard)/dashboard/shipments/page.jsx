@@ -2,16 +2,16 @@ import { CheckMarkSvg, ThreeDotSvg } from "../../../../components/svg/Svg";
 
 const page = () => {
   return (
-    <div>
+    <div className="overflow-hidden">
       <div className="flex items-center justify-between mb-6">
         <h6 className="text-2xl md:text-4xl text-[#111827] font-medium">
           Shipments
         </h6>
-        <button className="py-4 px-8 text-blue-500 text-white rounded-2xl bg-blue-500 text-lg font-medium cursor-pointer hover:bg-blue-500/85">
+        <button className="py-4 px-8 text-white rounded-2xl bg-blue-500 text-lg font-medium cursor-pointer hover:bg-blue-500/85">
           Create New
         </button>
       </div>
-      <div className="bg-[#FEFEFE] rounded-2xl p-6">
+      <div className="bg-[#FEFEFE] overflow-auto rounded-2xl p-6">
         <div className="overflow-x-auto">
           <table className="min-w-[1352px] w-full">
             <thead>
@@ -61,7 +61,9 @@ const page = () => {
                     </td>
                     <td className="py-3.5">
                       <div className="flex items-center justify-center">
-                        <ThreeDotSvg />
+                        <button className="cursor-pointer">
+                          <ThreeDotSvg />
+                        </button>
                       </div>
                     </td>
                   </tr>

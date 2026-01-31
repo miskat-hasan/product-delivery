@@ -38,19 +38,19 @@ const Register = () => {
 
   return (
     <section className="w-full min-h-screen flex items-center justify-center px-4 py-5 bg-[#F9F5EE]">
-      <div className="max-w-[592px] w-full p-6 flex flex-col justify-center items-center gap-6 shrink-0 rounded-3xl border border-primary-blue bg-white-50">
-        <div className="text-[60px] font-bold text-primary-black uppercase">
+      <div className="max-w-[592px] w-full px-3 py-4 xs:p-6 flex flex-col justify-center items-center gap-3 sm:gap-4 md:gap-6 shrink-0 rounded-3xl border border-primary-blue bg-white-50">
+        <div className="text-4xl xs:text-5xl sm:text-[60px] font-bold text-primary-black uppercase">
           logo
         </div>
-        <div className="space-y-3">
-          <p className="text-2xl font-bold text-primary-black">
+        <div className="sm:space-y-3">
+          <p  className="text-xl sm:text-2xl text-center font-bold text-primary-black">
             Create Your Account
           </p>
           <p className="text-black-300 text-center">
             Sign up to manage your shipments.
           </p>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-3.5 xs:space-y-5">
           {/* Name Input */}
           <div className="space-y-1">
             <input
@@ -169,7 +169,7 @@ const Register = () => {
           </div>
 
           {/* Terms Checkbox */}
-          <div className="space-y-1">
+          <div className="space-y-1 max-xs:text-sm">
             <label className="text-black-400 flex items-center gap-1 cursor-pointer">
               <input
                 {...register("terms", {
@@ -186,11 +186,11 @@ const Register = () => {
 
           <button
             type="submit"
-            className="p-4 rounded-2xl bg-primary-blue shadow-[0_0_8px_2px_rgba(1,216,255,0.16),0_0_8px_2px_rgba(1,216,255,0.16)] text-white text-lg font-medium w-full cursor-pointer hover:bg-primary-blue/85 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="p-2.5 sm:p-4 rounded-2xl bg-primary-blue shadow-[0_0_8px_2px_rgba(1,216,255,0.16),0_0_8px_2px_rgba(1,216,255,0.16)] text-white text-lg font-medium w-full cursor-pointer hover:bg-primary-blue/85 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             Create Account
           </button>
-          <div className="text-black-400 font-medium text-center">
+          <div className="text-black-400 font-medium text-center max-xs:text-sm">
             Already have an account?{" "}
             <Link
               href={"/login"}
