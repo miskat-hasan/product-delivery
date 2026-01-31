@@ -18,8 +18,8 @@ const ShipmentStatus = () => {
     "Delivered",
   ];
   return (
-    <div className="py-[84px] px-1 md:px-[60px]">
-      <div className="flex max-sm:flex-col max-sm:items-start justify-between items-end">
+    <div className="py-[84px] px-1 md:px-[60px] space-y-[50px]">
+      <div className="flex max-sm:gap-4 max-sm:flex-col max-sm:items-start justify-between items-end">
         <div className="space-y-2">
           <div className="flex items-center gap-4">
             <h4 className="text-lg md:text-2xl lg:text-[30px] font-medium text-black-500">
@@ -37,7 +37,7 @@ const ShipmentStatus = () => {
         </button>
       </div>
       {/* Progress Bar */}
-      <div className="relative my-[50px]">
+      <div className="relative max-sm:hidden">
         <div className="w-full h-10 md:h-12 xl:h-[65px] bg-[#ECF4F9] rounded-full overflow-hidden">
           <div
             className="h-full bg-[#00A63E] rounded-full"
@@ -68,9 +68,9 @@ const ShipmentStatus = () => {
       </div>
 
       {/* grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
         {/* route info */}
-        <div className="p-6 flex flex-col gap-6 rounded-3xl border border-black-100">
+        <div className="p-3 sm:p-6 flex flex-col gap-6 rounded-2xl sm:rounded-3xl border border-black-100">
           <div className="flex items-center gap-2">
             <LocationSvg />
             <h5 className="text-2xl font-medium text-[#0A0A0A]">
@@ -107,7 +107,7 @@ const ShipmentStatus = () => {
           </div>
         </div>
         {/* shipment details */}
-        <div className="p-6 flex flex-col gap-6 rounded-3xl border border-black-100">
+        <div className="p-3 sm:p-6 flex flex-col gap-6 rounded-2xl sm:rounded-3xl border border-black-100">
           <div className="flex items-center gap-2">
             <PackageSvg className={"text-black size-6"} />
             <h5 className="text-2xl font-medium text-[#0A0A0A]">
@@ -136,7 +136,7 @@ const ShipmentStatus = () => {
           </div>
         </div>
         {/* Parties Involved */}
-        <div className="p-6 flex flex-col gap-6 rounded-3xl border border-black-100">
+        <div className="p-3 sm:p-6 flex flex-col gap-6 rounded-2xl sm:rounded-3xl border border-black-100">
           <div className="flex items-center gap-2">
             <UsersSvg />
             <h5 className="text-2xl font-medium text-[#0A0A0A]">

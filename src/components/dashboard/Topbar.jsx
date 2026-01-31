@@ -8,11 +8,11 @@ import SidebarSmallDevice from "./SidebarSmallDevice";
 
 const Topbar = () => {
   const [openNotificationBar, setOpenNotificationBar] = useState(false);
-  const [openMobileSideBar, setOpenMobileSideBar] = useState(true);
+  const [openMobileSideBar, setOpenMobileSideBar] = useState(false);
 
   return (
-    <div className="bg-[#FEFEFE] h-[100px] sticky top-0 shadow-[0_4px_4px_0_rgba(0,0,0,0.04)] w-full pl-6 pr-[80px] py-7 flex items-center justify-between relative]">
-      <h6 className="text-xl font-medium text-black-500 flex items-center gap-4">
+    <div className="bg-[#FEFEFE] h-[100px] sticky top-0 shadow-[0_4px_4px_0_rgba(0,0,0,0.04)] w-full px-3 md:pl-6 md:pr-[80px] py-7 flex items-center justify-between relative]">
+      <h6 className="text-lg sm:text-xl font-medium text-black-500 flex items-center gap-1 sm:gap-4">
         <button
           onClick={() => setOpenMobileSideBar(true)}
           className="xl:hidden cursor-pointer"
@@ -21,7 +21,7 @@ const Topbar = () => {
         </button>
         Welcome Back, James!
       </h6>
-      <div className="flex gap-6 items-center">
+      <div className="flex gap-2 sm:gap-6 items-center">
         <div
           onClick={() => setOpenNotificationBar((prev) => !prev)}
           className="relative cursor-pointer"
@@ -37,7 +37,7 @@ const Topbar = () => {
             {/* <Image src={""} width={44} height={44} alt=""/> */}
             <span>TD</span>
           </figure>
-          <div>
+          <div className="max-sm:hidden">
             <h6 className="text-primary-black font-medium">Tanzila Diva</h6>
             <p className="text-black-300 text-xs">DIvatanzila68@gmail.com</p>
           </div>

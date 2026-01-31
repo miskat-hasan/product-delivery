@@ -7,64 +7,65 @@ const ShipmentsTable = () => {
   const [openActionBar, setOpenActionBar] = useState(null);
 
   return (
-    <div className="bg-[#FEFEFE] rounded-2xl p-6">
+    <div className="bg-[#FEFEFE] rounded-2xl p-2 md:p-6">
       <div className="flex items-center justify-between mb-6">
-        <h6 className="text-2xl text-[#111827] font-medium">Shipments</h6>
-        <button className="flex items-center justify-center px-6 py-2.5 gap-2.5 rounded-lg border border-blue-500 bg-[#ECF4F9] text-blue-500 font-medium">
+        <h6 className="text-xl sm:text-2xl text-[#111827] font-medium">Shipments</h6>
+        <button className="flex items-center justify-center max-sm:text-sm px-3 sm:px-6 py-2 sm:py-2.5 gap-2.5 rounded-lg border border-blue-500 bg-[#ECF4F9] text-blue-500 font-medium">
           Create New +
         </button>
       </div>
 
-      <div className="bg-white-50 w-[700px] xl:w-[890px] 2xl:w-full overflow-x-auto rounded-2xl p-6">
-        <table className="w-full">
+      <div className="bg-white-50 rounded-2xl md:p-6">
+        <div className="overflow-x-auto w-full">
+         <table className="min-w-[1000px] w-full whitespace-nowrap">
           <thead>
             <tr className="text-left">
-              <th className="text-nowrap px-3 text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0]">
+              <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0]">
                 AWB Number
               </th>
-              <th className="text-nowrap px-3 text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0]">
+              <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0]">
                 Status
               </th>
-              <th className="text-nowrap px-3 text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0]">
+              <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0]">
                 Route
               </th>
-              <th className="text-nowrap px-3 text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0]">
+              <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0]">
                 Parties
               </th>
-              <th className="text-nowrap px-3 text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0]">
+              <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0]">
                 Documents
               </th>
-              <th className="text-nowrap px-3 text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0] text-center">
+              <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0] text-center">
                 Actions
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className="max-sm:text-sm">
             {Array(6)
               .fill(null)
               .map((_, idx) => (
                 <tr key={idx}>
-                  <td className="text-nowrap px-3 py-3.5 text-blue-500 font-medium">
+                  <td className="px-3 py-3.5 text-blue-500 font-medium">
                     AWB-123-12345678
                   </td>
-                  <td className="text-nowrap px-3 py-3.5">
+                  <td className="px-3 py-3.5">
                     <span className="p-2.5 rounded-full bg-[#FFF9E6] text-[#FFC107]">
                       Ready for Pickup
                     </span>
                   </td>
-                  <td className="text-nowrap px-3 py-3.5 text-black-500">
+                  <td className="px-3 py-3.5 text-black-500">
                     Miami → Managua
                   </td>
-                  <td className="text-nowrap px-3 py-3.5">
+                  <td className="px-3 py-3.5">
                     <p className="text-black-300">Agent: John Smith</p>
                     <p className="text-black-300">Broker: Sarah Johnson</p>
                   </td>
-                  <td className="text-nowrap px-3 py-3.5">
+                  <td className="px-3 py-3.5">
                     <div className="flex items-center gap-1 text-[#28A745]">
                       <CheckMarkSvg className="size-4" /> Complete
                     </div>
                   </td>
-                  <td className="text-nowrap px-3 py-3.5 relative">
+                  <td className="px-3 py-3.5 relative">
                     <div className="flex items-center justify-center">
                       <button
                         onClick={() =>
@@ -94,6 +95,8 @@ const ShipmentsTable = () => {
               ))}
           </tbody>
         </table>
+        </div>
+      
       </div>
     </div>
   );
