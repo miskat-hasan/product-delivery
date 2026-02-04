@@ -1,16 +1,45 @@
 "use client";
 import ContactFinder from "@/components/dashboard/ContactFinder";
 import { FilePlusSvg } from "@/components/svg/Svg";
+import html2canvas from "html2canvas";
 import React, { useState } from "react";
 
 const AirWaybillForm = () => {
-  const [isContactFinderOpen, setIsContactFinderOpen] = useState(false);
+  const captureForm = async () => {
+    const element = document.getElementById("capture-area");
+
+    if (!element) return;
+
+    const canvas = await html2canvas(element, {
+      scale: window.devicePixelRatio * 2, // sharp text
+      useCORS: true,
+      backgroundColor: "#ffffff",
+
+      // VERY IMPORTANT for tall pages
+      windowWidth: element.scrollWidth,
+      windowHeight: element.scrollHeight,
+      scrollX: 0,
+      scrollY: -window.scrollY,
+    });
+
+    const link = document.createElement("a");
+    link.href = canvas.toDataURL("image/png");
+    link.download = "air-waybill.png";
+    link.click();
+  };
+
   return (
-    <div className="overflow-x-auto w-[8141px]">
+    <div id="capture-area" className="overflow-x-auto w-[8141px]">
       <div className="w-full max-w-[7206px] mx-auto pt-[385px] pb-[317px]">
         <div className="w-full">
           <h5 className="text-[170px] flex justify-end mb-[62px]">
             777-12345675
+            <button
+              onClick={captureForm}
+              className="mt-6 px-6 py-2 bg-black text-white rounded cursor-pointer"
+            >
+              Download Screenshot
+            </button>
           </h5>
           <div className="border-x-[10px] border-t-[10px] relative">
             <div className="absolute w-[313px] h-[268px] -top-[268px] left-[617px] border-x-[10px]" />
@@ -692,7 +721,7 @@ const AirWaybillForm = () => {
                   height="143"
                   viewBox="0 0 1161 143"
                   fill="none"
-                    className="mx-auto -mt-2"
+                  className="mx-auto -mt-2"
                 >
                   <path
                     d="M4.08203 2.9707L99.6915 137.971H1056.39L1156.08 2.9707"
