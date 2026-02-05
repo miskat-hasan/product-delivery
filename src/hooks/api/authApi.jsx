@@ -10,7 +10,7 @@ export const useLogin = () => {
   return useClientApi({
     method: "post",
     key: ["login"],
-    endpoint: "/api/users/login",
+    endpoint: "/api/login",
     onSuccess: (data) => {
       if (data?.success) {
         setToken(data?.data?.token);
@@ -21,7 +21,7 @@ export const useLogin = () => {
           confirmButtonText: "Go To Dashboard",
           allowOutsideClick: true,
         }).then(() => {
-          router.push("/admin/class_and_students/upcoming_classes");
+          router.push("/dashboard");
         });
       }
     },
