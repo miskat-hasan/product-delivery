@@ -1,6 +1,7 @@
 "use client";
 import ContactFinder from "@/components/dashboard/ContactFinder";
 import { FilePlusSvg } from "@/components/svg/Svg";
+import Link from "next/link";
 import React, { useState } from "react";
 
 const AirWaybillForm = () => {
@@ -869,12 +870,16 @@ const AirWaybillForm = () => {
           ORIGINAL 3 (FOR SHIPPER)
         </div>
         <div className="flex items-center gap-5">
+          <Link href={'/dashboard'}>
           <button className="text-lg font-medium text-blue-500 w-[300px] cursor-pointer border border-blue-500 rounded-2xl bg-[#C3DCEB] hover:bg-[#bad2e0] py-4 px-4 ">
             Continue to dashboard
           </button>
+          </Link>
+          <Link href={"/print-preview"}>
           <button className="text-lg font-medium text-black-300 w-[300px] cursor-pointer rounded-2xl bg-black-100 hover:bg-black-50 py-4 px-4 ">
-            Continue to dashboard
+            Submit the Form
           </button>
+          </Link>
         </div>
       </div>
       {isContactFinderOpen && (

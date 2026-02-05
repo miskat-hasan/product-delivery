@@ -61,10 +61,10 @@ body {
     @apply w-[2708px] shrink-0;
   }
   .preview-left-side {
-    @apply w-[580px];
+    @apply w-[580px] shrink-0;
   }
   .preview-right-side {
-    @apply w-[636px];
+    @apply w-[636px] shrink-0;
   }
   .mini-preview-left-side{
     @apply w-[536px];
