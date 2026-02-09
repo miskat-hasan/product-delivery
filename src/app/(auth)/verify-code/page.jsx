@@ -1,10 +1,11 @@
 "use client";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-
+import { useSearchParams } from "next/navigation";
+import { useVerifyCode } from "@/hooks/api/authApi";
 
 const VerifyCode = () => {
-  const router = useRouter();
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email");
 
   const {
     register,
@@ -12,15 +13,18 @@ const VerifyCode = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      verify_code: "",
+      otp: "",
     },
   });
 
+  const { mutateAsync: verifyOTPMutation, isPending } = useVerifyCode();
   const onSubmit = (data) => {
-    console.log(data);
-    // Add your verify code API call here
-    // On success, navigate to change password page
-    // router.push('/change-password');
+    const payload = {
+      otp: data?.otp,
+      email: email,
+    };
+
+    verifyOTPMutation(payload);
   };
 
   return (
@@ -36,32 +40,28 @@ const VerifyCode = () => {
         <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-5">
           <div className="space-y-1">
             <input
-              {...register("verify_code", {
+              {...register("otp", {
                 required: "Verification code is required",
                 pattern: {
-                  value: /^\d{6}$/,
-                  message: "Code must be exactly 6 digits",
+                  value: /^\d{5}$/,
+                  message: "Code must be exactly 5 digits",
                 },
                 minLength: {
-                  value: 6,
-                  message: "Code must be 6 digits",
+                  value: 5,
+                  message: "Code must be 5 digits",
                 },
                 maxLength: {
-                  value: 6,
-                  message: "Code must be 6 digits",
+                  value: 5,
+                  message: "Code must be 5 digits",
                 },
               })}
               type="text"
-              placeholder="Enter your 6-digit access code"
-              maxLength={6}
-              className={`form-input ${
-                errors.verify_code ? "border-red-500" : ""
-              }`}
+              placeholder="Enter your 5-digit access code"
+              maxLength={5}
+              className={`form-input ${errors.otp ? "border-red-500" : ""}`}
             />
-            {errors.verify_code && (
-              <p className="text-red-500 text-sm">
-                {errors.verify_code.message}
-              </p>
+            {errors.otp && (
+              <p className="text-red-500 text-sm">{errors.otp.message}</p>
             )}
           </div>
           <button
