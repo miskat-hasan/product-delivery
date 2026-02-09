@@ -1,4 +1,4 @@
-"use client"
+"use client";
 import Link from "next/link";
 import {
   HouseSvg,
@@ -8,6 +8,7 @@ import {
   ShipmentsSvg,
 } from "../svg/Svg";
 import { usePathname } from "next/navigation";
+import { useLogout } from "@/hooks/api/authApi";
 
 const sidebarNavItem = [
   {
@@ -43,28 +44,51 @@ const sidebarNavItem = [
 ];
 
 const Sidebar = () => {
-  const pathName = usePathname()
-  console.log(pathName)
+  const pathName = usePathname();
+  
+  const { mutateAsync: logoutMutation, isPending } = useLogout();
   return (
     <div className="w-[80%] xs:w-[60%] sm:w-[280px] xl:w-[316px] 2xl:w-[416px] h-screen flex flex-col shrink-0 overflow-y-auto bg-white-50 max-xl:hidden">
       <div className="text-[60px] font-bold text-black-500 text-left px-4 lg:px-8 xl:px-12 2xl:text-center my-5">
         LOGO
       </div>
-      
+
       <div className="space-y-2 flex-1 flex flex-col">
-        {sidebarNavItem.map((item, index) => (
-          <Link
-            key={index}
-            href={item.link}
-            className={`px-4 lg:px-8 xl:px-12 2xl:px-[82px] py-4 relative flex items-center gap-2.5 group hover:bg-primary-blue transition-all hover:text-white rounded-r-lg text-xl ${
-              item.id === "4" && "mt-auto"
-            } ${pathName === item.link && "bg-primary-blue transition-all text-white"}`}
-          >
-            <div className={`w-1.5 h-full absolute top-0 left-0 rounded-r-2xl group-hover:bg-[#082E55]  ${pathName === item.link && "bg-[#082e55]"}`} />
-            <item.icon className={`group-hover:text-white  ${pathName === item.link && "text-white"}`} />
-            <span>{item.label}</span>
-          </Link>
-        ))}
+        {sidebarNavItem.map((item, index) =>
+          item.label === "Log Out" ? (
+            <button
+              key={index}
+              onClick={()=> logoutMutation()}
+              className={`px-4 lg:px-8 xl:px-12 2xl:px-[82px] py-4 relative flex items-center gap-2.5 group hover:bg-primary-blue transition-all hover:text-white cursor-pointer rounded-r-lg text-xl ${
+                item.id === "4" && "mt-auto"
+              } ${pathName === item.link && "bg-primary-blue transition-all text-white"}`}
+            >
+              <div
+                className={`w-1.5 h-full absolute top-0 left-0 rounded-r-2xl group-hover:bg-[#082E55]  ${pathName === item.link && "bg-[#082e55]"}`}
+              />
+              <item.icon
+                className={`group-hover:text-white  ${pathName === item.link && "text-white"}`}
+              />
+              <span>{isPending ? "Logging out" : "Log Out"}</span>
+            </button>
+          ) : (
+            <Link
+              key={index}
+              href={item.link}
+              className={`px-4 lg:px-8 xl:px-12 2xl:px-[82px] py-4 relative flex items-center gap-2.5 group hover:bg-primary-blue transition-all hover:text-white rounded-r-lg text-xl ${
+                item.id === "4" && "mt-auto"
+              } ${pathName === item.link && "bg-primary-blue transition-all text-white"}`}
+            >
+              <div
+                className={`w-1.5 h-full absolute top-0 left-0 rounded-r-2xl group-hover:bg-[#082E55]  ${pathName === item.link && "bg-[#082e55]"}`}
+              />
+              <item.icon
+                className={`group-hover:text-white  ${pathName === item.link && "text-white"}`}
+              />
+              <span>{item.label}</span>
+            </Link>
+          ),
+        )}
       </div>
     </div>
   );

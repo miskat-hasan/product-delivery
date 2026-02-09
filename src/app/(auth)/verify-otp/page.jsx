@@ -1,10 +1,11 @@
 "use client";
 import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { useForgotPassword } from "@/hooks/api/authApi";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useVerifyOTP } from "@/hooks/api/authApi";
 
-const ForgetPassword = () => {
-  const router = useRouter();
+const VerifyCode = () => {
+  const searchParams = useSearchParams();
+  const email = searchParams.get("email");
 
   const {
     register,
@@ -12,19 +13,18 @@ const ForgetPassword = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      email: "",
+      otp: "",
     },
   });
 
-  const { mutateAsync: forgotPasswordMutation, isPending } =
-    useForgotPassword();
-
+  const { mutateAsync: verifyOTPMutation, isPending } = useVerifyOTP();
   const onSubmit = (data) => {
-    forgotPasswordMutation(data, {
-      onSuccess: () => {
-        router.push(`/verify-otp?email=${data?.email}`);
-      },
-    });
+    const payload = {
+      otp: data?.otp,
+      email: email,
+    };
+
+    verifyOTPMutation(payload);
   };
 
   return (
@@ -34,24 +34,34 @@ const ForgetPassword = () => {
           logo
         </div>
         <p className="sm:text-2xl font-bold text-primary-black text-center">
-          Please enter the email address you used during registration.
+          Please check your email and enter the login code in the field
+          provided.
         </p>
         <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-5">
           <div className="space-y-1">
             <input
-              {...register("email", {
-                required: "Email is required",
+              {...register("otp", {
+                required: "Verification code is required",
                 pattern: {
-                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                  message: "Invalid email address",
+                  value: /^\d{5}$/,
+                  message: "Code must be exactly 5 digits",
+                },
+                minLength: {
+                  value: 5,
+                  message: "Code must be 5 digits",
+                },
+                maxLength: {
+                  value: 5,
+                  message: "Code must be 5 digits",
                 },
               })}
               type="text"
-              placeholder="Enter Email"
-              className={`form-input ${errors.email ? "border-red-500" : ""}`}
+              placeholder="Enter your 5-digit access code"
+              maxLength={5}
+              className={`form-input ${errors.otp ? "border-red-500" : ""}`}
             />
-            {errors.email && (
-              <p className="text-red-500 text-sm">{errors.email.message}</p>
+            {errors.otp && (
+              <p className="text-red-500 text-sm">{errors.otp.message}</p>
             )}
           </div>
           <button
@@ -59,7 +69,7 @@ const ForgetPassword = () => {
             className="p-2.5 sm:p-4 rounded-2xl bg-primary-blue shadow-[0_0_8px_2px_rgba(1,216,255,0.16),0_0_8px_2px_rgba(1,216,255,0.16)] text-white text-lg font-medium w-full cursor-pointer hover:bg-primary-blue/85 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled={isPending}
           >
-            {isPending ? "Pending ..." : "Continue"}
+            {isPending ? "Verifying ..." : "Verify & Continue"}
           </button>
         </form>
       </div>
@@ -67,4 +77,4 @@ const ForgetPassword = () => {
   );
 };
 
-export default ForgetPassword;
+export default VerifyCode;
