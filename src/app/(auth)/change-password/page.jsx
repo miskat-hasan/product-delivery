@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { AiFillEye } from "react-icons/ai";
 import { useRouter } from "next/navigation";
 import { EyeClose } from "../../../components/svg/Svg";
-
+import { useChangePassword } from "@/hooks/api/authApi";
 
 const ChangePassword = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -25,11 +25,11 @@ const ChangePassword = () => {
 
   const password = watch("password");
 
+  const { mutateAsync: changePasswordMutation, isPending } =
+    useChangePassword();
+
   const onSubmit = (data) => {
-    const payload = {
-      password: data.password,
-    };
-    console.log(payload);
+    changePasswordMutation(data);
     // Add your change password API call here
     // On success, navigate to login page
     // router.push('/login');

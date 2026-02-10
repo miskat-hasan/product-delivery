@@ -2,14 +2,42 @@
 import { useForm } from "react-hook-form";
 import { CheckMarkSvg, CloseSvg, DownArrowSvg, MailSvg } from "../svg/Svg";
 import { useState } from "react";
+import { useAddCollaborator } from "@/hooks/api/dashboardApi";
+import Swal from "sweetalert2";
 
 const AddCollaboratorsModal = ({ onClose }) => {
-  const form = useForm();
+  const form = useForm({
+    defaultValues: {
+      role: "",
+      awb_serial_id: "",
+      name: "",
+      email: "",
+      access_level: "",
+    },
+  });
+
   const { handleSubmit, register } = form;
   const [openEmailInvitation, setOpenEmailInvitation] = useState(false);
 
+  // add new collaborator mutation
+  const { mutate: addCollaboratorMutation, isPending: addCollaboratorPending } =
+    useAddCollaborator();
+
   const onSubmit = (data) => {
-    console.log(data);
+    addCollaboratorMutation(data, {
+      onSuccess: (data) => {
+        Swal.fire({
+          title: data?.data?.message,
+          icon: "success",
+        });
+      },
+      onError: (err) => {
+        Swal.fire({
+          title: err?.response?.data?.message || "Something went wrong",
+          icon: "error",
+        });
+      },
+    });
   };
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#333333CC]">
@@ -33,18 +61,29 @@ const AddCollaboratorsModal = ({ onClose }) => {
         <form onSubmit={handleSubmit(onSubmit)} className="my-8 space-y-4">
           <div className="space-y-2">
             <div className="text-black-500">Collaborator Role</div>
-            <select className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none">
-              <option>Select Collaborator role</option>
-              <option value={"Consignee"}>Consignee</option>
-              <option value="Customs Broker">Customs Broker</option>
-              <option value="Delivery Driver">Delivery Driver</option>
-              <option value="Other">Other</option>
+            <select
+              {...register("role")}
+              className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
+            >
+              <option value={""} disabled>
+                Select Collaborator role
+              </option>
+              <option value={"consignee"}>Consignee</option>
+              <option value="custom_broker">Customs Broker</option>
+              <option value="driver">Delivery Driver</option>
+              <option value="carriers_agent">Carriers Agent</option>
+              <option value="shipper">shipper</option>
             </select>
           </div>
           <div className="space-y-2">
             <div className="text-black-500">Select AWB</div>
-            <select className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none">
-              <option>Select AWB NO</option>
+            <select
+              {...register("awb_serial_id")}
+              className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
+            >
+              <option value={""} disabled>
+                Select AWB NO
+              </option>
               <option value={"AWB-2024-1234"}>AWB-2024-1234</option>
               <option value={"AWB-2024-1234"}>AWB-2024-1234</option>
               <option value={"AWB-2024-1234"}>AWB-2024-1234</option>
@@ -55,6 +94,7 @@ const AddCollaboratorsModal = ({ onClose }) => {
             <div className="text-black-500">Full Name</div>
             <input
               type="text"
+              {...register("name")}
               placeholder="Enter your collaborator’s name"
               className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
             />
@@ -63,14 +103,20 @@ const AddCollaboratorsModal = ({ onClose }) => {
             <div className="text-black-500">Email Address</div>
             <input
               type="text"
+              {...register("email")}
               placeholder="Enter your collaborator’s email"
               className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
             />
           </div>
           <div className="space-y-2">
             <div className="text-black-500">Access Level</div>
-            <select className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none">
-              <option>Select Access Level</option>
+            <select
+              {...register("access_level")}
+              className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
+            >
+              <option value={""} disabled>
+                Select Access Level
+              </option>
               <option value={"Viewer"} className="flex flex-col">
                 <p>Viewer -</p>
                 <p> Can view shipment details and documents</p>
@@ -81,7 +127,7 @@ const AddCollaboratorsModal = ({ onClose }) => {
               </option>
             </select>
           </div>
-          <div className="py-4 px-3 rounded-[10px] border border-primary-blue bg-blue-50 w-full">
+          {/* <div className="py-4 px-3 rounded-[10px] border border-primary-blue bg-blue-50 w-full">
             <h6 className="text-lg font-medium text-black-500 mb-3">
               What happens next:
             </h6>
@@ -103,8 +149,8 @@ const AddCollaboratorsModal = ({ onClose }) => {
                 You can resend the invitation or revoke access anytime
               </li>
             </ul>
-          </div>
-          <div>
+          </div> */}
+          {/* <div>
             <button
               onClick={() => setOpenEmailInvitation((prev) => !prev)}
               className="rounded-2xl p-4 border cursor-pointer border-black-50 bg-white-500 w-full text-gray-300 outline-none flex items-center justify-between"
@@ -153,7 +199,7 @@ const AddCollaboratorsModal = ({ onClose }) => {
                 </div>
               </div>
             )}
-          </div>
+          </div> */}
           <div className="flex items-center gap-3">
             <button
               onClick={onClose}
@@ -162,8 +208,9 @@ const AddCollaboratorsModal = ({ onClose }) => {
               Cancel
             </button>
             <button className="py-2 px-4 sm:p-4 flex items-center gap-1 text-blue-500 text-white rounded-xl sm:rounded-2xl flex-1 justify-center border bg-blue-500 text-sm sm:text-lg font-medium cursor-pointer hover:bg-blue-500/85">
-              <MailSvg className={"text-white"} />
-              Send Invitation
+              {/* <MailSvg className={"text-white"} /> */}
+              {/* Send Invitation */}
+              Add New Collaborator
             </button>
           </div>
         </form>
