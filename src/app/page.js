@@ -1,13 +1,21 @@
 "use client";
 
 import useAuth from "@/hooks/useAuth";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
+  const router = useRouter();
   const { token, user } = useAuth();
-  if (token && user) {
-    redirect("/admin/class_and_students/upcoming_classes");
-  } else {
-    redirect("/login");
-  }
+
+  useEffect(() => {
+    if (!token && !user) {
+      router.replace("/login");
+      return;
+    }
+    router.replace("/dashboard");
+  }, [token, user, router]);
+
+  // Optional loading UI
+  return null;
 }

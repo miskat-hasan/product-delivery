@@ -79,25 +79,6 @@ export const useVerifyCode = () => {
   });
 };
 
-// Verify OTP for forgot password
-export const useVerifyOTP = () => {
-  const router = useRouter();
-  return useClientApi({
-    method: "post",
-    key: ["verify-reset-otp"],
-    endpoint: "/api/verify-reset-otp",
-    onSuccess: () => {
-      router.push("/change-password");
-    },
-    onError: (err) => {
-      Swal.fire({
-        title: err?.response?.data?.message || "Something went wrong",
-        icon: "error",
-      });
-    },
-  });
-};
-
 // resend OTP
 export const useResendOPT = () => {
   return useClientApi({
@@ -122,6 +103,42 @@ export const useForgotPassword = () => {
   });
 };
 
+// Verify OTP for forgot password
+export const useVerifyOTP = () => {
+  const router = useRouter();
+  return useClientApi({
+    method: "post",
+    key: ["verify-reset-otp"],
+    endpoint: "/api/verify-reset-otp",
+    onSuccess: () => {
+      router.push("/change-password");
+    },
+    onError: (err) => {
+      Swal.fire({
+        title: err?.response?.data?.message || "Something went wrong",
+        icon: "error",
+      });
+    },
+  });
+};
+
+// change/reset password
+export const useChangePassword = () => {
+  return useClientApi({
+    method: "post",
+    key: ['change-password'],
+    endpoint: "/api/reset-password",
+    onSuccess: () => {
+      router.push("/login");
+    },
+    onError: (err) => {
+      Swal.fire({
+        title: err?.response?.data?.message || "Something went wrong",
+        icon: "error",
+      });
+    },
+  })
+}
 // get user data
 export const useGetUserData = (token) => {
   return useClientApi({
