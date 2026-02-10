@@ -5,10 +5,14 @@ import { IoMdMenu } from "react-icons/io";
 import Notifications from "./Notifications";
 import { useState } from "react";
 import SidebarSmallDevice from "./SidebarSmallDevice";
+import useAuth from "@/hooks/useAuth";
 
 const Topbar = () => {
   const [openNotificationBar, setOpenNotificationBar] = useState(false);
   const [openMobileSideBar, setOpenMobileSideBar] = useState(false);
+
+  const { user } = useAuth();
+  console.log(user);
 
   return (
     <div className="bg-[#FEFEFE] h-[100px] sticky top-0 shadow-[0_4px_4px_0_rgba(0,0,0,0.04)] w-full px-3 md:pl-6 md:pr-[80px] py-7 flex items-center justify-between relative]">
@@ -19,7 +23,7 @@ const Topbar = () => {
         >
           <IoMdMenu className="size-6" />
         </button>
-        Welcome Back, James!
+        Welcome Back, {user?.full_name}!
       </h6>
       <div className="flex gap-2 sm:gap-6 items-center">
         <div
@@ -35,11 +39,13 @@ const Topbar = () => {
         <div className="flex items-center gap-2">
           <figure className="size-[44px] rounded-full overflow-hidden flex items-center justify-center border">
             {/* <Image src={""} width={44} height={44} alt=""/> */}
-            <span>TD</span>
+            <span>{user?.full_name.match(/\b(\w)/g).join("")}</span>
           </figure>
           <div className="max-sm:hidden">
-            <h6 className="text-primary-black font-medium">Tanzila Diva</h6>
-            <p className="text-black-300 text-xs">DIvatanzila68@gmail.com</p>
+            <h6 className="text-primary-black font-medium">
+              {user?.full_name ?? "User"}
+            </h6>
+            <p className="text-black-300 text-xs">{user?.email}</p>
           </div>
         </div>
       </div>
@@ -49,7 +55,7 @@ const Topbar = () => {
         </div>
       )}
       {openMobileSideBar && (
-        <SidebarSmallDevice onClose={() => setOpenMobileSideBar(false)}/>
+        <SidebarSmallDevice onClose={() => setOpenMobileSideBar(false)} />
       )}
     </div>
   );

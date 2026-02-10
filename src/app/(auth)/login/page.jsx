@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiFillEye } from "react-icons/ai";
 import { EyeClose } from "../../../components/svg/Svg";
+import { useLogin } from "@/hooks/api/authApi";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -16,15 +17,21 @@ const Login = () => {
     defaultValues: {
       email: "",
       password: "",
-      "remember-me": false,
+      remember_me: false,
     },
+    mode: "onSubmit",
   });
 
-  const onSubmit = (data) => {
-    const payload = {
-      email: data.email,
-      password: data.password,
-    };
+  // login mutation
+  const { mutateAsync: loginMutation, isPending } = useLogin();
+
+  const onSubmit = async (data) => {
+    // const payload = {
+    //   email: data?.email,
+    //   password: data?.password,
+    //   remember_me: data?.remember_me
+    // };
+    await loginMutation(data);
   };
 
   return (
@@ -41,7 +48,10 @@ const Login = () => {
             Log in to manage your shipments.
           </p>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)} className="w-full space-y-3.5 xs:space-y-5">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="w-full space-y-3.5 xs:space-y-5"
+        >
           {/* Email Input */}
           <div className="space-y-1">
             <input
@@ -98,7 +108,7 @@ const Login = () => {
 
           <div className="flex items-center gap-4 justify-between max-xs:text-sm">
             <label className="text-black-400 flex items-center gap-1 cursor-pointer">
-              <input {...register("remember-me")} type="checkbox" />
+              <input {...register("remember_me")} type="checkbox" />
               Remember me
             </label>
             <Link
@@ -112,8 +122,9 @@ const Login = () => {
           <button
             type="submit"
             className="p-2.5 sm:p-4 rounded-2xl bg-primary-blue shadow-[0_0_8px_2px_rgba(1,216,255,0.16),0_0_8px_2px_rgba(1,216,255,0.16)] text-white text-lg font-medium w-full cursor-pointer hover:bg-primary-blue/85 disabled:opacity-50 disabled:cursor-not-allowed"
+            disabled={isPending}
           >
-            Login
+            {isPending ? "Pending ...":"Login"}
           </button>
 
           <div className="text-black-400 font-medium text-center max-xs:text-sm">

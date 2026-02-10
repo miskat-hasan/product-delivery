@@ -35,7 +35,7 @@
 
 body {
   background-color: var(--background);
-   font-family: "Inter", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 @layer base {
@@ -51,13 +51,45 @@ body {
   .mini-left-side {
     @apply w-[533.151px];
   }
-  .preview_left_side{
+  .preview_left_side {
     @apply w-[3456px] shrink-0;
   }
-  .preview_right_side{
+  .preview_right_side {
     @apply w-[3740px] shrink-0;
   }
-  .preview_mini_left_side{
+  .preview_mini_left_side {
     @apply w-[2708px] shrink-0;
   }
+  .preview-left-side {
+    @apply w-[580px] shrink-0;
+  }
+  .preview-right-side {
+    @apply w-[636px] shrink-0;
+  }
+  .mini-preview-left-side{
+    @apply w-[536px];
+
+  }
+}
+
+/* @media print {
+  @page {
+    size: Latter portrait;
+    margin: 0;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+} */
+svg {
+  shape-rendering: geometricPrecision;
+  text-rendering: geometricPrecision;
+}
+
+#capture-area text,
+#capture-area p,
+#capture-area span {
+  line-height: none;
 }
