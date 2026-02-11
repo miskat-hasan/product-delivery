@@ -1,6 +1,4 @@
 "use client";
-import ContactFinder from "@/components/dashboard/ContactFinder";
-import { FilePlusSvg } from "@/components/svg/Svg";
 import html2canvas from "html2canvas";
 import { FiDownload } from "react-icons/fi";
 
@@ -41,6 +39,7 @@ const AirWaybillForm = () => {
     link.download = "air-waybill.png";
     link.click();
   };
+
   return (
     <div>
       <button
@@ -48,7 +47,6 @@ const AirWaybillForm = () => {
         className="top-6 transition size-12 text-2xl flex items-center justify-center bg-white border-black border-2 hover:bg-black hover:text-white rounded cursor-pointer absolute right-10"
       >
         <FiDownload />
-
       </button>
       <div id="capture-area">
         <div className="w-full max-w-[1218px] mx-auto py-10 bg-white">
@@ -279,7 +277,9 @@ const AirWaybillForm = () => {
                     </div>
                   </div>
                   <div className="w-[77px] flex flex-col h-full">
-                    <p className="border-b-2 text-[11px] text-center pb-1.5">Other</p>
+                    <p className="border-b-2 text-[11px] text-center pb-1.5">
+                      Other
+                    </p>
                     <div className="flex flex-1">
                       <p className="text-[11px] text-center pt-1 border-r-2 flex-1">
                         PPD
