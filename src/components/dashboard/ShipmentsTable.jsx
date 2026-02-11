@@ -10,7 +10,7 @@ const ShipmentsTable = () => {
     <div className="bg-[#FEFEFE] rounded-2xl p-2 md:p-6">
       <div className="flex items-center justify-between mb-6">
         <h6 className="text-xl sm:text-2xl text-[#111827] font-medium">Shipments</h6>
-        <Link href={'air-waybill'}>
+        <Link href={'/dashboard/air-waybill'}>
         <button className="flex items-center justify-center max-sm:text-sm px-3 sm:px-6 py-2 sm:py-2.5 gap-2.5 rounded-lg border border-blue-500 bg-[#ECF4F9] text-blue-500 hover:bg-white font-medium cursor-pointer">
           Create New +
         </button>
