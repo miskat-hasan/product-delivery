@@ -26,3 +26,23 @@ export const useGetAllCollaborator = () => {
     endpoint: "/api/my-collaborator",
   });
 };
+
+export const useAddUserContact = () => {
+  return useClientApi({
+    method: "post",
+    isPrivate: true,
+    key: ["add-user-contact"],
+    key: ["/add-user"],
+    endpoint: "/api/add-user",
+  });
+};
+
+export const GetAllUserContact = (role) => {
+  return useClientApi({
+    method: "get",
+    isPrivate: true,
+    key: ["get-all-user-contact-info", role],
+    params: { role },
+    endpoint: `/api/form-data`,
+  });
+};
