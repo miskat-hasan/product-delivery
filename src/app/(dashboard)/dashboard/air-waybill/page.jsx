@@ -11,10 +11,32 @@ const AirWaybillForm = () => {
 
   const { register, reset, handleSubmit } = form;
 
-  const [isContactFinderOpen, setIsContactFinderOpen] = useState(false);
+  const [isContactFinderOpen, setIsContactFinderOpen] = useState(null);
+
+  const [selectedContacts, setSelectedContacts] = useState({
+    shipper: null,
+    consignee: null,
+    carriers_agent: null,
+  });
+
+  console.log(selectedContacts);
+
+  const handleContactSelect = (contact) => {
+    setSelectedContacts((prev) => ({
+      ...prev,
+      [isContactFinderOpen]: contact,
+    }));
+
+    // OPTIONAL: auto-fill form fields
+    // if (isContactFinderOpen === "shipper") {
+    //   form.setValue("shipper_account_number", contact.account_number);
+    // }
+  };
+
   const onSubmit = (data) => {
     console.log(data);
   };
+
   return (
     <div className="w-full max-w-[1418px] mx-auto py-10">
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -32,7 +54,7 @@ const AirWaybillForm = () => {
                       Shipper&rsquo;s Name and Address
                     </p>
                     <div
-                      onClick={() => setIsContactFinderOpen(true)}
+                      onClick={() => setIsContactFinderOpen("shipper")}
                       className="flex items-center justify-center size-[44px] bg-[#F5F5F5] hover:bg-[#e6e2e2] transition-colors rounded-full mt-[10px] self-end cursor-pointer"
                     >
                       <FilePlusSvg />
@@ -42,14 +64,26 @@ const AirWaybillForm = () => {
                     <p>Shipper&rsquo;s Account Number</p>
                     <input
                       type="text"
-                      {...register("shipper_account_number")}
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                      value={
+                        selectedContacts.shipper
+                          ? `${selectedContacts.shipper.account_number}`
+                          : ""
+                      }
+                      readOnly
+                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
                     />
                   </div>
                 </div>
                 <div className="px-[10px] py-[14px] border-b-2">
                   <textarea
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[120px]"
+                    value={
+                      selectedContacts.shipper
+                        ? `${selectedContacts.shipper.full_name}
+${selectedContacts.shipper.city}, ${selectedContacts.shipper.state}, ${selectedContacts.shipper.country}`
+                        : ""
+                    }
+                    readOnly
+                    className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[120px]"
                     placeholder="Shipper’s Name And Address |"
                   ></textarea>
                 </div>
@@ -77,19 +111,38 @@ const AirWaybillForm = () => {
                       Consignee&rsquo;s Name and Address
                     </p>
                     <div
-                      onClick={() => setIsContactFinderOpen(true)}
+                      onClick={() => setIsContactFinderOpen("consignee")}
                       className="flex items-center justify-center size-[44px] bg-[#F5F5F5] hover:bg-[#e6e2e2] transition-colors rounded-full mt-[10px] self-end cursor-pointer"
                     >
                       <FilePlusSvg />
                     </div>
                   </div>
-                  <div className="text-black text-xl border-b-2 border-l-2 flex justify-center pt-3 min-h-[94.502px] bg-[#DFDFDF]">
+                  <div className="text-black text-xl border-b-2 border-l-2 flex flex-col px-2 justify-center pt-3 min-h-[94.502px] bg-[#DFDFDF]">
                     Consignee&rsquo;s Account Number
+                    <input
+                      type="text"
+                      value={
+                        selectedContacts.consignee
+                          ? `${selectedContacts.consignee.account_number}`
+                          : ""
+                      }
+                      readOnly
+                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                    />
                   </div>
                 </div>
                 {/* text area */}
                 <div className="px-[10px] py-[14px] border-b-2">
-                  <textarea className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[120px]"></textarea>
+                  <textarea
+                    value={
+                      selectedContacts.consignee
+                        ? `${selectedContacts.consignee.full_name}
+${selectedContacts.consignee.city}, ${selectedContacts.consignee.state}, ${selectedContacts.consignee.country}`
+                        : ""
+                    }
+                    readOnly
+                    className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[120px]"
+                  ></textarea>
                 </div>
               </div>
               {/* right */}
@@ -118,27 +171,43 @@ const AirWaybillForm = () => {
                       Issuing Carrier&rsquo;s Agent Name and City
                     </p>
                     <div
-                      onClick={() => setIsContactFinderOpen(true)}
+                      onClick={() => setIsContactFinderOpen("carriers_agent")}
                       className="flex items-center justify-center size-[30px] bg-[#F5F5F5] hover:bg-[#e6e2e2] transition-colors rounded-full mt-[10px] self-end cursor-pointer"
                     >
                       <FilePlusSvg className={"size-4"} />
                     </div>
                   </div>
-                  <textarea className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[94px]"></textarea>
+                  <textarea
+                    value={
+                      selectedContacts.carriers_agent
+                        ? `${selectedContacts.carriers_agent.full_name}
+${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state}, ${selectedContacts.carriers_agent.country}`
+                        : ""
+                    }
+                    readOnly
+                    className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[94px]"
+                  ></textarea>
                 </div>
                 <div className="grid grid-cols-2 border-b-2">
                   <div className="text-black text-xl flex flex-col px-2.5 pb-2.5 pt-1.5 pt-3 min-h-[94.502px]">
                     Agent&rsquo;s IATA Code
                     <input
                       type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                      {...register("carriers_agent_iata_code")}
+                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
                     />
                   </div>
                   <div className="text-black text-xl border-l-2 flex flex-col px-2.5 pb-2.5 pt-1.5 pt-3 min-h-[94.502px]">
                     Account No.
                     <input
                       type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                      value={
+                        selectedContacts.carriers_agent
+                          ? `${selectedContacts.carriers_agent.account_number}`
+                          : ""
+                      }
+                      readOnly
+                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
                     />
                   </div>
                 </div>
@@ -146,24 +215,38 @@ const AirWaybillForm = () => {
               {/* right */}
               <div className="right-side text-xl px-2 py-3 border-b-2">
                 Accounting Information
-                <textarea className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 mt-3 min-h-[192px]"></textarea>
+                <textarea
+                  {...register("carriers_agent_accounting_info")}
+                  className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 mt-3 min-h-[192px]"
+                ></textarea>
               </div>
             </div>
             {/* separator */}
             <div className="w-full flex">
               {/* left */}
-              <div className="left-side border-r-2 border-b-2">
-                <div className="p-[10px]">
+              <div className="left-side border-r-2 border-b-2 px-[10px]">
+                <div className="pb-2">
                   Airport of Departure (Addr. of First Carrier) and Requested
                   Routing
                 </div>
+                <input
+                  {...register("flights_booking_requested_routing")}
+                  type="text"
+                  className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                />
               </div>
               {/* right */}
               <div className="right-side border-b-2">
                 <div className="flex relative">
-                  <p className="absolute text-[15.75px] top-1.5 left-2 text-nowrap">
+                  <p className="absolute text-[15.75px] top-1.5 left-2 text-nowrap flex flex-col">
                     Reference Number
+                    <input
+                      {...register("flights_booking_reference+_number")}
+                      type="text"
+                      className="bg-[#F5F5F5] text-black-500 text-xs max-w-[80%] border border-black-100 px-2 py-2 min-h-[32px]"
+                    />
                   </p>
+
                   <div className="mx-auto relative">
                     <p className="left-1/2 absolute -translate-x-1/2 text-[15.75px]">
                       Optional Shipping Information
@@ -186,8 +269,20 @@ const AirWaybillForm = () => {
 
                 <div className="flex">
                   <div className="w-[260.7px]" />
-                  <div className="h-[39.77px] flex-1 border-l-2 border-r-2" />
-                  <div className="w-[237.11px]" />
+                  <div className="h-[39.77px] flex-1 border-l-2 border-r-2 p-1">
+                    <input
+                      {...register("flights_booking_optional_shipping_1")}
+                      type="text"
+                      className="bg-[#F5F5F5] text-black-500 text-xs w-full  border border-black-100 px-2 py-2 min-h-[32px]"
+                    />
+                  </div>
+                  <div className="w-[237.11px] px-1 pt-1">
+                    <input
+                      {...register("flights_booking_optional_shipping_2")}
+                      type="text"
+                      className="bg-[#F5F5F5] text-black-500 text-xs w-full  border border-black-100 px-2 py-2 min-h-[32px]"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -197,6 +292,11 @@ const AirWaybillForm = () => {
               <div className="left-side flex border-b-2 h-[96.471px]">
                 <div className="w-[74.814px] text-xl p-2.5 h-full border-r-2">
                   To
+                  <input
+                    type="text"
+                    {...register("routing_and_destination_to_1")}
+                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                  />
                 </div>
                 <div>
                   <div className="flex pr-2">
@@ -223,41 +323,81 @@ const AirWaybillForm = () => {
                   <div className="pt-3 px-2">
                     <input
                       type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[42px]"
+                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[42px]"
                     />
                   </div>
                 </div>
                 <div className="w-[70.877px] text-xl p-2.5 h-full border-l-2">
                   To
+                  <input
+                    type="text"
+                    {...register("routing_and_destination_to_2")}
+                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                  />
                 </div>
                 <div className="w-[61.1px] text-xl p-2.5 h-full border-l-2">
                   by
+                  <input
+                    type="text"
+                    {...register("routing_and_destination_by_1")}
+                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                  />
                 </div>
                 <div className="w-[70.877px] text-xl p-2.5 h-full border-l-2">
                   To
+                  <input
+                    type="text"
+                    {...register("routing_and_destination_to_3")}
+                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                  />
                 </div>
                 <div className="w-[61.1px] text-xl p-2.5 h-full border-l-2">
                   by
+                  <input
+                    type="text"
+                    {...register("routing_and_destination_by_2")}
+                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                  />
                 </div>
               </div>
               <div className="right-side border-b-2 shrink-0 flex">
                 <div className="text-[13.782px] px-1 py-3.5 border-x-2 w-[70.877px]">
                   Currency
+                  <input
+                    type="text"
+                    {...register("currency")}
+                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                  />
                 </div>
-                <div className="text-[11.813px] py-3 border-r-2 w-[37px]">
+                <div className="text-[11.813px] py-3 px-[1px] border-r-2 w-[37px]">
                   CHGS <br />
                   Code
+                  <input
+                    type="text"
+                    {...register("chgs_code")}
+                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-1 py-1 min-h-[32px]"
+                  />
                 </div>
                 <div className="w-[77.5px] flex flex-col h-full">
                   <p className="border-b-2 border-r-2 text-[13.782px] text-center">
                     WT/VAL
                   </p>
                   <div className="flex flex-1">
-                    <p className="text-[11.813px] text-center pt-1 border-r-2 flex-1">
+                    <p className="text-[11.813px] text-center pt-1 border-r-2 flex-1 px-0.5">
                       PPD
+                      <input
+                        type="text"
+                        {...register("ppd_1")}
+                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-1 py-1 min-h-[32px]"
+                      />
                     </p>
-                    <p className="text-[11.813px] text-center pt-1 border-r-2 flex-1">
+                    <p className="text-[11.813px] text-center pt-1 border-r-2 flex-1 px-0.5">
                       COLL
+                      <input
+                        type="text"
+                        {...register("coll_1")}
+                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-1 py-1 min-h-[32px]"
+                      />
                     </p>
                   </div>
                 </div>
@@ -266,19 +406,39 @@ const AirWaybillForm = () => {
                     WT/VAL
                   </p>
                   <div className="flex flex-1">
-                    <p className="text-[11.813px] text-center pt-1 border-r-2 flex-1">
+                    <p className="text-[11.813px] text-center pt-1 border-r-2 flex-1 px-0.5">
                       PPD
+                      <input
+                        type="text"
+                        {...register("ppd_2")}
+                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-1 py-1 min-h-[32px]"
+                      />
                     </p>
-                    <p className="text-[11.813px] text-center pt-1 flex-1">
+                    <p className="text-[11.813px] text-center pt-1 flex-1 px-0.5">
                       COLL
+                      <input
+                        type="text"
+                        {...register("coll_2")}
+                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-1 py-1 min-h-[32px]"
+                      />
                     </p>
                   </div>
                 </div>
-                <div className="w-[239px] text-[13.782px] text-center border-l-2">
+                <div className="w-[239px] text-[13.782px] text-center border-l-2 px-1">
                   Declared Value for Carriage
+                  <input
+                    type="text"
+                    {...register("declared_value_for_carriage")}
+                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                  />
                 </div>
-                <div className="w-[239px] text-[13.782px] text-center border-l-2">
+                <div className="w-[239px] text-[13.782px] text-center border-l-2 px-1">
                   Declared Value for Customs
+                  <input
+                    type="text"
+                    {...register("declared_value_for_customs")}
+                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                  />
                 </div>
               </div>
             </div>
@@ -290,7 +450,8 @@ const AirWaybillForm = () => {
                   Airport of Destination
                   <input
                     type="text"
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[42px] mt-2.5"
+                    {...register("airport_of_destination")}
+                    className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[42px] mt-2.5"
                   />
                 </div>
                 <div className="border-l-2">
@@ -318,13 +479,15 @@ const AirWaybillForm = () => {
                     <div className="border-r-2 h-[47.785px] px-2 py-1">
                       <input
                         type="text"
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("requested_flight")}
+                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
                       />
                     </div>
                     <div className="px-2 py-1">
                       <input
                         type="text"
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("requested_date")}
+                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
                       />
                     </div>
                   </div>
@@ -332,8 +495,13 @@ const AirWaybillForm = () => {
               </div>
               {/* right */}
               <div className="right-side flex">
-                <div className="text-xl pt-2 px-1.5 border-r-2">
+                <div className="text-xl pt-2 px-1.5 border-r-2 flex flex-col">
                   Amount of Insurance
+                  <input
+                    type="text"
+                    {...register("amount_of_insurance")}
+                    className="bg-[#F5F5F5] text-black-500 text-xs border border-black-100 px-2 py-1 min-h-[31px]"
+                  />
                 </div>
                 <div className="flex-1 px-2.5 pt-[18px] pb-[22px] text-[13.782px]">
                   INSURANCE – If carrier offers insurance, and such insurance is
@@ -347,10 +515,18 @@ const AirWaybillForm = () => {
             <div className="w-full h-[170.104px] border-y-2 flex justify-between">
               <div className="flex-1 mt-3 mx-2.5">
                 <p className="text-xl">Handling Information</p>
-                <textarea className="bg-[#F5F5F5] text-[#222222] w-full text-xs w-full border border-black-100 px-2 py-3 min-h-[116px]"></textarea>
+                <textarea
+                  {...register("handling_information_description")}
+                  className="bg-[#F5F5F5] text-black-500 w-full text-xs w-full border border-black-100 px-2 py-3 min-h-[116px]"
+                ></textarea>
               </div>
               <div className="h-[75.602px] w-[226.806px] border-l-2 border-t-2 ml-auto text-center self-end-safe text-xl p-1">
                 SCI
+                <input
+                  type="text"
+                  {...register("handling_information_sci")}
+                  className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                />
               </div>
             </div>
             {/* separator */}
@@ -363,7 +539,7 @@ const AirWaybillForm = () => {
                   <div className="p-1">
                     <input
                       type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
+                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
                     />
                   </div>
                 </div>
@@ -377,7 +553,7 @@ const AirWaybillForm = () => {
                   <div className="p-1">
                     <input
                       type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
+                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
                     />
                   </div>
                 </div>
@@ -402,7 +578,7 @@ const AirWaybillForm = () => {
                     <div className="p-1 border-l-2">
                       <input
                         type="text"
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
+                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
                       />
                     </div>
                   </div>
@@ -419,7 +595,7 @@ const AirWaybillForm = () => {
                   <div className="p-1">
                     <input
                       type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
+                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
                     />
                   </div>
                 </div>
@@ -434,7 +610,7 @@ const AirWaybillForm = () => {
                 <div className="p-1">
                   <input
                     type="text"
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
+                    className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
                   />
                 </div>
               </div>
@@ -447,7 +623,7 @@ const AirWaybillForm = () => {
                   <div className="p-1">
                     <input
                       type="text"
-                      className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
+                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
                     />
                   </div>
                 </div>
@@ -526,13 +702,15 @@ const AirWaybillForm = () => {
                     <div className="border-r-2 h-[40.557px] p-1">
                       <input
                         type="text"
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("charges_summary_prepaid_weight_charge")}
+                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
                       />
                     </div>
                     <div className="p-1">
                       <input
                         type="text"
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("charges_summary_collect_weight_charge")}
+                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
                       />
                     </div>
                   </div>
@@ -563,13 +741,19 @@ const AirWaybillForm = () => {
                     <div className="border-r-2 h-[49.023px] p-1">
                       <input
                         type="text"
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register(
+                          "charges_summary_prepaid_valuation_charge",
+                        )}
+                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
                       />
                     </div>
                     <div className="p-1">
                       <input
                         type="text"
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register(
+                          "charges_summary_collect_valuation_charge",
+                        )}
+                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
                       />
                     </div>
                   </div>
@@ -600,13 +784,15 @@ const AirWaybillForm = () => {
                     <div className="border-r-2 h-[49.023px] p-1">
                       <input
                         type="text"
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("charges_summary_prepaid_tax")}
+                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
                       />
                     </div>
                     <div className="p-1">
                       <input
                         type="text"
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("charges_summary_collect_tax")}
+                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
                       />
                     </div>
                   </div>
@@ -615,7 +801,10 @@ const AirWaybillForm = () => {
               {/* right */}
               <div className="py-[2px] px-1.5 border-b-2 w-full flex flex-col">
                 Other Charges
-                <textarea className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 my-3 px-2 py-3 flex-1"></textarea>
+                <textarea
+                  {...register("other_charges_description")}
+                  className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 my-3 px-2 py-3 flex-1"
+                ></textarea>
               </div>
             </div>
             {/* separator */}
@@ -648,13 +837,19 @@ const AirWaybillForm = () => {
                     <div className="border-r-2 h-[49.023px] p-1">
                       <input
                         type="text"
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register(
+                          "charges_summary_prepaid_total_other_charges_due_agent",
+                        )}
+                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
                       />
                     </div>
                     <div className="p-1">
                       <input
                         type="text"
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register(
+                          "charges_summary_collect_total_other_charges_due_agent",
+                        )}
+                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
                       />
                     </div>
                   </div>
@@ -685,13 +880,19 @@ const AirWaybillForm = () => {
                     <div className="border-r-2 h-[49.023px] p-1">
                       <input
                         type="text"
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register(
+                          "charges_summary_prepaid_total_other_charges_due_carrier",
+                        )}
+                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
                       />
                     </div>
                     <div className="p-1">
                       <input
                         type="text"
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register(
+                          "charges_summary_collect_total_other_charges_due_carrier",
+                        )}
+                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
                       />
                     </div>
                   </div>
@@ -747,7 +948,8 @@ const AirWaybillForm = () => {
                     <div className="p-1">
                       <input
                         type="text"
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        disabled
+                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
                       />
                     </div>
                   </div>
@@ -774,7 +976,8 @@ const AirWaybillForm = () => {
                     <div className="p-1">
                       <input
                         type="text"
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        disabled
+                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
                       />
                     </div>
                   </div>
@@ -893,17 +1096,24 @@ const AirWaybillForm = () => {
                 Continue to dashboard
               </button>
             </Link>
-            <Link href={"/print-preview"}>
-              <button className="text-lg font-medium text-black-300 w-[300px] cursor-pointer rounded-2xl bg-black-100 hover:bg-black-50 py-4 px-4 ">
-                Submit the Form
-              </button>
-            </Link>
+            {/* <Link href={"/print-preview"}> */}
+            <button
+              type="submit"
+              className="text-lg font-medium text-black-300 w-[300px] cursor-pointer rounded-2xl bg-black-100 hover:bg-black-50 py-4 px-4 "
+            >
+              Submit the Form
+            </button>
+            {/* </Link> */}
           </div>
         </div>
-        {isContactFinderOpen && (
-          <ContactFinder onClose={() => setIsContactFinderOpen(false)} />
-        )}
       </form>
+      {isContactFinderOpen && (
+        <ContactFinder
+          contactFinder={isContactFinderOpen}
+          onClose={() => setIsContactFinderOpen(null)}
+          onSelect={handleContactSelect}
+        />
+      )}
     </div>
   );
 };
