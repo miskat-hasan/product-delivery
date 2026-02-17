@@ -11,6 +11,8 @@ const Dashboard = () => {
   const { data: collaboratorData, isLoading: collaboratorDataLoading } =
     useGetAllCollaborator();
 
+
+
   return (
     <div className="space-y-7">
       <div className="flex items-center justify-between">
@@ -20,12 +22,12 @@ const Dashboard = () => {
           </h6>
           <p className="text-[#767676]">Friday, 13 march 2025</p>
         </div>
-        <button className="py-2 sm:py-4 px-3 sm:px-8 text-blue-500 text-white rounded-md sm:rounded-2xl bg-blue-500 text-sm sm:text-lg font-medium cursor-pointer hover:bg-blue-500/85">
+        {/* <button className="py-2 sm:py-4 px-3 sm:px-8 text-blue-500 text-white rounded-md sm:rounded-2xl bg-blue-500 text-sm sm:text-lg font-medium cursor-pointer hover:bg-blue-500/85">
           Create New
-        </button>
+        </button> */}
       </div>
       {/* status */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-6">
         {Array(3)
           .fill(null)
           .map((_, index) => (
@@ -46,7 +48,7 @@ const Dashboard = () => {
               </div>
             </div>
           ))}
-      </div>
+      </div> */}
       {/* collaborators */}
       <div className="bg-[#FEFEFE] rounded-2xl p-2 sm:p-6">
         <div className="flex max-sm:flex-col gap-2 items-center justify-between mb-6">

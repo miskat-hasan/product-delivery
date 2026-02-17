@@ -12,8 +12,7 @@ const Topbar = () => {
   const [openMobileSideBar, setOpenMobileSideBar] = useState(false);
 
   const { user } = useAuth();
-  console.log(user);
-
+  
   return (
     <div className="bg-[#FEFEFE] h-[100px] sticky top-0 shadow-[0_4px_4px_0_rgba(0,0,0,0.04)] w-full px-3 md:pl-6 md:pr-[80px] py-7 flex items-center justify-between relative]">
       <h6 className="text-lg sm:text-xl font-medium text-black-500 flex items-center gap-1 sm:gap-4">

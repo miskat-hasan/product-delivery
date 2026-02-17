@@ -2,6 +2,8 @@
 
 import ContactFinder from "@/components/dashboard/ContactFinder";
 import { FilePlusSvg } from "@/components/svg/Svg";
+import { StoreAirWaybill } from "@/hooks/api/dashboardApi";
+import useAuth from "@/hooks/useAuth";
 import Link from "next/link";
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
@@ -9,6 +11,7 @@ import { useForm } from "react-hook-form";
 const AirWaybillForm = () => {
   const form = useForm({});
 
+  const { user } = useAuth();
   const { register, reset, handleSubmit } = form;
 
   const [isContactFinderOpen, setIsContactFinderOpen] = useState(null);
@@ -18,8 +21,6 @@ const AirWaybillForm = () => {
     consignee: null,
     carriers_agent: null,
   });
-
-  console.log(selectedContacts);
 
   const handleContactSelect = (contact) => {
     setSelectedContacts((prev) => ({
@@ -33,8 +34,126 @@ const AirWaybillForm = () => {
     // }
   };
 
+  const buildPayload = (formData) => {
+    return {
+      issue_by: user?.id,
+
+      shipper: {
+        account_number: selectedContacts?.shipper?.account_number,
+        name: selectedContacts?.shipper?.full_name,
+        address:
+          selectedContacts?.shipper?.city +
+          ", " +
+          selectedContacts?.shipper?.state +
+          ", " +
+          selectedContacts?.shipper?.country,
+      },
+
+      consignee: {
+        account_number: selectedContacts?.consignee?.account_number,
+        name: selectedContacts?.consignee?.full_name,
+        address:
+          selectedContacts?.consignee?.city +
+          ", " +
+          selectedContacts?.consignee?.state +
+          ", " +
+          selectedContacts?.consignee?.country,
+      },
+
+      agent: {
+        account_number: selectedContacts?.carriers_agent?.account_number,
+        name: selectedContacts?.carriers_agent?.full_name,
+        address:
+          selectedContacts?.carriers_agent?.city +
+          ", " +
+          selectedContacts?.carriers_agent?.state +
+          ", " +
+          selectedContacts?.carriers_agent?.country,
+        iata_code: formData?.carriers_agent_iata_code,
+      },
+
+      accounting_info: formData?.accounting_info,
+
+      flights_booking: {
+        airport_of_departure: formData?.airport_of_departure,
+        reference_number: formData?.reference_number,
+        optional_shipping_1: formData?.optional_shipping_1,
+        optional_shipping_2: formData?.optional_shipping_2,
+        routing_and_destination_to_1: formData?.routing_and_destination_to_1,
+        routing_and_destination_to_2: formData?.routing_and_destination_to_2,
+        routing_and_destination_to_3: formData?.routing_and_destination_to_3,
+        routing_and_destination_by_1: formData?.routing_and_destination_by_1,
+        routing_and_destination_by_2: formData?.routing_and_destination_by_2,
+        first_carrier: formData?.first_carrier,
+        currency: formData?.currency,
+        chgs_code: formData?.chgs_code,
+        ppd_1: formData?.ppd_1,
+        ppd_2: formData?.ppd_2,
+        coll_1: formData?.coll_1,
+        coll_2: formData?.coll_2,
+        declared_value_for_carriage: formData?.declared_value_for_carriage,
+        declared_value_for_customs: formData?.declared_value_for_customs,
+        airport_of_destination: formData?.airport_of_destination,
+        requested_flight: formData?.requested_flight,
+        requested_date: formData?.requested_date,
+        amount_of_insurance: formData?.amount_of_insurance,
+      },
+
+      handling_info: {
+        description: formData?.handling_information_description,
+        sci: formData?.handling_information_sci,
+      },
+
+      nature_quantity: {
+        no_of_rcp_pieces: formData?.no_of_rcp_pieces,
+        gross_weight: formData?.gross_weight,
+        kg_lb: formData?.kg_lb,
+        rate_class: formData?.rate_class,
+        chargeable_weight: formData?.chargeable_weight,
+        rage_charge: formData?.rage_charge,
+        total: formData?.total,
+        nature_and_quantity_of_goods: formData?.nature_and_quantity_of_goods,
+      },
+
+      charges_summary: {
+        prepaid: {
+          weight_charge: formData?.charges_summary_prepaid_weight_charge,
+          valuation_charge: formData?.charges_summary_prepaid_valuation_charge,
+          tax: formData?.charges_summary_prepaid_tax,
+          total_other_charges_due_agent:
+            formData?.charges_summary_prepaid_total_other_charges_due_agent,
+          total_other_charges_due_carrier:
+            formData?.charges_summary_prepaid_total_other_charges_due_carrier,
+          total_prepaid: formData?.total_prepaid,
+        },
+        collect: {
+          weight_charge: formData?.charges_summary_collect_weight_charge,
+          valuation_charge: formData?.charges_summary_collect_valuation_charge,
+          tax: formData?.charges_summary_collect_tax,
+          total_other_charges_due_agent:
+            formData?.charges_summary_collect_total_other_charges_due_agent,
+          total_other_charges_due_carrier:
+            formData?.charges_summary_collect_total_other_charges_due_carrier,
+          total_collect: formData?.total_collect,
+        },
+      },
+
+      other_charges: {
+        currency_conversion_rates: formData?.currency_conversion_rates,
+        cc_charges_in_dest_currency: formData?.cc_charges_in_dest_currency,
+        charges_at_destination: formData?.charges_at_destination,
+        total_collect_charges: formData?.total_collect_charges,
+        description: formData?.other_charges_description,
+      },
+    };
+  };
+
+  const { mutate, isPending } = StoreAirWaybill();
+
   const onSubmit = (data) => {
-    console.log(data);
+    const payload = buildPayload(data);
+
+    mutate(payload);
   };
 
   return (
@@ -93,7 +212,9 @@ ${selectedContacts.shipper.city}, ${selectedContacts.shipper.state}, ${selectedC
                 <div className="px-2 py-3">
                   <p className="text-xl mb-[30px]">Not Negotiable</p>
                   <h3 className="text-[27.5px] font-bold">Air Waybill</h3>
-                  <p className="text-xl">Issued by</p>
+                  <p className="text-xl">
+                    Issued by <strong>{user?.full_name}</strong>
+                  </p>
                 </div>
                 <div className="border-y-2 px-2 py-6 text-xl mt-auto">
                   Copies 1, 2 and 3 of this Air Waybill are originals and have
@@ -216,7 +337,7 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
               <div className="right-side text-xl px-2 py-3 border-b-2">
                 Accounting Information
                 <textarea
-                  {...register("carriers_agent_accounting_info")}
+                  {...register("accounting_info")}
                   className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 mt-3 min-h-[192px]"
                 ></textarea>
               </div>
@@ -230,7 +351,7 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   Routing
                 </div>
                 <input
-                  {...register("flights_booking_requested_routing")}
+                  {...register("airport_of_departure")}
                   type="text"
                   className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
                 />
@@ -241,7 +362,7 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   <p className="absolute text-[15.75px] top-1.5 left-2 text-nowrap flex flex-col">
                     Reference Number
                     <input
-                      {...register("flights_booking_reference+_number")}
+                      {...register("reference_number")}
                       type="text"
                       className="bg-[#F5F5F5] text-black-500 text-xs max-w-[80%] border border-black-100 px-2 py-2 min-h-[32px]"
                     />
@@ -271,14 +392,14 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   <div className="w-[260.7px]" />
                   <div className="h-[39.77px] flex-1 border-l-2 border-r-2 p-1">
                     <input
-                      {...register("flights_booking_optional_shipping_1")}
+                      {...register("optional_shipping_1")}
                       type="text"
                       className="bg-[#F5F5F5] text-black-500 text-xs w-full  border border-black-100 px-2 py-2 min-h-[32px]"
                     />
                   </div>
                   <div className="w-[237.11px] px-1 pt-1">
                     <input
-                      {...register("flights_booking_optional_shipping_2")}
+                      {...register("optional_shipping_2")}
                       type="text"
                       className="bg-[#F5F5F5] text-black-500 text-xs w-full  border border-black-100 px-2 py-2 min-h-[32px]"
                     />
@@ -323,6 +444,7 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   <div className="pt-3 px-2">
                     <input
                       type="text"
+                      {...register("first_carrier")}
                       className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[42px]"
                     />
                   </div>
@@ -428,6 +550,7 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   Declared Value for Carriage
                   <input
                     type="text"
+                    {...register("declared_value_for_carriage")}
                     {...register("declared_value_for_carriage")}
                     className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
                   />
@@ -539,6 +662,7 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   <div className="p-1">
                     <input
                       type="text"
+                      {...register("no_of_rcp_pieces")}
                       className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
                     />
                   </div>
@@ -553,16 +677,24 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   <div className="p-1">
                     <input
                       type="text"
+                      {...register("gross_weight")}
                       className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
                     />
                   </div>
                 </div>
                 <div className="w-full h-[68px] border-t-2" />
               </div>
-              <div className="w-[20.279px] border-r-2 flex justify-between flex-col">
+              <div className="w-[50.279px] border-r-2 flex justify- flex-col">
                 <div className="py-1 border-b-2 h-[68px] text-center">
                   kg <br />
                   lb
+                </div>
+                <div className="px-0.5 pt-1">
+                  <input
+                    type="text"
+                    {...register("kg_lb")}
+                    className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-0.5 py-3 min-h-[31px]"
+                  />
                 </div>
               </div>
               <div className="w-[22.838px] bg-[#D9D9D9] border-r-2" />
@@ -570,14 +702,18 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                 <div className="w-[18.9px]" />
                 <div className="w-[130.334px] border-r-2 flex flex-col">
                   <div>
+                    <div className="h-[68px] flex flex-col">
+
                     <p className="text-xl">Rate Class</p>
-                    <p className="text-[11.813px] border-y-2 border-l-2 text-center">
+                    <p className="text-[11.813px] border-y-2 flex-1 border-l-2 text-center">
                       Commodity <br />
-                      Item No.
+                      {/* Item No. */}
                     </p>
+                    </div>
                     <div className="p-1 border-l-2">
                       <input
                         type="text"
+                        {...register("rate_class")}
                         className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
                       />
                     </div>
@@ -595,6 +731,7 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   <div className="p-1">
                     <input
                       type="text"
+                      {...register("chargeable_weight")}
                       className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
                     />
                   </div>
@@ -610,6 +747,7 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                 <div className="p-1">
                   <input
                     type="text"
+                    {...register("rage_charge")}
                     className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
                   />
                 </div>
@@ -623,6 +761,7 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   <div className="p-1">
                     <input
                       type="text"
+                      {...register("total")}
                       className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
                     />
                   </div>
@@ -630,11 +769,28 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                 <div className="w-full h-[68px] border-t-2" />
               </div>
               <div className="w-[18.9px] bg-[#D9D9D9] border-r-2" />
-              <div className="text-center w-[418.173px] h-[68px] text-xl border-b-2 flex items-center justify-center flex-1">
-                <p className="max-w-[284px] mx-auto">
-                  Nature and Quantity of Goods (incl. Dimensions or Volume)
-                </p>
+              <div className="w-[430px] flex flex-col justify-between">
+                <div>
+                  <div className="text-center h-[68px] text-xl border-b-2 flex items-center justify-center">
+                    Nature and Quantity of Goods (incl. Dimensions or Volume)
+                  </div>
+                  <div className="p-1">
+                    <input
+                      type="text"
+                      {...register("nature_and_quantity_of_goods")}
+                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
+                    />
+                  </div>
+                </div>
+                <div className="w-full h-[68px] border-t-2" />
               </div>
+              {/* <div className="text-center w-full h-[68px] text-xl border-b-2 flex flex-col items-center justify-center flex-1">
+                <div className="bg-red-800 w-[418.173px]">
+                  <p className="max-w-[284px] mx-auto">
+                    Nature and Quantity of Goods (incl. Dimensions or Volume)
+                  </p>
+                </div>
+              </div> */}
             </div>
             {/* separator */}
             <div className="w-full flex">
@@ -948,7 +1104,7 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                     <div className="p-1">
                       <input
                         type="text"
-                        disabled
+                        {...register("total_prepaid")}
                         className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
                       />
                     </div>
@@ -976,7 +1132,7 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                     <div className="p-1">
                       <input
                         type="text"
-                        disabled
+                        {...register("total_collect")}
                         className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
                       />
                     </div>
@@ -1001,6 +1157,13 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                         stroke-width="1.9688"
                       />
                     </svg>
+                    <div className="px-2 pt-1">
+                      <input
+                        type="text"
+                        {...register("currency_conversion_rates")}
+                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                      />
+                    </div>
                   </div>
                   <div className="relative w-full">
                     <p className="absolute top-[2px] left-1/2 -translate-x-1/2 text-nowrap">
@@ -1019,6 +1182,13 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                         stroke-width="1.9688"
                       />
                     </svg>
+                    <div className="px-2 pt-1">
+                      <input
+                        type="text"
+                        {...register("cc_charges_in_dest_currency")}
+                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1059,6 +1229,13 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                       stroke-width="1.9688"
                     />
                   </svg>
+                  <div className="px-2 pt-1">
+                    <input
+                      type="text"
+                      {...register("charges_at_destination")}
+                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                    />
+                  </div>
                 </div>
               </div>
             </div>
@@ -1082,6 +1259,13 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                     stroke-width="1.9688"
                   />
                 </svg>
+                <div className="px-2 pt-1">
+                  <input
+                    type="text"
+                    {...register("total_collect_charges")}
+                    className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                  />
+                </div>
               </div>
             </div>
           </div>
@@ -1100,8 +1284,9 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
             <button
               type="submit"
               className="text-lg font-medium text-black-300 w-[300px] cursor-pointer rounded-2xl bg-black-100 hover:bg-black-50 py-4 px-4 "
+              disabled={isPending}
             >
-              Submit the Form
+              {isPending ? "Submitting..." : "Submit the Form"}
             </button>
             {/* </Link> */}
           </div>
