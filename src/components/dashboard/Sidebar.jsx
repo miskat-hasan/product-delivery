@@ -69,7 +69,7 @@ const Sidebar = () => {
               <item.icon
                 className={`group-hover:text-white  ${pathName === item.link && "text-white"}`}
               />
-              <span>{isPending ? "Logging out" : "Log Out"}</span>
+              <span>{isPending ? "Processing..." : "Log Out"}</span>
             </button>
           ) : (
             <Link
