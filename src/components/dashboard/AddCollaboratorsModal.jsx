@@ -2,7 +2,10 @@
 import { useForm } from "react-hook-form";
 import { CheckMarkSvg, CloseSvg, DownArrowSvg, MailSvg } from "../svg/Svg";
 import { useState } from "react";
-import { useAddCollaborator } from "@/hooks/api/dashboardApi";
+import {
+  useAddCollaborator,
+  useGetCollaboratorContent,
+} from "@/hooks/api/dashboardApi";
 import Swal from "sweetalert2";
 
 const AddCollaboratorsModal = ({ onClose }) => {
@@ -19,6 +22,10 @@ const AddCollaboratorsModal = ({ onClose }) => {
   const { handleSubmit, register } = form;
   const [openEmailInvitation, setOpenEmailInvitation] = useState(false);
 
+  // get collaborator content
+  const { data: collaborateContent, isLoading: collaborateContentLoading } =
+    useGetCollaboratorContent();
+
   // add new collaborator mutation
   const { mutate: addCollaboratorMutation, isPending: addCollaboratorPending } =
     useAddCollaborator();
@@ -26,8 +33,9 @@ const AddCollaboratorsModal = ({ onClose }) => {
   const onSubmit = (data) => {
     addCollaboratorMutation(data, {
       onSuccess: (data) => {
+        onClose();
         Swal.fire({
-          title: data?.data?.message,
+          title: data?.message,
           icon: "success",
         });
       },
@@ -40,7 +48,7 @@ const AddCollaboratorsModal = ({ onClose }) => {
     });
   };
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-[#333333CC]">
+    <div className="fixed inset-0 z-[99] flex items-center justify-center bg-[#333333CC]">
       <div className="absolute inset-0" onClick={onClose} />
       <div
         className={`relative z-10 w-full bg-[#FEFEFE] max-w-[581px] max-h-[calc(100vh-50px)] overflow-y-auto p-2 sm:p-6 rounded-xl [&::-webkit-scrollbar]:hidden [scrollbar-width:none] sm:rounded-3xl border border-[#3D8FBE] mx-3`}
@@ -84,10 +92,15 @@ const AddCollaboratorsModal = ({ onClose }) => {
               <option value={""} disabled>
                 Select AWB NO
               </option>
-              <option value={"AWB-2024-1234"}>AWB-2024-1234</option>
-              <option value={"AWB-2024-1234"}>AWB-2024-1234</option>
-              <option value={"AWB-2024-1234"}>AWB-2024-1234</option>
-              <option value={"AWB-2024-1234"}>AWB-2024-1234</option>
+              {collaborateContentLoading
+                ? "Loading ..."
+                : collaborateContent?.data?.form_serial_id?.map(
+                    (item, index) => (
+                      <option key={index} value={item?.serial_id}>
+                        {item?.serial_id}
+                      </option>
+                    ),
+                  )}
             </select>
           </div>
           <div className="space-y-2">
@@ -117,13 +130,13 @@ const AddCollaboratorsModal = ({ onClose }) => {
               <option value={""} disabled>
                 Select Access Level
               </option>
-              <option value={"Viewer"} className="flex flex-col">
-                <p>Viewer -</p>
-                <p> Can view shipment details and documents</p>
+              <option value={"view"} className="flex flex-col">
+                <span>Viewer -</span>
+                <span> Can view shipment details and documents</span>
               </option>
-              <option value={"Editor"} className="flex flex-col">
-                <p>Editor -</p>
-                <p> Can upload documents</p>
+              <option value={"edit"} className="flex flex-col">
+                <span>Editor -</span>
+                <span> Can upload documents</span>
               </option>
             </select>
           </div>
@@ -207,10 +220,13 @@ const AddCollaboratorsModal = ({ onClose }) => {
             >
               Cancel
             </button>
-            <button className="py-2 px-4 sm:p-4 flex items-center gap-1 text-blue-500 text-white rounded-xl sm:rounded-2xl flex-1 justify-center border bg-blue-500 text-sm sm:text-lg font-medium cursor-pointer hover:bg-blue-500/85">
+            <button
+              disabled={addCollaboratorPending}
+              className="py-2 px-4 sm:p-4 flex items-center gap-1 text-blue-500 text-white rounded-xl sm:rounded-2xl flex-1 justify-center border bg-blue-500 text-sm sm:text-lg font-medium cursor-pointer hover:bg-blue-500/85"
+            >
               {/* <MailSvg className={"text-white"} /> */}
               {/* Send Invitation */}
-              Add New Collaborator
+              {addCollaboratorPending ? "Adding ... " : "Add New Collaborator"}
             </button>
           </div>
         </form>
