@@ -93,3 +93,32 @@ svg {
 #capture-area span {
   line-height: none;
 }
+
+@media print {
+  /* Hide everything except the capture area */
+  body * {
+    visibility: hidden;
+  }
+
+  #capture-area,
+  #capture-area * {
+    visibility: visible;
+  }
+
+  /* Hide the download button */
+  button {
+    display: none !important;
+  }
+
+  #capture-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  @page {
+    size: A2 portrait;   /* Paper size: A2, Layout: Portrait */
+    margin: default;     /* Margins: Default */
+  }
+}
