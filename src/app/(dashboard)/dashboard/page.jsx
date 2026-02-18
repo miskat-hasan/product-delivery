@@ -11,7 +11,14 @@ const Dashboard = () => {
   const { data: collaboratorData, isLoading: collaboratorDataLoading } =
     useGetAllCollaborator();
 
+  const today = new Date();
 
+  const formattedDate = new Intl.DateTimeFormat("en-GB", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+  }).format(today);
 
   return (
     <div className="space-y-7">
@@ -20,7 +27,7 @@ const Dashboard = () => {
           <h6 className="text-2xl sm:text-4xl font-medium text-black-500">
             Overview
           </h6>
-          <p className="text-[#767676]">Friday, 13 march 2025</p>
+          <p className="text-[#767676]">{formattedDate}</p>
         </div>
         {/* <button className="py-2 sm:py-4 px-3 sm:px-8 text-blue-500 text-white rounded-md sm:rounded-2xl bg-blue-500 text-sm sm:text-lg font-medium cursor-pointer hover:bg-blue-500/85">
           Create New
