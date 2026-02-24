@@ -8,7 +8,7 @@ import useAuth from "@/hooks/useAuth";
 const AirWaybillPreview = () => {
   const searchParams = useSearchParams();
 
-    const router = useRouter();
+  const router = useRouter();
   const { token, user } = useAuth();
 
   useEffect(() => {
@@ -26,43 +26,39 @@ const AirWaybillPreview = () => {
 
   const captureForm = () => {
     // Inject a temporary style to force background graphics
-    //   const style = document.createElement("style");
-    //   style.id = "print-override";
-    //   style.innerHTML = `
-    //   @media print {
-    //     body * { visibility: hidden; }
-    //     #capture-area, #capture-area * { visibility: visible; }
-    //     button { display: none !important; }
-    //     #capture-area { position: absolute; left: 0; top: 0; width: 100%; }
-    //     @page { size: A2 portrait; margin: 1cm; }
-    //   }
-    // `;
     const style = document.createElement("style");
     style.id = "print-override";
     style.innerHTML = `
   @media print {
-    body * { visibility: hidden; }
-    #capture-area, #capture-area * { 
-      visibility: visible; 
-      /* Ensures colors and images show up without user checking 'Background Graphics' */
-      -webkit-print-color-adjust: exact !important;
-      print-color-adjust: exact !important;
+    @page {
+      size: A2 portrait;
+      margin: 0.5cm;
     }
-    button { display: none !important; }
-    #capture-area { position: absolute; left: 0; top: 0; width: 100%; }
-    
-    /* Forces the browser to default to these dimensions */
-    @page { 
-      size: A2 portrait; 
-      margin: 1cm; 
+
+    body * { visibility: hidden; }
+    #capture-area, #capture-area * { visibility: visible; }
+    button, .no-print { display: none !important; }
+
+    #capture-area {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      width: 100% !important;
+      height: auto !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      box-shadow: none !important;
+    }
+
+    html, body {
+      margin: 0 !important;
+      padding: 0 !important;
     }
   }
 `;
     document.head.appendChild(style);
 
     window.print();
-
-    // Clean up after print dialog closes
     setTimeout(() => {
       const el = document.getElementById("print-override");
       if (el) el.remove();
