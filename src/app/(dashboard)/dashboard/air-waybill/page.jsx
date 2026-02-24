@@ -12,7 +12,12 @@ const AirWaybillForm = () => {
   const form = useForm({});
 
   const { user } = useAuth();
-  const { register, reset, handleSubmit } = form;
+  const {
+    register,
+    reset,
+    handleSubmit,
+    formState: { errors },
+  } = form;
 
   const [isContactFinderOpen, setIsContactFinderOpen] = useState(null);
 
@@ -22,16 +27,21 @@ const AirWaybillForm = () => {
     carriers_agent: null,
   });
 
+  const [contactErrors, setContactErrors] = useState({
+    shipper: false,
+    consignee: false,
+    carriers_agent: false,
+  });
+
   const handleContactSelect = (contact) => {
     setSelectedContacts((prev) => ({
       ...prev,
       [isContactFinderOpen]: contact,
     }));
-
-    // OPTIONAL: auto-fill form fields
-    // if (isContactFinderOpen === "shipper") {
-    //   form.setValue("shipper_account_number", contact.account_number);
-    // }
+    setContactErrors((prev) => ({
+      ...prev,
+      [isContactFinderOpen]: false,
+    }));
   };
 
   const buildPayload = (formData) => {
@@ -151,10 +161,23 @@ const AirWaybillForm = () => {
   const { mutate, isPending } = StoreAirWaybill();
 
   const onSubmit = (data) => {
-    const payload = buildPayload(data);
+    // Validate contact selections
+    const newContactErrors = {
+      shipper: !selectedContacts.shipper,
+      consignee: !selectedContacts.consignee,
+      carriers_agent: !selectedContacts.carriers_agent,
+    };
+    setContactErrors(newContactErrors);
 
+    if (Object.values(newContactErrors).some(Boolean)) return;
+
+    const payload = buildPayload(data);
     mutate(payload);
   };
+
+  // Helper: shared input error ring style
+  const errClass = (hasError) =>
+    hasError ? "ring-1 ring-red-500" : "";
 
   return (
     <div className="w-full max-w-[1418px] mx-auto py-10">
@@ -174,10 +197,13 @@ const AirWaybillForm = () => {
                     </p>
                     <div
                       onClick={() => setIsContactFinderOpen("shipper")}
-                      className="flex items-center justify-center size-[44px] bg-[#F5F5F5] hover:bg-[#e6e2e2] transition-colors rounded-full mt-[10px] self-end cursor-pointer"
+                      className={`flex items-center justify-center size-[44px] bg-[#F5F5F5] hover:bg-[#e6e2e2] transition-colors rounded-full mt-[10px] self-end cursor-pointer ${contactErrors.shipper ? "ring-2 ring-red-500" : ""}`}
                     >
                       <FilePlusSvg />
                     </div>
+                    {contactErrors.shipper && (
+                      <p className="text-red-500 text-xs mt-1">Shipper is required</p>
+                    )}
                   </div>
                   <div className="text-black text-xl border-b-2 border-l-2 flex  flex-col px-2 justify-center pt-3 min-h-[94.502px]">
                     <p>Shipper&rsquo;s Account Number</p>
@@ -189,7 +215,7 @@ const AirWaybillForm = () => {
                           : ""
                       }
                       readOnly
-                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                      className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-2 min-h-[42px] ${errClass(contactErrors.shipper)}`}
                     />
                   </div>
                 </div>
@@ -202,8 +228,8 @@ ${selectedContacts.shipper.city}, ${selectedContacts.shipper.state}, ${selectedC
                         : ""
                     }
                     readOnly
-                    className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[120px]"
-                    placeholder="Shipper’s Name And Address |"
+                    className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[120px] ${errClass(contactErrors.shipper)}`}
+                    placeholder="Shipper's Name And Address |"
                   ></textarea>
                 </div>
               </div>
@@ -233,10 +259,13 @@ ${selectedContacts.shipper.city}, ${selectedContacts.shipper.state}, ${selectedC
                     </p>
                     <div
                       onClick={() => setIsContactFinderOpen("consignee")}
-                      className="flex items-center justify-center size-[44px] bg-[#F5F5F5] hover:bg-[#e6e2e2] transition-colors rounded-full mt-[10px] self-end cursor-pointer"
+                      className={`flex items-center justify-center size-[44px] bg-[#F5F5F5] hover:bg-[#e6e2e2] transition-colors rounded-full mt-[10px] self-end cursor-pointer ${contactErrors.consignee ? "ring-2 ring-red-500" : ""}`}
                     >
                       <FilePlusSvg />
                     </div>
+                    {contactErrors.consignee && (
+                      <p className="text-red-500 text-xs mt-1">Consignee is required</p>
+                    )}
                   </div>
                   <div className="text-black text-xl border-b-2 border-l-2 flex flex-col px-2 justify-center pt-3 min-h-[94.502px] bg-[#DFDFDF]">
                     Consignee&rsquo;s Account Number
@@ -248,7 +277,7 @@ ${selectedContacts.shipper.city}, ${selectedContacts.shipper.state}, ${selectedC
                           : ""
                       }
                       readOnly
-                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                      className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-2 min-h-[42px] ${errClass(contactErrors.consignee)}`}
                     />
                   </div>
                 </div>
@@ -262,7 +291,7 @@ ${selectedContacts.consignee.city}, ${selectedContacts.consignee.state}, ${selec
                         : ""
                     }
                     readOnly
-                    className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[120px]"
+                    className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[120px] ${errClass(contactErrors.consignee)}`}
                   ></textarea>
                 </div>
               </div>
@@ -293,11 +322,14 @@ ${selectedContacts.consignee.city}, ${selectedContacts.consignee.state}, ${selec
                     </p>
                     <div
                       onClick={() => setIsContactFinderOpen("carriers_agent")}
-                      className="flex items-center justify-center size-[30px] bg-[#F5F5F5] hover:bg-[#e6e2e2] transition-colors rounded-full mt-[10px] self-end cursor-pointer"
+                      className={`flex items-center justify-center size-[30px] bg-[#F5F5F5] hover:bg-[#e6e2e2] transition-colors rounded-full mt-[10px] self-end cursor-pointer ${contactErrors.carriers_agent ? "ring-2 ring-red-500" : ""}`}
                     >
                       <FilePlusSvg className={"size-4"} />
                     </div>
                   </div>
+                  {contactErrors.carriers_agent && (
+                    <p className="text-red-500 text-xs mb-1">Carrier&apos;s Agent is required</p>
+                  )}
                   <textarea
                     value={
                       selectedContacts.carriers_agent
@@ -306,7 +338,7 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                         : ""
                     }
                     readOnly
-                    className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[94px]"
+                    className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[94px] ${errClass(contactErrors.carriers_agent)}`}
                   ></textarea>
                 </div>
                 <div className="grid grid-cols-2 border-b-2">
@@ -314,9 +346,12 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                     Agent&rsquo;s IATA Code
                     <input
                       type="text"
-                      {...register("carriers_agent_iata_code")}
-                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                      {...register("carriers_agent_iata_code", { required: true })}
+                      className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-2 min-h-[42px] ${errClass(errors.carriers_agent_iata_code)}`}
                     />
+                    {errors.carriers_agent_iata_code && (
+                      <p className="text-red-500 text-xs mt-1">Required</p>
+                    )}
                   </div>
                   <div className="text-black text-xl border-l-2 flex flex-col px-2.5 pb-2.5 pt-1.5 pt-3 min-h-[94.502px]">
                     Account No.
@@ -328,7 +363,7 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                           : ""
                       }
                       readOnly
-                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                      className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-2 min-h-[42px] ${errClass(contactErrors.carriers_agent)}`}
                     />
                   </div>
                 </div>
@@ -337,9 +372,12 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
               <div className="right-side text-xl px-2 py-3 border-b-2">
                 Accounting Information
                 <textarea
-                  {...register("accounting_info")}
-                  className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 mt-3 min-h-[192px]"
+                  {...register("accounting_info", { required: true })}
+                  className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 mt-3 min-h-[192px] ${errClass(errors.accounting_info)}`}
                 ></textarea>
+                {errors.accounting_info && (
+                  <p className="text-red-500 text-xs mt-1">Required</p>
+                )}
               </div>
             </div>
             {/* separator */}
@@ -351,10 +389,13 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   Routing
                 </div>
                 <input
-                  {...register("airport_of_departure")}
+                  {...register("airport_of_departure", { required: true })}
                   type="text"
-                  className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                  className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-2 min-h-[42px] ${errClass(errors.airport_of_departure)}`}
                 />
+                {errors.airport_of_departure && (
+                  <p className="text-red-500 text-xs mt-1">Required</p>
+                )}
               </div>
               {/* right */}
               <div className="right-side border-b-2">
@@ -362,10 +403,13 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   <p className="absolute text-[15.75px] top-1.5 left-2 text-nowrap flex flex-col">
                     Reference Number
                     <input
-                      {...register("reference_number")}
+                      {...register("reference_number", { required: true })}
                       type="text"
-                      className="bg-[#F5F5F5] text-black-500 text-xs max-w-[80%] border border-black-100 px-2 py-2 min-h-[32px]"
+                      className={`bg-[#F5F5F5] text-black-500 text-xs max-w-[80%] border border-black-100 px-2 py-2 min-h-[32px] ${errClass(errors.reference_number)}`}
                     />
+                    {errors.reference_number && (
+                      <span className="text-red-500 text-xs">Required</span>
+                    )}
                   </p>
 
                   <div className="mx-auto relative">
@@ -392,16 +436,16 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   <div className="w-[260.7px]" />
                   <div className="h-[39.77px] flex-1 border-l-2 border-r-2 p-1">
                     <input
-                      {...register("optional_shipping_1")}
+                      {...register("optional_shipping_1", { required: true })}
                       type="text"
-                      className="bg-[#F5F5F5] text-black-500 text-xs w-full  border border-black-100 px-2 py-2 min-h-[32px]"
+                      className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-2 min-h-[32px] ${errClass(errors.optional_shipping_1)}`}
                     />
                   </div>
                   <div className="w-[237.11px] px-1 pt-1">
                     <input
-                      {...register("optional_shipping_2")}
+                      {...register("optional_shipping_2", { required: true })}
                       type="text"
-                      className="bg-[#F5F5F5] text-black-500 text-xs w-full  border border-black-100 px-2 py-2 min-h-[32px]"
+                      className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-2 min-h-[32px] ${errClass(errors.optional_shipping_2)}`}
                     />
                   </div>
                 </div>
@@ -415,8 +459,8 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   To
                   <input
                     type="text"
-                    {...register("routing_and_destination_to_1")}
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                    {...register("routing_and_destination_to_1", { required: true, maxLength: 10 })}
+                    className={`bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px] ${errClass(errors.routing_and_destination_to_1)}`}
                   />
                 </div>
                 <div>
@@ -444,8 +488,8 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   <div className="pt-3 px-2">
                     <input
                       type="text"
-                      {...register("first_carrier")}
-                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[42px]"
+                      {...register("first_carrier", { required: true })}
+                      className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[42px] ${errClass(errors.first_carrier)}`}
                     />
                   </div>
                 </div>
@@ -453,32 +497,32 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   To
                   <input
                     type="text"
-                    {...register("routing_and_destination_to_2")}
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                    {...register("routing_and_destination_to_2", { required: true })}
+                    className={`bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px] ${errClass(errors.routing_and_destination_to_2)}`}
                   />
                 </div>
                 <div className="w-[61.1px] text-xl p-2.5 h-full border-l-2">
                   by
                   <input
                     type="text"
-                    {...register("routing_and_destination_by_1")}
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                    {...register("routing_and_destination_by_1", { required: true })}
+                    className={`bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px] ${errClass(errors.routing_and_destination_by_1)}`}
                   />
                 </div>
                 <div className="w-[70.877px] text-xl p-2.5 h-full border-l-2">
                   To
                   <input
                     type="text"
-                    {...register("routing_and_destination_to_3")}
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                    {...register("routing_and_destination_to_3", { required: true })}
+                    className={`bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px] ${errClass(errors.routing_and_destination_to_3)}`}
                   />
                 </div>
                 <div className="w-[61.1px] text-xl p-2.5 h-full border-l-2">
                   by
                   <input
                     type="text"
-                    {...register("routing_and_destination_by_2")}
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                    {...register("routing_and_destination_by_2", { required: true })}
+                    className={`bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px] ${errClass(errors.routing_and_destination_by_2)}`}
                   />
                 </div>
               </div>
@@ -487,8 +531,8 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   Currency
                   <input
                     type="text"
-                    {...register("currency")}
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                    {...register("currency", { required: true })}
+                    className={`bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px] ${errClass(errors.currency)}`}
                   />
                 </div>
                 <div className="text-[11.813px] py-3 px-[1px] border-r-2 w-[37px]">
@@ -496,8 +540,8 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   Code
                   <input
                     type="text"
-                    {...register("chgs_code")}
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-1 py-1 min-h-[32px]"
+                    {...register("chgs_code", { required: true })}
+                    className={`bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-1 py-1 min-h-[32px] ${errClass(errors.chgs_code)}`}
                   />
                 </div>
                 <div className="w-[77.5px] flex flex-col h-full">
@@ -509,16 +553,16 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                       PPD
                       <input
                         type="text"
-                        {...register("ppd_1")}
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-1 py-1 min-h-[32px]"
+                        {...register("ppd_1", { required: true })}
+                        className={`bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-1 py-1 min-h-[32px] ${errClass(errors.ppd_1)}`}
                       />
                     </p>
                     <p className="text-[11.813px] text-center pt-1 border-r-2 flex-1 px-0.5">
                       COLL
                       <input
                         type="text"
-                        {...register("coll_1")}
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-1 py-1 min-h-[32px]"
+                        {...register("coll_1", { required: true })}
+                        className={`bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-1 py-1 min-h-[32px] ${errClass(errors.coll_1)}`}
                       />
                     </p>
                   </div>
@@ -532,16 +576,16 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                       PPD
                       <input
                         type="text"
-                        {...register("ppd_2")}
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-1 py-1 min-h-[32px]"
+                        {...register("ppd_2", { required: true })}
+                        className={`bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-1 py-1 min-h-[32px] ${errClass(errors.ppd_2)}`}
                       />
                     </p>
                     <p className="text-[11.813px] text-center pt-1 flex-1 px-0.5">
                       COLL
                       <input
                         type="text"
-                        {...register("coll_2")}
-                        className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-1 py-1 min-h-[32px]"
+                        {...register("coll_2", { required: true })}
+                        className={`bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-1 py-1 min-h-[32px] ${errClass(errors.coll_2)}`}
                       />
                     </p>
                   </div>
@@ -550,17 +594,16 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   Declared Value for Carriage
                   <input
                     type="text"
-                    {...register("declared_value_for_carriage")}
-                    {...register("declared_value_for_carriage")}
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                    {...register("declared_value_for_carriage", { required: true })}
+                    className={`bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px] ${errClass(errors.declared_value_for_carriage)}`}
                   />
                 </div>
                 <div className="w-[239px] text-[13.782px] text-center border-l-2 px-1">
                   Declared Value for Customs
                   <input
                     type="text"
-                    {...register("declared_value_for_customs")}
-                    className="bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px]"
+                    {...register("declared_value_for_customs", { required: true })}
+                    className={`bg-[#F5F5F5] text-[#222222] text-xs w-full border border-black-100 px-2 py-2 min-h-[42px] ${errClass(errors.declared_value_for_customs)}`}
                   />
                 </div>
               </div>
@@ -573,9 +616,12 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   Airport of Destination
                   <input
                     type="text"
-                    {...register("airport_of_destination")}
-                    className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[42px] mt-2.5"
+                    {...register("airport_of_destination", { required: true })}
+                    className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[42px] mt-2.5 ${errClass(errors.airport_of_destination)}`}
                   />
+                  {errors.airport_of_destination && (
+                    <p className="text-red-500 text-xs mt-1">Required</p>
+                  )}
                 </div>
                 <div className="border-l-2">
                   <div className="relative flex">
@@ -602,15 +648,15 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                     <div className="border-r-2 h-[47.785px] px-2 py-1">
                       <input
                         type="text"
-                        {...register("requested_flight")}
-                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("requested_flight", { required: true })}
+                        className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.requested_flight)}`}
                       />
                     </div>
                     <div className="px-2 py-1">
                       <input
                         type="text"
-                        {...register("requested_date")}
-                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("requested_date", { required: true })}
+                        className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.requested_date)}`}
                       />
                     </div>
                   </div>
@@ -622,9 +668,12 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   Amount of Insurance
                   <input
                     type="text"
-                    {...register("amount_of_insurance")}
-                    className="bg-[#F5F5F5] text-black-500 text-xs border border-black-100 px-2 py-1 min-h-[31px]"
+                    {...register("amount_of_insurance", { required: true })}
+                    className={`bg-[#F5F5F5] text-black-500 text-xs border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.amount_of_insurance)}`}
                   />
+                  {errors.amount_of_insurance && (
+                    <p className="text-red-500 text-xs mt-1">Required</p>
+                  )}
                 </div>
                 <div className="flex-1 px-2.5 pt-[18px] pb-[22px] text-[13.782px]">
                   INSURANCE – If carrier offers insurance, and such insurance is
@@ -639,17 +688,23 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
               <div className="flex-1 mt-3 mx-2.5">
                 <p className="text-xl">Handling Information</p>
                 <textarea
-                  {...register("handling_information_description")}
-                  className="bg-[#F5F5F5] text-black-500 w-full text-xs w-full border border-black-100 px-2 py-3 min-h-[116px]"
+                  {...register("handling_information_description", { required: true })}
+                  className={`bg-[#F5F5F5] text-black-500 w-full text-xs w-full border border-black-100 px-2 py-3 min-h-[116px] ${errClass(errors.handling_information_description)}`}
                 ></textarea>
+                {errors.handling_information_description && (
+                  <p className="text-red-500 text-xs mt-1">Required</p>
+                )}
               </div>
               <div className="h-[75.602px] w-[226.806px] border-l-2 border-t-2 ml-auto text-center self-end-safe text-xl p-1">
                 SCI
                 <input
                   type="text"
-                  {...register("handling_information_sci")}
-                  className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                  {...register("handling_information_sci", { required: true })}
+                  className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.handling_information_sci)}`}
                 />
+                {errors.handling_information_sci && (
+                  <p className="text-red-500 text-xs mt-1">Required</p>
+                )}
               </div>
             </div>
             {/* separator */}
@@ -662,8 +717,8 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   <div className="p-1">
                     <input
                       type="text"
-                      {...register("no_of_rcp_pieces")}
-                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
+                      {...register("no_of_rcp_pieces", { required: true })}
+                      className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px] ${errClass(errors.no_of_rcp_pieces)}`}
                     />
                   </div>
                 </div>
@@ -677,8 +732,8 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   <div className="p-1">
                     <input
                       type="text"
-                      {...register("gross_weight")}
-                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
+                      {...register("gross_weight", { required: true })}
+                      className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px] ${errClass(errors.gross_weight)}`}
                     />
                   </div>
                 </div>
@@ -692,8 +747,8 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                 <div className="px-0.5 pt-1">
                   <input
                     type="text"
-                    {...register("kg_lb")}
-                    className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-0.5 py-3 min-h-[31px]"
+                    {...register("kg_lb", { required: true })}
+                    className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-0.5 py-3 min-h-[31px] ${errClass(errors.kg_lb)}`}
                   />
                 </div>
               </div>
@@ -703,18 +758,16 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                 <div className="w-[130.334px] border-r-2 flex flex-col">
                   <div>
                     <div className="h-[68px] flex flex-col">
-
-                    <p className="text-xl">Rate Class</p>
-                    <p className="text-[11.813px] border-y-2 flex-1 border-l-2 text-center">
-                      Commodity <br />
-                      {/* Item No. */}
-                    </p>
+                      <p className="text-xl">Rate Class</p>
+                      <p className="text-[11.813px] border-y-2 flex-1 border-l-2 text-center">
+                        Commodity <br />
+                      </p>
                     </div>
                     <div className="p-1 border-l-2">
                       <input
                         type="text"
-                        {...register("rate_class")}
-                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
+                        {...register("rate_class", { required: true })}
+                        className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px] ${errClass(errors.rate_class)}`}
                       />
                     </div>
                   </div>
@@ -731,8 +784,8 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   <div className="p-1">
                     <input
                       type="text"
-                      {...register("chargeable_weight")}
-                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
+                      {...register("chargeable_weight", { required: true })}
+                      className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px] ${errClass(errors.chargeable_weight)}`}
                     />
                   </div>
                 </div>
@@ -747,8 +800,8 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                 <div className="p-1">
                   <input
                     type="text"
-                    {...register("rage_charge")}
-                    className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
+                    {...register("rage_charge", { required: true })}
+                    className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px] ${errClass(errors.rage_charge)}`}
                   />
                 </div>
               </div>
@@ -761,8 +814,8 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   <div className="p-1">
                     <input
                       type="text"
-                      {...register("total")}
-                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
+                      {...register("total", { required: true })}
+                      className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px] ${errClass(errors.total)}`}
                     />
                   </div>
                 </div>
@@ -777,20 +830,13 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   <div className="p-1">
                     <input
                       type="text"
-                      {...register("nature_and_quantity_of_goods")}
-                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px]"
+                      {...register("nature_and_quantity_of_goods", { required: true })}
+                      className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-3 min-h-[31px] ${errClass(errors.nature_and_quantity_of_goods)}`}
                     />
                   </div>
                 </div>
                 <div className="w-full h-[68px] border-t-2" />
               </div>
-              {/* <div className="text-center w-full h-[68px] text-xl border-b-2 flex flex-col items-center justify-center flex-1">
-                <div className="bg-red-800 w-[418.173px]">
-                  <p className="max-w-[284px] mx-auto">
-                    Nature and Quantity of Goods (incl. Dimensions or Volume)
-                  </p>
-                </div>
-              </div> */}
             </div>
             {/* separator */}
             <div className="w-full flex">
@@ -803,54 +849,24 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                       <p className="absolute top-[2px] left-1/2 -translate-x-1/2">
                         Prepaid
                       </p>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="134"
-                        height="29"
-                        viewBox="0 0 134 29"
-                        fill="none"
-                      >
-                        <path
-                          d="M0.845703 0.507812L16.687 27.0866H117.166L133.149 0.507812"
-                          stroke="black"
-                          stroke-width="1.9688"
-                        />
+                      <svg xmlns="http://www.w3.org/2000/svg" width="134" height="29" viewBox="0 0 134 29" fill="none">
+                        <path d="M0.845703 0.507812L16.687 27.0866H117.166L133.149 0.507812" stroke="black" stroke-width="1.9688" />
                       </svg>
                     </div>
                     <div className="relative">
                       <p className="absolute top-[2px] left-1/2 -translate-x-1/2">
                         Weight Charge
                       </p>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="229"
-                        height="29"
-                        viewBox="0 0 229 29"
-                        fill="none"
-                      >
-                        <path
-                          d="M0.803711 0.583984L19.6273 27.1628H207.982L227.609 0.583984"
-                          stroke="black"
-                          stroke-width="1.9688"
-                        />
+                      <svg xmlns="http://www.w3.org/2000/svg" width="229" height="29" viewBox="0 0 229 29" fill="none">
+                        <path d="M0.803711 0.583984L19.6273 27.1628H207.982L227.609 0.583984" stroke="black" stroke-width="1.9688" />
                       </svg>
                     </div>
                     <div className="relative">
                       <p className="absolute top-[2px] left-1/2 -translate-x-1/2">
                         Collect
                       </p>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="134"
-                        height="29"
-                        viewBox="0 0 134 29"
-                        fill="none"
-                      >
-                        <path
-                          d="M0.845703 0.507812L16.687 27.0866H117.166L133.149 0.507812"
-                          stroke="black"
-                          stroke-width="1.9688"
-                        />
+                      <svg xmlns="http://www.w3.org/2000/svg" width="134" height="29" viewBox="0 0 134 29" fill="none">
+                        <path d="M0.845703 0.507812L16.687 27.0866H117.166L133.149 0.507812" stroke="black" stroke-width="1.9688" />
                       </svg>
                     </div>
                   </div>
@@ -858,15 +874,15 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                     <div className="border-r-2 h-[40.557px] p-1">
                       <input
                         type="text"
-                        {...register("charges_summary_prepaid_weight_charge")}
-                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("charges_summary_prepaid_weight_charge", { required: true })}
+                        className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.charges_summary_prepaid_weight_charge)}`}
                       />
                     </div>
                     <div className="p-1">
                       <input
                         type="text"
-                        {...register("charges_summary_collect_weight_charge")}
-                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("charges_summary_collect_weight_charge", { required: true })}
+                        className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.charges_summary_collect_weight_charge)}`}
                       />
                     </div>
                   </div>
@@ -878,18 +894,8 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                       <p className="absolute top-[2px] left-1/2 -translate-x-1/2">
                         Valuation Charge
                       </p>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="267"
-                        height="29"
-                        viewBox="0 0 267 29"
-                        fill="none"
-                      >
-                        <path
-                          d="M0.758789 0.642578L22.7196 27.2214H242.467L265.365 0.642578"
-                          stroke="black"
-                          stroke-width="1.9688"
-                        />
+                      <svg xmlns="http://www.w3.org/2000/svg" width="267" height="29" viewBox="0 0 267 29" fill="none">
+                        <path d="M0.758789 0.642578L22.7196 27.2214H242.467L265.365 0.642578" stroke="black" stroke-width="1.9688" />
                       </svg>
                     </div>
                   </div>
@@ -897,19 +903,15 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                     <div className="border-r-2 h-[49.023px] p-1">
                       <input
                         type="text"
-                        {...register(
-                          "charges_summary_prepaid_valuation_charge",
-                        )}
-                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("charges_summary_prepaid_valuation_charge", { required: true })}
+                        className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.charges_summary_prepaid_valuation_charge)}`}
                       />
                     </div>
                     <div className="p-1">
                       <input
                         type="text"
-                        {...register(
-                          "charges_summary_collect_valuation_charge",
-                        )}
-                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("charges_summary_collect_valuation_charge", { required: true })}
+                        className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.charges_summary_collect_valuation_charge)}`}
                       />
                     </div>
                   </div>
@@ -921,18 +923,8 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                       <p className="absolute top-[2px] left-1/2 -translate-x-1/2">
                         Tax
                       </p>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="153"
-                        height="28"
-                        viewBox="0 0 153 28"
-                        fill="none"
-                      >
-                        <path
-                          d="M0.890625 0.435547L13.4397 27.0143H139.01L152.094 0.435547"
-                          stroke="black"
-                          stroke-width="1.9688"
-                        />
+                      <svg xmlns="http://www.w3.org/2000/svg" width="153" height="28" viewBox="0 0 153 28" fill="none">
+                        <path d="M0.890625 0.435547L13.4397 27.0143H139.01L152.094 0.435547" stroke="black" stroke-width="1.9688" />
                       </svg>
                     </div>
                   </div>
@@ -940,15 +932,15 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                     <div className="border-r-2 h-[49.023px] p-1">
                       <input
                         type="text"
-                        {...register("charges_summary_prepaid_tax")}
-                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("charges_summary_prepaid_tax", { required: true })}
+                        className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.charges_summary_prepaid_tax)}`}
                       />
                     </div>
                     <div className="p-1">
                       <input
                         type="text"
-                        {...register("charges_summary_collect_tax")}
-                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("charges_summary_collect_tax", { required: true })}
+                        className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.charges_summary_collect_tax)}`}
                       />
                     </div>
                   </div>
@@ -958,9 +950,12 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
               <div className="py-[2px] px-1.5 border-b-2 w-full flex flex-col">
                 Other Charges
                 <textarea
-                  {...register("other_charges_description")}
-                  className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 my-3 px-2 py-3 flex-1"
+                  {...register("other_charges_description", { required: true })}
+                  className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 my-3 px-2 py-3 flex-1 ${errClass(errors.other_charges_description)}`}
                 ></textarea>
+                {errors.other_charges_description && (
+                  <p className="text-red-500 text-xs mb-1">Required</p>
+                )}
               </div>
             </div>
             {/* separator */}
@@ -974,18 +969,8 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                       <p className="absolute top-[2px] left-1/2 -translate-x-1/2 text-nowrap">
                         Total Other Charges Due Agent
                       </p>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="417"
-                        height="29"
-                        viewBox="0 0 417 29"
-                        fill="none"
-                      >
-                        <path
-                          d="M0.600586 0.791016L35.1105 27.3698H380.428L416.411 0.791016"
-                          stroke="black"
-                          stroke-width="1.9688"
-                        />
+                      <svg xmlns="http://www.w3.org/2000/svg" width="417" height="29" viewBox="0 0 417 29" fill="none">
+                        <path d="M0.600586 0.791016L35.1105 27.3698H380.428L416.411 0.791016" stroke="black" stroke-width="1.9688" />
                       </svg>
                     </div>
                   </div>
@@ -993,19 +978,15 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                     <div className="border-r-2 h-[49.023px] p-1">
                       <input
                         type="text"
-                        {...register(
-                          "charges_summary_prepaid_total_other_charges_due_agent",
-                        )}
-                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("charges_summary_prepaid_total_other_charges_due_agent", { required: true })}
+                        className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.charges_summary_prepaid_total_other_charges_due_agent)}`}
                       />
                     </div>
                     <div className="p-1">
                       <input
                         type="text"
-                        {...register(
-                          "charges_summary_collect_total_other_charges_due_agent",
-                        )}
-                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("charges_summary_collect_total_other_charges_due_agent", { required: true })}
+                        className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.charges_summary_collect_total_other_charges_due_agent)}`}
                       />
                     </div>
                   </div>
@@ -1017,18 +998,8 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                       <p className="absolute top-[2px] left-1/2 -translate-x-1/2 text-nowrap">
                         Total Other Charges Due Carrier
                       </p>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="417"
-                        height="29"
-                        viewBox="0 0 417 29"
-                        fill="none"
-                      >
-                        <path
-                          d="M0.600586 0.791016L35.1105 27.3698H380.428L416.411 0.791016"
-                          stroke="black"
-                          stroke-width="1.9688"
-                        />
+                      <svg xmlns="http://www.w3.org/2000/svg" width="417" height="29" viewBox="0 0 417 29" fill="none">
+                        <path d="M0.600586 0.791016L35.1105 27.3698H380.428L416.411 0.791016" stroke="black" stroke-width="1.9688" />
                       </svg>
                     </div>
                   </div>
@@ -1036,19 +1007,15 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                     <div className="border-r-2 h-[49.023px] p-1">
                       <input
                         type="text"
-                        {...register(
-                          "charges_summary_prepaid_total_other_charges_due_carrier",
-                        )}
-                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("charges_summary_prepaid_total_other_charges_due_carrier", { required: true })}
+                        className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.charges_summary_prepaid_total_other_charges_due_carrier)}`}
                       />
                     </div>
                     <div className="p-1">
                       <input
                         type="text"
-                        {...register(
-                          "charges_summary_collect_total_other_charges_due_carrier",
-                        )}
-                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("charges_summary_collect_total_other_charges_due_carrier", { required: true })}
+                        className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.charges_summary_collect_total_other_charges_due_carrier)}`}
                       />
                     </div>
                   </div>
@@ -1086,26 +1053,15 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                       <p className="absolute top-[2px] left-1/2 -translate-x-1/2 text-nowrap">
                         Total Prepaid
                       </p>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="229"
-                        height="29"
-                        viewBox="0 0 229 29"
-                        fill="none"
-                        className="mx-auto"
-                      >
-                        <path
-                          d="M0.803711 0.583984L19.6273 27.1628H207.982L227.609 0.583984"
-                          stroke="black"
-                          stroke-width="1.9688"
-                        />
+                      <svg xmlns="http://www.w3.org/2000/svg" width="229" height="29" viewBox="0 0 229 29" fill="none" className="mx-auto">
+                        <path d="M0.803711 0.583984L19.6273 27.1628H207.982L227.609 0.583984" stroke="black" stroke-width="1.9688" />
                       </svg>
                     </div>
                     <div className="p-1">
                       <input
                         type="text"
-                        {...register("total_prepaid")}
-                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("total_prepaid", { required: true })}
+                        className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.total_prepaid)}`}
                       />
                     </div>
                   </div>
@@ -1114,26 +1070,15 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                       <p className="absolute top-[2px] left-1/2 -translate-x-1/2 text-nowrap">
                         Total Collect
                       </p>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="229"
-                        height="29"
-                        viewBox="0 0 229 29"
-                        fill="none"
-                        className="mx-auto"
-                      >
-                        <path
-                          d="M0.803711 0.583984L19.6273 27.1628H207.982L227.609 0.583984"
-                          stroke="black"
-                          stroke-width="1.9688"
-                        />
+                      <svg xmlns="http://www.w3.org/2000/svg" width="229" height="29" viewBox="0 0 229 29" fill="none" className="mx-auto">
+                        <path d="M0.803711 0.583984L19.6273 27.1628H207.982L227.609 0.583984" stroke="black" stroke-width="1.9688" />
                       </svg>
                     </div>
                     <div className="p-1">
                       <input
                         type="text"
-                        {...register("total_collect")}
-                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("total_collect", { required: true })}
+                        className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.total_collect)}`}
                       />
                     </div>
                   </div>
@@ -1144,24 +1089,14 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                     <p className="absolute top-[2px] left-1/2 -translate-x-1/2 text-nowrap">
                       Currency Conversion Rates
                     </p>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="268"
-                      height="29"
-                      viewBox="0 0 268 29"
-                      fill="none"
-                    >
-                      <path
-                        d="M0.757812 0.644531L22.8004 27.2233H243.365L266.349 0.644531"
-                        stroke="black"
-                        stroke-width="1.9688"
-                      />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="268" height="29" viewBox="0 0 268 29" fill="none">
+                      <path d="M0.757812 0.644531L22.8004 27.2233H243.365L266.349 0.644531" stroke="black" stroke-width="1.9688" />
                     </svg>
                     <div className="px-2 pt-1">
                       <input
                         type="text"
-                        {...register("currency_conversion_rates")}
-                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("currency_conversion_rates", { required: true })}
+                        className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.currency_conversion_rates)}`}
                       />
                     </div>
                   </div>
@@ -1169,24 +1104,14 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                     <p className="absolute top-[2px] left-1/2 -translate-x-1/2 text-nowrap">
                       CC Charges in Dest. Currency
                     </p>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="267"
-                      height="29"
-                      viewBox="0 0 267 29"
-                      fill="none"
-                    >
-                      <path
-                        d="M0.757812 0.644531L22.784 27.2233H243.186L266.152 0.644531"
-                        stroke="black"
-                        stroke-width="1.9688"
-                      />
+                    <svg xmlns="http://www.w3.org/2000/svg" width="267" height="29" viewBox="0 0 267 29" fill="none">
+                      <path d="M0.757812 0.644531L22.784 27.2233H243.186L266.152 0.644531" stroke="black" stroke-width="1.9688" />
                     </svg>
                     <div className="px-2 pt-1">
                       <input
                         type="text"
-                        {...register("cc_charges_in_dest_currency")}
-                        className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                        {...register("cc_charges_in_dest_currency", { required: true })}
+                        className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.cc_charges_in_dest_currency)}`}
                       />
                     </div>
                   </div>
@@ -1215,25 +1140,14 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                   <p className="absolute top-[2px] left-1/2 -translate-x-1/2 text-nowrap">
                     Charges at Destination
                   </p>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="229"
-                    height="29"
-                    viewBox="0 0 229 29"
-                    fill="none"
-                    className="mx-auto"
-                  >
-                    <path
-                      d="M0.803711 0.583984L19.6273 27.1628H207.982L227.609 0.583984"
-                      stroke="black"
-                      stroke-width="1.9688"
-                    />
+                  <svg xmlns="http://www.w3.org/2000/svg" width="229" height="29" viewBox="0 0 229 29" fill="none" className="mx-auto">
+                    <path d="M0.803711 0.583984L19.6273 27.1628H207.982L227.609 0.583984" stroke="black" stroke-width="1.9688" />
                   </svg>
                   <div className="px-2 pt-1">
                     <input
                       type="text"
-                      {...register("charges_at_destination")}
-                      className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                      {...register("charges_at_destination", { required: true })}
+                      className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.charges_at_destination)}`}
                     />
                   </div>
                 </div>
@@ -1245,25 +1159,14 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                 <p className="absolute top-[2px] left-1/2 -translate-x-1/2 text-nowrap">
                   Total Collect Charges
                 </p>
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="229"
-                  height="29"
-                  viewBox="0 0 229 29"
-                  fill="none"
-                  className="mx-auto"
-                >
-                  <path
-                    d="M0.803711 0.583984L19.6273 27.1628H207.982L227.609 0.583984"
-                    stroke="black"
-                    stroke-width="1.9688"
-                  />
+                <svg xmlns="http://www.w3.org/2000/svg" width="229" height="29" viewBox="0 0 229 29" fill="none" className="mx-auto">
+                  <path d="M0.803711 0.583984L19.6273 27.1628H207.982L227.609 0.583984" stroke="black" stroke-width="1.9688" />
                 </svg>
                 <div className="px-2 pt-1">
                   <input
                     type="text"
-                    {...register("total_collect_charges")}
-                    className="bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px]"
+                    {...register("total_collect_charges", { required: true })}
+                    className={`bg-[#F5F5F5] text-black-500 text-xs w-full border border-black-100 px-2 py-1 min-h-[31px] ${errClass(errors.total_collect_charges)}`}
                   />
                 </div>
               </div>
@@ -1280,7 +1183,6 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
                 Continue to dashboard
               </button>
             </Link>
-            {/* <Link href={"/print-preview"}> */}
             <button
               type="submit"
               className="text-lg font-medium text-black-300 w-[300px] cursor-pointer rounded-2xl bg-black-100 hover:bg-black-50 py-4 px-4 "
@@ -1288,7 +1190,6 @@ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state
             >
               {isPending ? "Submitting..." : "Submit the Form"}
             </button>
-            {/* </Link> */}
           </div>
         </div>
       </form>
