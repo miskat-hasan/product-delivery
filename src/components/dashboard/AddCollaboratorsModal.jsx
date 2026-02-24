@@ -7,6 +7,7 @@ import {
   useGetCollaboratorContent,
 } from "@/hooks/api/dashboardApi";
 import Swal from "sweetalert2";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AddCollaboratorsModal = ({ onClose }) => {
   const form = useForm({
@@ -22,6 +23,8 @@ const AddCollaboratorsModal = ({ onClose }) => {
   const { handleSubmit, register } = form;
   const [openEmailInvitation, setOpenEmailInvitation] = useState(false);
 
+  const queryClient = useQueryClient()
+
   // get collaborator content
   const { data: collaborateContent, isLoading: collaborateContentLoading } =
     useGetCollaboratorContent();
@@ -34,6 +37,7 @@ const AddCollaboratorsModal = ({ onClose }) => {
     addCollaboratorMutation(data, {
       onSuccess: (data) => {
         onClose();
+        queryClient.invalidateQueries("get-all-collaborator")
         Swal.fire({
           title: data?.message,
           icon: "success",
