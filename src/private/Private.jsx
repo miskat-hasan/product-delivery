@@ -3,12 +3,12 @@ import React, { useEffect } from "react";
 
 import { useRouter } from "next/navigation";
 import useAuth from "@/hooks/useAuth";
-// import Loader from "@/components/common/Loader";
+import { LoaderSVG } from "@/components/svg/Svg";
 
 const PrivateLayout = ({ children }) => {
   const router = useRouter();
   const { user, token, loading } = useAuth();
-  console.log(user)
+  console.log(user);
 
   useEffect(() => {
     if (!token && !user) {
@@ -19,8 +19,9 @@ const PrivateLayout = ({ children }) => {
   if (loading) {
     return (
       <div className="h-screen w-full flex justify-center items-center">
-        {/* <Loader /> */}
-        Loading ...
+        <div className="size-28">
+          <LoaderSVG />
+        </div>
       </div>
     );
   }

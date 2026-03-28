@@ -74,7 +74,7 @@ const ContactFinder = ({ onClose, contactFinder, onSelect }) => {
               </button>
             </div>
           </div>
-          <div className="flex items-center gap-5 mb-5">
+          {/* <div className="flex items-center gap-5 mb-5">
             <input
               type="text"
               className="text-sm h-[36px] outline-none text-[#717182] flex-1 py-1 px-5 rounded-lg border border-[#00000000] bg-[#F3F3F5]"
@@ -84,7 +84,7 @@ const ContactFinder = ({ onClose, contactFinder, onSelect }) => {
               <SearchSvg />
               Search
             </button>
-          </div>
+          </div> */}
 
           <div className="w-full mb-8">
             <table className="w-full">
@@ -111,34 +111,51 @@ const ContactFinder = ({ onClose, contactFinder, onSelect }) => {
                 </tr>
               </thead>
               <tbody>
-                {isLoading ? (
-                  <tr>
-                    <td></td>
-                    <td>Loading ...</td>
-                  </tr>
-                ) : (
-                  data?.data?.map((item, index) => (
-                    <tr key={index} className="">
-                      <td className="pt-5 pr-2 text-left">
-                        <input
-                          type="checkbox"
-                          checked={selectedContact?.id === item.id}
-                          onChange={() => setSelectedContact(item)}
-                          className="cursor-pointer"
-                        />
-                      </td>
-                      <td className="pt-5 text-[#717182] font-normal text-sm text-left">
-                        {item?.account_number}
-                      </td>
-                      <td className="pt-5 text-[#717182] font-normal text-sm">
-                        {item?.full_name}
-                      </td>
-                      <td className="pt-5 text-[#717182] font-normal text-sm">
-                        {item?.city} {item?.state} {item?.country}
-                      </td>
-                    </tr>
-                  ))
-                )}
+                {isLoading
+                  ? Array.from({ length: 5 }).map((_, index) => (
+                      <tr key={index} className="animate-pulse">
+                        {/* Checkbox Column */}
+                        <td className="pt-5 pr-2">
+                          <div className="size-4 bg-gray-200 rounded" />
+                        </td>
+
+                        {/* Account Number Column */}
+                        <td className="pt-5 pr-4">
+                          <div className="h-4 w-24 bg-gray-100 rounded" />
+                        </td>
+
+                        {/* Name Column */}
+                        <td className="pt-5 pr-4">
+                          <div className="h-4 w-32 bg-gray-100 rounded" />
+                        </td>
+
+                        {/* Address Column */}
+                        <td className="pt-5">
+                          <div className="h-4 w-full max-w-[180px] bg-gray-50 rounded" />
+                        </td>
+                      </tr>
+                    ))
+                  : data?.data?.map((item, index) => (
+                      <tr key={index} className="">
+                        <td className="pt-5 pr-2 text-left">
+                          <input
+                            type="checkbox"
+                            checked={selectedContact?.id === item.id}
+                            onChange={() => setSelectedContact(item)}
+                            className="cursor-pointer"
+                          />
+                        </td>
+                        <td className="pt-5 text-[#717182] font-normal text-sm text-left">
+                          {item?.account_number}
+                        </td>
+                        <td className="pt-5 text-[#717182] font-normal text-sm">
+                          {item?.full_name}
+                        </td>
+                        <td className="pt-5 text-[#717182] font-normal text-sm">
+                          {item?.city} {item?.state} {item?.country}
+                        </td>
+                      </tr>
+                    ))}
               </tbody>
             </table>
           </div>
@@ -190,24 +207,6 @@ const ContactFinder = ({ onClose, contactFinder, onSelect }) => {
           </div>
           <form onSubmit={handleSubmit(onSubmit)} className="my-8 space-y-4">
             <div className="space-y-2">
-              <div className="text-black-500">Full Name</div>
-              <input
-                type="text"
-                {...register("full_name")}
-                placeholder="Enter Full Name"
-                className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
-              />
-            </div>
-            <div className="space-y-2">
-              <div className="text-black-500">Email Address</div>
-              <input
-                type="text"
-                {...register("email")}
-                placeholder="Enter Email"
-                className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
-              />
-            </div>
-            <div className="space-y-2">
               <div className="text-black-500">Account Number</div>
               <input
                 type="text"
@@ -216,34 +215,12 @@ const ContactFinder = ({ onClose, contactFinder, onSelect }) => {
                 className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
               />
             </div>
-            <div className="flex gap-4">
-              <div className="space-y-2">
-                <div className="text-black-500">City</div>
-                <input
-                  type="text"
-                  placeholder="City"
-                  {...register("city")}
-                  className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
-                />
-              </div>
-              <div className="space-y-2">
-                <div className="text-black-500">State</div>
-                <input
-                  type="text"
-                  {...register("state")}
-                  placeholder="State"
-                  className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
-                />
-              </div>
-              <div className="space-y-2">
-                <div className="text-black-500">Country</div>
-                <input
-                  type="text"
-                  placeholder="Country"
-                  {...register("country")}
-                  className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
-                />
-              </div>
+            <div className="space-y-2">
+              <div className="text-black-500">Name and Address</div>
+              <textarea
+                cols={3}
+                className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
+              ></textarea>
             </div>
             <div className="flex items-center justify-end gap-2 mt-5">
               <button

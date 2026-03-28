@@ -1,22 +1,47 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import React from "react";
+import React, { useState } from "react";
 import { MdPermContactCalendar } from "react-icons/md";
 import { IoMdSettings } from "react-icons/io";
 import Link from "next/link";
+import ContactFinder from "@/components/dashboard/ContactFinder";
 
 const Page = () => {
-  const form = useForm({
-    defaultValues: {},
-  });
+  const form = useForm({});
 
+  // const { user } = useAuth();
   const {
     register,
-    control,
     reset,
+    handleSubmit,
     formState: { errors },
   } = form;
+
+  const [isContactFinderOpen, setIsContactFinderOpen] = useState(null);
+
+  const [selectedContacts, setSelectedContacts] = useState({
+    shipper: null,
+    consignee: null,
+    carriers_agent: null,
+  });
+
+  const [contactErrors, setContactErrors] = useState({
+    shipper: false,
+    consignee: false,
+    carriers_agent: false,
+  });
+
+  const handleContactSelect = (contact) => {
+    setSelectedContacts((prev) => ({
+      ...prev,
+      [isContactFinderOpen]: contact,
+    }));
+    setContactErrors((prev) => ({
+      ...prev,
+      [isContactFinderOpen]: false,
+    }));
+  };
 
   return (
     <section>
@@ -28,7 +53,7 @@ const Page = () => {
           <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
             <div className="flex items-center justify-between gap-2">
               <h6 className="text-xl">Shipper</h6>
-              <button>
+              <button onClick={() => setIsContactFinderOpen("shipper")}>
                 <MdPermContactCalendar className="size-6 lg:size-7 text-gray-700" />
               </button>
             </div>
@@ -38,6 +63,11 @@ const Page = () => {
               </div>
               <input
                 type="text"
+                value={
+                  selectedContacts.shipper
+                    ? `${selectedContacts.shipper.account_number}`
+                    : ""
+                }
                 className="w-full rounded-xl px-3 py-2.5 text-sm sm:text-base font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 border border-gray-400 hover:border-gray-700 transition-all duration-150"
               />
             </div>
@@ -47,6 +77,12 @@ const Page = () => {
               </div>
               <textarea
                 rows={4}
+                value={
+                  selectedContacts.shipper
+                    ? `${selectedContacts.shipper.full_name}
+ ${selectedContacts.shipper.city}, ${selectedContacts.shipper.state}, ${selectedContacts.shipper.country}`
+                    : ""
+                }
                 className="w-full rounded-xl px-3 py-2.5 text-sm sm:text-base font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 border border-gray-400 hover:border-gray-700 transition-all duration-150"
               ></textarea>
             </div>
@@ -55,7 +91,7 @@ const Page = () => {
           <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
             <div className="flex items-center justify-between gap-2">
               <h6 className="text-xl">Consignee</h6>
-              <button>
+              <button onClick={() => setIsContactFinderOpen("consignee")}>
                 <MdPermContactCalendar className="size-6 lg:size-7 text-gray-700" />
               </button>
             </div>
@@ -65,6 +101,11 @@ const Page = () => {
               </div>
               <input
                 type="text"
+                 value={
+                  selectedContacts.consignee
+                    ? `${selectedContacts.consignee.account_number}`
+                    : ""
+                }
                 className="w-full rounded-xl px-3 py-2.5 text-sm sm:text-base font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 border border-gray-400 hover:border-gray-700 transition-all duration-150"
               />
             </div>
@@ -74,6 +115,12 @@ const Page = () => {
               </div>
               <textarea
                 rows={4}
+                 value={
+                  selectedContacts.consignee
+                    ? `${selectedContacts.consignee.full_name}
+ ${selectedContacts.consignee.city}, ${selectedContacts.consignee.state}, ${selectedContacts.consignee.country}`
+                    : ""
+                }
                 className="w-full rounded-xl px-3 py-2.5 text-sm sm:text-base font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 border border-gray-400 hover:border-gray-700 transition-all duration-150"
               ></textarea>
             </div>
@@ -83,7 +130,7 @@ const Page = () => {
           <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
             <div className="flex items-center justify-between gap-2">
               <h6 className="text-xl">Issuing carrier&apos;s agent</h6>
-              <button>
+              <button onClick={() => setIsContactFinderOpen("carriers_agent")}>
                 <MdPermContactCalendar className="size-6 lg:size-7 text-gray-700" />
               </button>
             </div>
@@ -93,6 +140,12 @@ const Page = () => {
               </div>
               <textarea
                 rows={4}
+                 value={
+                  selectedContacts.carriers_agent
+                    ? `${selectedContacts.carriers_agent.full_name}
+ ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state}, ${selectedContacts.carriers_agent.country}`
+                    : ""
+                }
                 className="w-full rounded-xl px-3 py-2.5 text-sm sm:text-base font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 border border-gray-400 hover:border-gray-700 transition-all duration-150"
               ></textarea>
             </div>
@@ -111,6 +164,11 @@ const Page = () => {
               </div>
               <input
                 type="text"
+                 value={
+                  selectedContacts.carriers_agent
+                    ? `${selectedContacts.carriers_agent.account_number}`
+                    : ""
+                }
                 className="w-full rounded-xl px-3 py-2.5 text-sm sm:text-base font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 border border-gray-400 hover:border-gray-700 transition-all duration-150"
               />
             </div>
@@ -295,12 +353,7 @@ const Page = () => {
 
           {/* Accounting information*/}
           <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
-            <div className="flex items-center justify-between gap-2">
               <h6 className="text-xl">Accounting information</h6>
-              <button>
-                <MdPermContactCalendar className="size-6 lg:size-7 text-gray-700" />
-              </button>
-            </div>
             <div className="space-y-1">
               <div className="leading-[1.45] font-medium text-sm sm:text-base text-gray-700">
                 Details
@@ -844,26 +897,33 @@ const Page = () => {
           </div>
         </div>
       </div>
-        <div className="flex items-center gap-5 my-7 pt-7">
-          <div className="text-3xl font-bold text-[#231F20] text-center basis-1/2">
-            {/* ORIGINAL 3 (FOR SHIPPER) */}
-          </div>
-          <div className="flex items-center gap-5">
-            <Link href={"/dashboard"}>
-              <button className="text-lg font-medium text-blue-500 w-[300px] cursor-pointer border border-blue-500 rounded-2xl bg-[#C3DCEB] hover:bg-[#bad2e0] py-4 px-4 ">
-                Continue to dashboard
-              </button>
-            </Link>
-            <button
-              type="submit"
-              className="text-lg font-medium text-black-300 w-[300px] cursor-pointer rounded-2xl bg-black-100 hover:bg-black-50 py-4 px-4 "
-              //  disabled={isPending}
-            >
-              {/* {isPending ? "Submitting..." : "Submit the Form"} */}
-              Submit the Form
-            </button>
-          </div>
+      <div className="flex items-center gap-5 my-7 pt-7">
+        <div className="text-3xl font-bold text-[#231F20] text-center basis-1/2">
+          {/* ORIGINAL 3 (FOR SHIPPER) */}
         </div>
+        <div className="flex items-center gap-5">
+          <Link href={"/dashboard"}>
+            <button className="text-lg font-medium text-blue-500 w-[300px] cursor-pointer border border-blue-500 rounded-2xl bg-[#C3DCEB] hover:bg-[#bad2e0] py-4 px-4 ">
+              Continue to dashboard
+            </button>
+          </Link>
+          <button
+            type="submit"
+            className="text-lg font-medium text-black-300 w-[300px] cursor-pointer rounded-2xl bg-black-100 hover:bg-black-50 py-4 px-4 "
+            //  disabled={isPending}
+          >
+            {/* {isPending ? "Submitting..." : "Submit the Form"} */}
+            Submit the Form
+          </button>
+        </div>
+      </div>
+      {isContactFinderOpen && (
+        <ContactFinder
+          contactFinder={isContactFinderOpen}
+          onClose={() => setIsContactFinderOpen(null)}
+          onSelect={handleContactSelect}
+        />
+      )}
     </section>
   );
 };
