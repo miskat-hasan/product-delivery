@@ -6,6 +6,9 @@ import { MdPermContactCalendar } from "react-icons/md";
 import { IoMdSettings } from "react-icons/io";
 import Link from "next/link";
 import ContactFinder from "@/components/dashboard/ContactFinder";
+import AirlineFinderModal from "@/components/dashboard/AirlineFinderModal";
+import AddOtherChargeModal from "@/components/dashboard/AddOtherChargeModal";
+import AddRateDescriptionModal from "@/components/dashboard/AddRateDescriptionModal";
 
 const Page = () => {
   const form = useForm({});
@@ -19,6 +22,28 @@ const Page = () => {
   } = form;
 
   const [isContactFinderOpen, setIsContactFinderOpen] = useState(null);
+
+  const [isAirlineFinderOpen, setIsAirlineFinderOpen] = useState(false);
+
+  const [isAddChargeOpen, setIsAddChargeOpen] = useState(false);
+  const [otherCharges, setOtherCharges] = useState([
+    { description: "lorem", amount: "10", entitlement: "DUE AGENT" },
+  ]);
+
+  const [isAddRateOpen, setIsAddRateOpen] = useState(false);
+  const [rateDescriptions, setRateDescriptions] = useState([
+    {
+      pieces: "23",
+      grossWeight: "10",
+      kl: "K",
+      rateClass: "",
+      itemNumber: "23",
+      chargeableWeight: "50",
+      rateCharge: "20",
+      total: "220",
+      natureQuantity: "1410",
+    },
+  ]);
 
   const [selectedContacts, setSelectedContacts] = useState({
     shipper: null,
@@ -43,6 +68,18 @@ const Page = () => {
     }));
   };
 
+  const handleAirlineFinder = (data) => {
+    console.log(data);
+  };
+
+  const handleAddCharge = (charge) => {
+    setOtherCharges((prev) => [...prev, charge]);
+  };
+
+  const handleAddRate = (rate) => {
+    setRateDescriptions((prev) => [...prev, rate]);
+  };
+
   return (
     <section>
       <h3 className="text-2xl mb-2">Create New Shipment</h3>
@@ -53,7 +90,10 @@ const Page = () => {
           <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
             <div className="flex items-center justify-between gap-2">
               <h6 className="text-xl">Shipper</h6>
-              <button onClick={() => setIsContactFinderOpen("shipper")}>
+              <button
+                onClick={() => setIsContactFinderOpen("shipper")}
+                className="cursor-pointer"
+              >
                 <MdPermContactCalendar className="size-6 lg:size-7 text-gray-700" />
               </button>
             </div>
@@ -91,7 +131,10 @@ const Page = () => {
           <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
             <div className="flex items-center justify-between gap-2">
               <h6 className="text-xl">Consignee</h6>
-              <button onClick={() => setIsContactFinderOpen("consignee")}>
+              <button
+                onClick={() => setIsContactFinderOpen("consignee")}
+                className="cursor-pointer"
+              >
                 <MdPermContactCalendar className="size-6 lg:size-7 text-gray-700" />
               </button>
             </div>
@@ -101,7 +144,7 @@ const Page = () => {
               </div>
               <input
                 type="text"
-                 value={
+                value={
                   selectedContacts.consignee
                     ? `${selectedContacts.consignee.account_number}`
                     : ""
@@ -115,7 +158,7 @@ const Page = () => {
               </div>
               <textarea
                 rows={4}
-                 value={
+                value={
                   selectedContacts.consignee
                     ? `${selectedContacts.consignee.full_name}
  ${selectedContacts.consignee.city}, ${selectedContacts.consignee.state}, ${selectedContacts.consignee.country}`
@@ -130,7 +173,10 @@ const Page = () => {
           <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
             <div className="flex items-center justify-between gap-2">
               <h6 className="text-xl">Issuing carrier&apos;s agent</h6>
-              <button onClick={() => setIsContactFinderOpen("carriers_agent")}>
+              <button
+                onClick={() => setIsContactFinderOpen("carriers_agent")}
+                className="cursor-pointer"
+              >
                 <MdPermContactCalendar className="size-6 lg:size-7 text-gray-700" />
               </button>
             </div>
@@ -140,7 +186,7 @@ const Page = () => {
               </div>
               <textarea
                 rows={4}
-                 value={
+                value={
                   selectedContacts.carriers_agent
                     ? `${selectedContacts.carriers_agent.full_name}
  ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state}, ${selectedContacts.carriers_agent.country}`
@@ -164,7 +210,7 @@ const Page = () => {
               </div>
               <input
                 type="text"
-                 value={
+                value={
                   selectedContacts.carriers_agent
                     ? `${selectedContacts.carriers_agent.account_number}`
                     : ""
@@ -336,7 +382,10 @@ const Page = () => {
           <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
             <div className="flex items-center justify-between gap-2">
               <h6 className="text-xl">Issuer</h6>
-              <button>
+              <button
+                className="cursor-pointer"
+                onClick={() => setIsAirlineFinderOpen(true)}
+              >
                 <MdPermContactCalendar className="size-6 lg:size-7 text-gray-700" />
               </button>
             </div>
@@ -353,7 +402,7 @@ const Page = () => {
 
           {/* Accounting information*/}
           <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
-              <h6 className="text-xl">Accounting information</h6>
+            <h6 className="text-xl">Accounting information</h6>
             <div className="space-y-1">
               <div className="leading-[1.45] font-medium text-sm sm:text-base text-gray-700">
                 Details
@@ -536,7 +585,10 @@ const Page = () => {
         <div className="col-span-2 bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
           <h6 className="text-xl">Rate description</h6>
           <div className="flex items-center gap-2">
-            <button className="bg-gray-200 px-4 py-1.5 rounded-md border border-gray-400 shadow text-sm">
+            <button
+              className="bg-gray-200 px-4 py-1.5 rounded-md border border-gray-400 shadow text-sm"
+              onClick={() => setIsAddRateOpen(true)}
+            >
               Add
             </button>
             <button className="bg-gray-200 px-4 py-1.5 rounded-md border border-gray-400 shadow text-sm">
@@ -577,18 +629,40 @@ const Page = () => {
               </thead>
 
               <tbody>
-                <tr className="border-b hover:bg-gray-50 transition-all">
-                  <td className="px-3 sm:px-6 py-3 text-gray-800">23</td>
-                  <td className="px-3 sm:px-6 py-3 text-gray-800">10</td>
-                  <td className="px-3 sm:px-6 py-3 text-gray-800">K</td>
-                  <td className="px-3 sm:px-6 py-3 text-gray-800"></td>
-                  <td className="px-3 sm:px-6 py-3 text-gray-800">23</td>
-                  <td className="px-3 sm:px-6 py-3 text-gray-800">50</td>
-                  <td className="px-3 sm:px-6 py-3 text-gray-800">20</td>
-                  <td className="px-3 sm:px-6 py-3 text-gray-800">220</td>
-                  <td className="px-3 sm:px-6 py-3 text-gray-800">1410</td>
-                  <td className="px-3 sm:px-6 py-3 text-gray-800"></td>
-                </tr>
+                {rateDescriptions.map((row, i) => (
+                  <tr
+                    key={i}
+                    className="border-b hover:bg-gray-50 transition-all"
+                  >
+                    <td className="px-3 sm:px-6 py-3 text-gray-800">
+                      {row.pieces}
+                    </td>
+                    <td className="px-3 sm:px-6 py-3 text-gray-800">
+                      {row.grossWeight}
+                    </td>
+                    <td className="px-3 sm:px-6 py-3 text-gray-800">
+                      {row.kl}
+                    </td>
+                    <td className="px-3 sm:px-6 py-3 text-gray-800">
+                      {row.rateClass}
+                    </td>
+                    <td className="px-3 sm:px-6 py-3 text-gray-800">
+                      {row.itemNumber}
+                    </td>
+                    <td className="px-3 sm:px-6 py-3 text-gray-800">
+                      {row.chargeableWeight}
+                    </td>
+                    <td className="px-3 sm:px-6 py-3 text-gray-800">
+                      {row.rateCharge}
+                    </td>
+                    <td className="px-3 sm:px-6 py-3 text-gray-800">
+                      {row.total}
+                    </td>
+                    <td className="px-3 sm:px-6 py-3 text-gray-800">
+                      {row.natureQuantity}
+                    </td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
@@ -787,7 +861,10 @@ const Page = () => {
           <div className="col-span-2 bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
             <h6 className="text-xl">Other charges</h6>
             <div className="flex items-center gap-2">
-              <button className="bg-gray-200 px-4 py-1.5 rounded-md border border-gray-400 shadow text-sm">
+              <button
+                className="bg-gray-200 px-4 py-1.5 rounded-md border border-gray-400 shadow text-sm cursor-pointer"
+                onClick={() => setIsAddChargeOpen(true)}
+              >
                 Add
               </button>
               <button className="bg-gray-200 px-4 py-1.5 rounded-md border border-gray-400 shadow text-sm">
@@ -814,13 +891,22 @@ const Page = () => {
                 </thead>
 
                 <tbody>
-                  <tr className="border-b hover:bg-gray-50 transition-all">
-                    <td className="px-3 sm:px-6 py-3 text-gray-800">lorem</td>
-                    <td className="px-3 sm:px-6 py-3 text-gray-800">10</td>
-                    <td className="px-3 sm:px-6 py-3 text-gray-800">
-                      DUE AGENT
-                    </td>
-                  </tr>
+                  {otherCharges.map((charge, i) => (
+                    <tr
+                      key={i}
+                      className="border-b hover:bg-gray-50 transition-all"
+                    >
+                      <td className="px-3 sm:px-6 py-3 text-gray-800">
+                        {charge.description}
+                      </td>
+                      <td className="px-3 sm:px-6 py-3 text-gray-800">
+                        {charge.amount}
+                      </td>
+                      <td className="px-3 sm:px-6 py-3 text-gray-800">
+                        {charge.entitlement}
+                      </td>
+                    </tr>
+                  ))}
                 </tbody>
               </table>
             </div>
@@ -830,9 +916,9 @@ const Page = () => {
           <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
             <div className="flex items-center justify-between gap-2">
               <h6 className="text-xl">Shipper&apos;s certification</h6>
-              <button>
+              {/* <button>
                 <IoMdSettings className="size-6 lg:size-7 text-gray-700" />
-              </button>
+              </button> */}
             </div>
             <div>
               <textarea
@@ -855,9 +941,9 @@ const Page = () => {
           <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
             <div className="flex items-center justify-between gap-2">
               <h6 className="text-xl">Carrier&apos;s execution</h6>
-              <button>
+              {/* <button>
                 <IoMdSettings className="size-6 lg:size-7 text-gray-700" />
-              </button>
+              </button> */}
             </div>
             <div>
               <textarea
@@ -922,6 +1008,26 @@ const Page = () => {
           contactFinder={isContactFinderOpen}
           onClose={() => setIsContactFinderOpen(null)}
           onSelect={handleContactSelect}
+        />
+      )}
+      {isAirlineFinderOpen && (
+        <AirlineFinderModal
+          onClose={() => setIsAirlineFinderOpen(false)}
+          onSelect={handleAirlineFinder}
+        />
+      )}
+
+      {isAddChargeOpen && (
+        <AddOtherChargeModal
+          onClose={() => setIsAddChargeOpen(false)}
+          onAdd={handleAddCharge}
+        />
+      )}
+
+      {isAddRateOpen && (
+        <AddRateDescriptionModal
+          onClose={() => setIsAddRateOpen(false)}
+          onAdd={handleAddRate}
         />
       )}
     </section>

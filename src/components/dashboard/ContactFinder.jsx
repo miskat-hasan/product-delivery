@@ -219,6 +219,7 @@ const ContactFinder = ({ onClose, contactFinder, onSelect }) => {
               <div className="text-black-500">Name and Address</div>
               <textarea
                 cols={3}
+                {...register("name_address")}
                 className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
               ></textarea>
             </div>
