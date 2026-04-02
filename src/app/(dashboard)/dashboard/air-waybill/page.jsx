@@ -3,7 +3,7 @@
 import { useForm } from "react-hook-form";
 import React, { useState } from "react";
 import { MdPermContactCalendar } from "react-icons/md";
-import { IoMdSettings } from "react-icons/io";
+import { FaRegPenToSquare, FaRegTrashCan } from "react-icons/fa6";
 import Link from "next/link";
 import ContactFinder from "@/components/dashboard/ContactFinder";
 import AirlineFinderModal from "@/components/dashboard/AirlineFinderModal";
@@ -43,7 +43,34 @@ const Page = () => {
       total: "220",
       natureQuantity: "1410",
     },
+    {
+      pieces: "31",
+      grossWeight: "20",
+      kl: "K",
+      rateClass: "",
+      itemNumber: "5",
+      chargeableWeight: "10",
+      rateCharge: "20",
+      total: "220",
+      natureQuantity: "D.M.S (cm) 54*40*31 : 31 PCS",
+    },
   ]);
+
+  const [selectedRows, setSelectedRows] = useState([]);
+
+  const handleRowSelect = (index) => {
+    setSelectedRows((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index],
+    );
+  };
+
+  const handleDeleteRate = (index) => {
+    setRateDescriptions((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleDeleteCharge = (index) => {
+    setOtherCharges((prev) => prev.filter((_, i) => i !== index));
+  };
 
   const [selectedContacts, setSelectedContacts] = useState({
     shipper: null,
@@ -362,20 +389,6 @@ const Page = () => {
                 className="w-full rounded-xl px-3 py-2.5 text-sm sm:text-base font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 border border-gray-400 hover:border-gray-700 transition-all duration-150"
               />
             </div>
-            <div className="flex gap-2 mt-4 max-md:col-span-2">
-              <input
-                id="bidding-checkbox"
-                type="checkbox"
-                {...form.register("listing")}
-                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-              />
-              <label
-                htmlFor="bidding-checkbox"
-                className="text-sm text-gray-600"
-              >
-                assign on save
-              </label>
-            </div>
           </div>
 
           {/* Issuer*/}
@@ -415,7 +428,7 @@ const Page = () => {
           </div>
 
           {/* Shipment Reference information */}
-          <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
+          {/* <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
             <h6 className="text-xl">Shipment reference information</h6>
             <div className="space-y-1">
               <div className="leading-[1.45] font-medium text-sm sm:text-base text-gray-700">
@@ -444,21 +457,7 @@ const Page = () => {
                 className="w-full rounded-xl px-3 py-2.5 text-sm sm:text-base font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 border border-gray-400 hover:border-gray-700 transition-all duration-150"
               />
             </div>
-            <div className="flex gap-2 mt-4 max-md:col-span-2">
-              <input
-                id="bidding-checkbox"
-                type="checkbox"
-                {...form.register("listing")}
-                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-              />
-              <label
-                htmlFor="bidding-checkbox"
-                className="text-sm text-gray-600"
-              >
-                assign on save
-              </label>
-            </div>
-          </div>
+          </div> */}
 
           {/* Charges declaration */}
           <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
@@ -472,7 +471,9 @@ const Page = () => {
                 </div>
                 <input
                   type="text"
-                  className="w-full rounded-xl px-3 py-2.5 text-sm sm:text-base font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 border border-gray-400 hover:border-gray-700 transition-all duration-150"
+                  disabled={true}
+                  value={"USD"}
+                  className="w-full rounded-xl px-3 py-2.5 text-sm sm:text-base font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 border border-gray-400 hover:border-gray-700 transition-all duration-150 disabled:bg-neutral-200"
                 />
               </div>
               <div className="space-y-1">
@@ -569,7 +570,7 @@ const Page = () => {
                 className="w-full rounded-xl px-3 py-2.5 text-sm sm:text-base font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 border border-gray-400 hover:border-gray-700 transition-all duration-150"
               />
             </div>
-            <div className="space-y-1 flex-1">
+            {/* <div className="space-y-1 flex-1">
               <div className="leading-[1.45] font-medium text-sm sm:text-base text-gray-700">
                 Destination
               </div>
@@ -577,7 +578,7 @@ const Page = () => {
                 type="text"
                 className="w-full rounded-xl px-3 py-2.5 text-sm sm:text-base font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 border border-gray-400 hover:border-gray-700 transition-all duration-150"
               />
-            </div>
+            </div> */}
           </div>
         </div>
 
@@ -586,17 +587,20 @@ const Page = () => {
           <h6 className="text-xl">Rate description</h6>
           <div className="flex items-center gap-2">
             <button
-              className="bg-gray-200 px-4 py-1.5 rounded-md border border-gray-400 shadow text-sm"
+              className="bg-gray-200 px-4 py-1.5 rounded-md border border-gray-400 shadow text-sm cursor-pointer hover:bg-gray-100"
               onClick={() => setIsAddRateOpen(true)}
             >
               Add
             </button>
-            <button className="bg-gray-200 px-4 py-1.5 rounded-md border border-gray-400 shadow text-sm">
+            {/* <button className="bg-gray-200 px-4 py-1.5 rounded-md border border-gray-400 shadow text-sm cursor-pointer hover:bg-gray-100">
               Modify
-            </button>
-            <button className="bg-gray-200 px-4 py-1.5 rounded-md border border-gray-400 shadow text-sm">
+            </button> */}
+            {/* <button
+              className="bg-gray-200 px-4 py-1.5 rounded-md border border-gray-400 shadow text-sm cursor-pointer hover:bg-gray-100"
+              onClick={handleRemoveRates}
+            >
               Remove
-            </button>
+            </button> */}
           </div>
           <div className="overflow-x-auto pt-2">
             <table className="w-full min-w-[800px] text-sm sm:text-base text-left text-gray-700">
@@ -624,6 +628,9 @@ const Page = () => {
                   <th className="px-3 sm:px-6 text-nowrap text-base">Total</th>
                   <th className="px-3 sm:px-6 text-nowrap text-base">
                     Nature and quantity
+                  </th>
+                  <th className="px-3 sm:px-6 py-2 text-nowrap text-base">
+                    Action
                   </th>
                 </tr>
               </thead>
@@ -661,8 +668,61 @@ const Page = () => {
                     <td className="px-3 sm:px-6 py-3 text-gray-800">
                       {row.natureQuantity}
                     </td>
+                    <td className="px-3 sm:px-6 py-3">
+                      <div className="flex items-center gap-2">
+                        <button className="text-red-500 hover:text-red-700 text-sm font-medium cursor-pointer">
+                          <FaRegPenToSquare />
+                        </button>
+                        <button
+                          onClick={() => handleDeleteRate(i)}
+                          className="text-red-500 hover:text-red-700 text-sm font-medium cursor-pointer"
+                        >
+                          <FaRegTrashCan />
+                        </button>
+                      </div>
+                    </td>
                   </tr>
                 ))}
+                <tr>
+                  <td
+                    className="px-3 sm:px-6 py-2 font-bold text-gray-900"
+                    colSpan={9}
+                  >
+                    Total:
+                  </td>
+                </tr>
+                <tr className="border-t hover:bg-gray-50 transition-all">
+                  <td className="px-3 sm:px-6 py-3"></td>
+                  <td className="px-3 sm:px-6 py-3 text-gray-800 font-semibold">
+                    {rateDescriptions.reduce(
+                      (sum, row) => sum + Number(row.pieces),
+                      0,
+                    )}
+                  </td>
+                  <td className="px-3 sm:px-6 py-3 text-gray-800 font-semibold">
+                    {rateDescriptions.reduce(
+                      (sum, row) => sum + Number(row.grossWeight),
+                      0,
+                    )}
+                  </td>
+                  <td className="px-3 sm:px-6 py-3 text-gray-800"></td>
+                  <td className="px-3 sm:px-6 py-3 text-gray-800"></td>
+                  <td className="px-3 sm:px-6 py-3 text-gray-800"></td>
+                  <td className="px-3 sm:px-6 py-3 text-gray-800 font-semibold">
+                    {rateDescriptions.reduce(
+                      (sum, row) => sum + Number(row.chargeableWeight),
+                      0,
+                    )}
+                  </td>
+                  <td className="px-3 sm:px-6 py-3 text-gray-800"></td>
+                  <td className="px-3 sm:px-6 py-3 text-gray-800 font-semibold">
+                    {rateDescriptions.reduce(
+                      (sum, row) => sum + Number(row.total),
+                      0,
+                    )}
+                  </td>
+                  <td className="px-3 sm:px-6 py-3 text-gray-800"></td>
+                </tr>
               </tbody>
             </table>
           </div>

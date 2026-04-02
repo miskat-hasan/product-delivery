@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import useAuth from "../useAuth";
 import useClientApi from "../useClientApi";
 import Swal from "sweetalert2";
+import { toast } from "sonner";
 
 // login
 export const useLogin = () => {
@@ -17,14 +18,9 @@ export const useLogin = () => {
       if (data?.success) {
         setToken(data?.data?.token);
 
-        Swal.fire({
-          title: data?.message || "Login Successful",
-          icon: "success",
-          confirmButtonText: "Go To Dashboard",
-          allowOutsideClick: true,
-        }).then(() => {
-          router.push("/dashboard");
-        });
+        toast.success(data?.message || "Login Successful");
+
+        router.push("/dashboard");
       }
     },
     onError: (err) => {
@@ -126,7 +122,7 @@ export const useVerifyOTP = () => {
 export const useChangePassword = () => {
   return useClientApi({
     method: "post",
-    key: ['change-password'],
+    key: ["change-password"],
     endpoint: "/api/reset-password",
     onSuccess: () => {
       router.push("/login");
@@ -137,8 +133,8 @@ export const useChangePassword = () => {
         icon: "error",
       });
     },
-  })
-}
+  });
+};
 // get user data
 export const useGetUserData = (token) => {
   return useClientApi({

@@ -22,7 +22,7 @@ const PlusSvg = () => (
 
 const RATE_CLASSES = ["", "Q", "S", "B", "M", "N", "R", "C", "U", "E", "Y", "K", "P"];
 const UNIT_OPTIONS = ["cm", "in", "mm"];
-const VOLUME_FACTORS = { cm: 6000, in: 366 }; // cm3/kg and in3/kg
+const VOLUME_FACTORS = { cm: 6000, in: 366 };
 
 const AddRateDescriptionModal = ({ onClose, onAdd }) => {
   const { register, handleSubmit, watch, setValue, control, formState: { errors } } = useForm({
