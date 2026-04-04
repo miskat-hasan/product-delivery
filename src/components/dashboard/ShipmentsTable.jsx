@@ -5,6 +5,7 @@ import Link from "next/link";
 import { DeleteShipment, GetAllShipments } from "@/hooks/api/dashboardApi";
 import Swal from "sweetalert2";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const ShipmentsTable = () => {
   const [openActionBar, setOpenActionBar] = useState(null);
@@ -26,17 +27,11 @@ const ShipmentsTable = () => {
       onSuccess: (data) => {
         setSelectedItem(null);
         setOpenActionBar(null);
-        Swal.fire({
-          icon: "success",
-          text: data?.message,
-        });
+        toast.success(data?.message);
         queryClient.invalidateQueries(["get-all-shipments"]);
       },
       onError: (err) => {
-        Swal.fire({
-          icon: "error",
-          text: err?.response?.data?.message,
-        });
+        toast.error(err?.response?.data?.message);
       },
     });
   };
@@ -81,7 +76,45 @@ const ShipmentsTable = () => {
             </thead>
             <tbody className="max-sm:text-sm">
               {isLoading
-                ? "Loading ..."
+                ? Array(3)
+                    .fill(null)
+                    .map((_, index) => (
+                      <tr
+                        key={index}
+                        className="animate-pulse border-b border-gray-50"
+                      >
+                        {/* AWB Number */}
+                        <td className="px-3 py-4">
+                          <div className="h-4 bg-gray-200 rounded w-24"></div>
+                        </td>
+                        {/* Status Badge */}
+                        <td className="px-3 py-4">
+                          <div className="h-8 bg-gray-100 rounded-full w-20"></div>
+                        </td>
+                        {/* Route */}
+                        <td className="px-3 py-4">
+                          <div className="h-4 bg-gray-200 rounded w-32"></div>
+                        </td>
+                        {/* Parties */}
+                        <td className="px-3 py-4 space-y-2">
+                          <div className="h-3 bg-gray-100 rounded w-20"></div>
+                          <div className="h-3 bg-gray-100 rounded w-16"></div>
+                        </td>
+                        {/* Documents Status */}
+                        <td className="px-3 py-4">
+                          <div className="flex items-center gap-2">
+                            <div className="size-4 bg-gray-200 rounded-full"></div>
+                            <div className="h-4 bg-gray-200 rounded w-16"></div>
+                          </div>
+                        </td>
+                        {/* Action Button */}
+                        <td className="px-3 py-4">
+                          <div className="flex justify-center">
+                            <div className="size-6 bg-gray-200 rounded-full"></div>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
                 : shipmentsData?.data?.length > 0
                   ? shipmentsData?.data?.map((item, idx) => (
                       <tr key={item?.id}>

@@ -24,10 +24,7 @@ export const useLogin = () => {
       }
     },
     onError: (err) => {
-      Swal.fire({
-        title: err?.response?.data?.message || "Something went wrong",
-        icon: "error",
-      });
+      toast.error(err?.response?.data?.message);
     },
   });
 };
@@ -39,10 +36,7 @@ export const useRegister = () => {
     key: ["register"],
     endpoint: "/api/register",
     onError: (err) => {
-      Swal.fire({
-        title: err?.response?.data?.message || "Something went wrong",
-        icon: "error",
-      });
+      toast.error(err?.response?.data?.message);
     },
   });
 };
@@ -57,20 +51,11 @@ export const useVerifyCode = () => {
     endpoint: "/api/verify-otp",
     onSuccess: (data) => {
       setToken(data?.data?.token);
-      Swal.fire({
-        title: data?.message || "Verified Successful",
-        icon: "success",
-        // confirmButtonText: "Go To Dashboard",
-        // allowOutsideClick: true,
-      }).then(() => {
-        router.push("/on-boarding");
-      });
+      toast.success(data?.message);
+      router.push("/on-boarding");
     },
     onError: (err) => {
-      Swal.fire({
-        title: err?.response?.data?.message || "Something went wrong",
-        icon: "error",
-      });
+      toast.error(err?.response?.data?.message);
     },
   });
 };
@@ -91,10 +76,7 @@ export const useForgotPassword = () => {
     key: ["forgot password"],
     endpoint: "/api/forgot-password",
     onError: (err) => {
-      Swal.fire({
-        title: err?.response?.data?.message || "Something went wrong",
-        icon: "error",
-      });
+      toast.error(err?.response?.data?.message);
     },
   });
 };
@@ -110,10 +92,7 @@ export const useVerifyOTP = () => {
       router.push("/change-password");
     },
     onError: (err) => {
-      Swal.fire({
-        title: err?.response?.data?.message || "Something went wrong",
-        icon: "error",
-      });
+      toast.error(err?.response?.data?.message);
     },
   });
 };
@@ -128,10 +107,7 @@ export const useChangePassword = () => {
       router.push("/login");
     },
     onError: (err) => {
-      Swal.fire({
-        title: err?.response?.data?.message || "Something went wrong",
-        icon: "error",
-      });
+      toast.error(err?.response?.data?.message);
     },
   });
 };

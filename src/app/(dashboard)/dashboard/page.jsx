@@ -68,7 +68,25 @@ const Dashboard = () => {
           </button>
         </div>
         {collaboratorDataLoading ? (
-          "Loading collaborator data ..."
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-3">
+            {Array(3)
+              .fill(null)
+              .map((_, index) => (
+                <div
+                  key={index}
+                  className="flex items-center justify-between gap-3 p-3 rounded-2xl border border-[#EBEBEB] overflow-hidden animate-pulse"
+                >
+                  <div className="space-y-2 flex-1">
+                    {/* Name line */}
+                    <div className="h-4 bg-gray-200 rounded-md w-3/4"></div>
+                    {/* Email line */}
+                    <div className="h-3 bg-gray-100 rounded-md w-1/2"></div>
+                  </div>
+                  {/* Role badge */}
+                  <div className="h-7 w-20 bg-gray-200 rounded-full"></div>
+                </div>
+              ))}
+          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-3">
             {collaboratorData?.data?.length > 0

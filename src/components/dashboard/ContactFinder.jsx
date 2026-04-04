@@ -5,13 +5,19 @@ import { useForm } from "react-hook-form";
 import { GetAllUserContact, useAddUserContact } from "@/hooks/api/dashboardApi";
 import Swal from "sweetalert2";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const ContactFinder = ({ onClose, contactFinder, onSelect }) => {
   const [addItemModal, setAddItemModal] = useState(false);
 
   const [selectedContact, setSelectedContact] = useState(null);
 
-  const { register, reset, handleSubmit } = useForm();
+  const {
+    register,
+    reset,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
   const [role, setRole] = useState(contactFinder);
 
@@ -36,17 +42,11 @@ const ContactFinder = ({ onClose, contactFinder, onSelect }) => {
       onSuccess: (data) => {
         reset();
         setAddItemModal(false);
-        Swal.fire({
-          title: data?.message,
-          icon: "success",
-        });
+        toast.success(data?.message);
         queryClient.invalidateQueries("get-all-user-contact-info");
       },
       onError: (err) => {
-        Swal.fire({
-          title: err?.response?.data?.message || "Something went wrong",
-          icon: "error",
-        });
+        toast.error(err?.response?.data?.message || "Something went wrong");
       },
     });
   };
@@ -95,67 +95,55 @@ const ContactFinder = ({ onClose, contactFinder, onSelect }) => {
                     Account Number
                   </th>
                   <th className="text-[#222] font-medium pb-5 border-b px-2">
-                    {contactFinder === "shipper"
-                      ? "Shipper’s Name"
-                      : contactFinder === "consignee"
-                        ? "Consignee’s Name"
-                        : "Carrier Agent’s Name"}
-                  </th>
-                  <th className="text-[#222] font-medium pb-5 border-b px-2">
-                    {contactFinder === "shipper"
-                      ? "Shipper’s Address"
-                      : contactFinder === "consignee"
-                        ? "Consignee’s Address"
-                        : "Carrier Agent’s Address"}
+                    Name and Address
                   </th>
                 </tr>
               </thead>
               <tbody>
-                {isLoading
-                  ? Array.from({ length: 5 }).map((_, index) => (
-                      <tr key={index} className="animate-pulse">
-                        {/* Checkbox Column */}
-                        <td className="pt-5 pr-2">
-                          <div className="size-4 bg-gray-200 rounded" />
-                        </td>
+                {isLoading ? (
+                  Array.from({ length: 5 }).map((_, index) => (
+                    <tr key={index} className="animate-pulse">
+                      {/* Checkbox Column */}
+                      <td className="pt-5 pr-2">
+                        <div className="size-4 bg-gray-200 rounded" />
+                      </td>
 
-                        {/* Account Number Column */}
-                        <td className="pt-5 pr-4">
-                          <div className="h-4 w-24 bg-gray-100 rounded" />
-                        </td>
+                      {/* Account Number Column */}
+                      <td className="pt-5 pr-4">
+                        <div className="h-4 w-24 bg-gray-100 rounded" />
+                      </td>
 
-                        {/* Name Column */}
-                        <td className="pt-5 pr-4">
-                          <div className="h-4 w-32 bg-gray-100 rounded" />
-                        </td>
-
-                        {/* Address Column */}
-                        <td className="pt-5">
-                          <div className="h-4 w-full max-w-[180px] bg-gray-50 rounded" />
-                        </td>
-                      </tr>
-                    ))
-                  : data?.data?.map((item, index) => (
-                      <tr key={index} className="">
-                        <td className="pt-5 pr-2 text-left">
-                          <input
-                            type="checkbox"
-                            checked={selectedContact?.id === item.id}
-                            onChange={() => setSelectedContact(item)}
-                            className="cursor-pointer"
-                          />
-                        </td>
-                        <td className="pt-5 text-[#717182] font-normal text-sm text-left">
-                          {item?.account_number}
-                        </td>
-                        <td className="pt-5 text-[#717182] font-normal text-sm">
-                          {item?.full_name}
-                        </td>
-                        <td className="pt-5 text-[#717182] font-normal text-sm">
-                          {item?.city} {item?.state} {item?.country}
-                        </td>
-                      </tr>
-                    ))}
+                      {/* Address Column */}
+                      <td className="pt-5">
+                        <div className="h-4 w-full max-w-[180px] bg-gray-50 rounded" />
+                      </td>
+                    </tr>
+                  ))
+                ) : data?.data?.length > 0 ? (
+                  data?.data?.map((item, index) => (
+                    <tr key={index} className="">
+                      <td className="pt-5 pr-2 text-left">
+                        <input
+                          type="checkbox"
+                          checked={selectedContact?.id === item.id}
+                          onChange={() => setSelectedContact(item)}
+                          className="cursor-pointer"
+                        />
+                      </td>
+                      <td className="pt-5 text-[#717182] font-normal text-sm text-left">
+                        {item?.account_number}
+                      </td>
+                      <td className="pt-5 text-[#717182] text-center font-normal text-sm">
+                        {item?.name_address}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr className="">
+                    <td></td>
+                    <td className="pt-5 pr-2 text-left">No data found</td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
@@ -179,7 +167,7 @@ const ContactFinder = ({ onClose, contactFinder, onSelect }) => {
                 onSelect(selectedContact);
                 onClose();
               }}
-              className="py-2.5 px-8 rounded-2xl w-[152px] bg-blue-500 text-white font-medium hover:bg-blue-500/85"
+              className="py-2.5 px-8 rounded-2xl w-[152px] bg-blue-500 text-white font-medium hover:bg-blue-500/85 cursor-pointer"
             >
               Select
             </button>
@@ -210,18 +198,40 @@ const ContactFinder = ({ onClose, contactFinder, onSelect }) => {
               <div className="text-black-500">Account Number</div>
               <input
                 type="text"
-                {...register("account_number")}
+                {...register("account_number", {
+                  required: "Account Number is required",
+                  maxLength: {
+                    value: 14,
+                    message: "Account Number cannot exceed 14 digits",
+                  },
+                  pattern: {
+                    value: /^[0-9]*$/,
+                    message: "Only numbers are allowed",
+                  },
+                })}
                 placeholder="Enter Account Number"
                 className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
               />
+              {errors.account_number && (
+                <p className="text-red-500 text-xs pl-1">
+                  {errors.account_number.message}
+                </p>
+              )}
             </div>
             <div className="space-y-2">
               <div className="text-black-500">Name and Address</div>
               <textarea
                 cols={3}
-                {...register("name_address")}
+                {...register("name_address", {
+                  required: "This field is required",
+                })}
                 className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
               ></textarea>
+              {errors.name_address && (
+                <p className="text-red-500 text-xs pl-1">
+                  {errors.name_address.message}
+                </p>
+              )}
             </div>
             <div className="flex items-center justify-end gap-2 mt-5">
               <button

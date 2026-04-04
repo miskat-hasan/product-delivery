@@ -1,16 +1,20 @@
 "use client";
 import { useForm } from "react-hook-form";
-import { CheckMarkSvg, CloseSvg, DownArrowSvg, MailSvg } from "../svg/Svg";
-import { useState } from "react";
+import { CloseSvg, MailSvg } from "../svg/Svg";
 import {
   useAddCollaborator,
   useGetCollaboratorContent,
 } from "@/hooks/api/dashboardApi";
 import Swal from "sweetalert2";
 import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const AddCollaboratorsModal = ({ onClose }) => {
-  const form = useForm({
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm({
     defaultValues: {
       role: "",
       awb_serial_id: "",
@@ -20,16 +24,9 @@ const AddCollaboratorsModal = ({ onClose }) => {
     },
   });
 
-  const { handleSubmit, register } = form;
-  const [openEmailInvitation, setOpenEmailInvitation] = useState(false);
-
-  const queryClient = useQueryClient()
-
-  // get collaborator content
+  const queryClient = useQueryClient();
   const { data: collaborateContent, isLoading: collaborateContentLoading } =
     useGetCollaboratorContent();
-
-  // add new collaborator mutation
   const { mutate: addCollaboratorMutation, isPending: addCollaboratorPending } =
     useAddCollaborator();
 
@@ -37,26 +34,19 @@ const AddCollaboratorsModal = ({ onClose }) => {
     addCollaboratorMutation(data, {
       onSuccess: (data) => {
         onClose();
-        queryClient.invalidateQueries("get-all-collaborator")
-        Swal.fire({
-          title: data?.message,
-          icon: "success",
-        });
+        queryClient.invalidateQueries("get-all-collaborator");
+        toast.success(data?.message);
       },
       onError: (err) => {
-        Swal.fire({
-          title: err?.response?.data?.message || "Something went wrong",
-          icon: "error",
-        });
+        toast.error(err?.response?.data?.message);
       },
     });
   };
+
   return (
     <div className="fixed inset-0 z-[99] flex items-center justify-center bg-[#333333CC]">
       <div className="absolute inset-0" onClick={onClose} />
-      <div
-        className={`relative z-10 w-full bg-[#FEFEFE] max-w-[581px] max-h-[calc(100vh-50px)] overflow-y-auto p-2 sm:p-6 rounded-xl [&::-webkit-scrollbar]:hidden [scrollbar-width:none] sm:rounded-3xl border border-[#3D8FBE] mx-3`}
-      >
+      <div className="relative z-10 w-full bg-[#FEFEFE] max-w-[581px] max-h-[calc(100vh-50px)] overflow-y-auto p-2 sm:p-6 rounded-xl sm:rounded-3xl border border-[#3D8FBE] mx-3">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-2 text-primary-black text-2xl font-medium">
             <MailSvg />
@@ -66,171 +56,130 @@ const AddCollaboratorsModal = ({ onClose }) => {
             <CloseSvg />
           </button>
         </div>
-        <p className="text-gray-300">
-          Send an invitation to collaborate on AWB-2024-1234. They&rsquo;ll
-          receive an email with access details.
-        </p>
+
         <form onSubmit={handleSubmit(onSubmit)} className="my-8 space-y-4">
-          <div className="space-y-2">
+          {/* Role */}
+          <div className="space-y-1">
             <div className="text-black-500">Collaborator Role</div>
             <select
-              {...register("role")}
-              className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
+              {...register("role", { required: "Role is required" })}
+              className={`rounded-2xl p-4 border w-full outline-none bg-white-500 ${errors.role ? "border-red-500" : "border-black-50 text-gray-300"}`}
             >
-              <option value={""} disabled>
+              <option value="" disabled>
                 Select Collaborator role
               </option>
-              <option value={"consignee"}>Consignee</option>
+              <option value="consignee">Consignee</option>
               <option value="custom_broker">Customs Broker</option>
               <option value="driver">Delivery Driver</option>
               <option value="carriers_agent">Carriers Agent</option>
-              <option value="shipper">shipper</option>
+              <option value="shipper">Shipper</option>
             </select>
+            {errors.role && (
+              <p className="text-red-500 text-xs pl-1">{errors.role.message}</p>
+            )}
           </div>
-          <div className="space-y-2">
+
+          {/* AWB */}
+          <div className="space-y-1">
             <div className="text-black-500">Select AWB</div>
             <select
-              {...register("awb_serial_id")}
-              className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
+              {...register("awb_serial_id", {
+                required: "Please select an AWB",
+              })}
+              className={`rounded-2xl p-4 border w-full outline-none bg-white-500 ${errors.awb_serial_id ? "border-red-500" : "border-black-50 text-gray-300"}`}
             >
-              <option value={""} disabled>
+              <option value="" disabled>
                 Select AWB NO
               </option>
-              {collaborateContentLoading
-                ? "Loading ..."
-                : collaborateContent?.data?.form_serial_id?.map(
-                    (item, index) => (
-                      <option key={index} value={item?.serial_id}>
-                        {item?.serial_id}
-                      </option>
-                    ),
-                  )}
+              {collaborateContentLoading ? (
+                <option>Loading ...</option>
+              ) : collaborateContent?.data?.form_serial_id?.length > 0 ? (
+                collaborateContent?.data?.form_serial_id?.map((item, index) => (
+                  <option key={index} value={item?.serial_id}>
+                    {item?.serial_id}
+                  </option>
+                ))
+              ) : (
+                <option disabled>No data found</option>
+              )}
             </select>
+            {errors.awb_serial_id && (
+              <p className="text-red-500 text-xs pl-1">
+                {errors.awb_serial_id.message}
+              </p>
+            )}
           </div>
-          <div className="space-y-2">
+
+          {/* Name */}
+          <div className="space-y-1">
             <div className="text-black-500">Full Name</div>
             <input
-              type="text"
-              {...register("name")}
-              placeholder="Enter your collaborator’s name"
-              className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
+              {...register("name", { required: "Name is required" })}
+              placeholder="Enter name"
+              className={`rounded-2xl p-4 border w-full outline-none bg-white-500 ${errors.name ? "border-red-500" : "border-black-50 text-gray-300"}`}
             />
+            {errors.name && (
+              <p className="text-red-500 text-xs pl-1">{errors.name.message}</p>
+            )}
           </div>
-          <div className="space-y-2">
+
+          {/* Email */}
+          <div className="space-y-1">
             <div className="text-black-500">Email Address</div>
             <input
-              type="text"
-              {...register("email")}
-              placeholder="Enter your collaborator’s email"
-              className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /^\S+@\S+$/i,
+                  message: "Invalid email format",
+                },
+              })}
+              placeholder="Enter email"
+              className={`rounded-2xl p-4 border w-full outline-none bg-white-500 ${errors.email ? "border-red-500" : "border-black-50 text-gray-300"}`}
             />
+            {errors.email && (
+              <p className="text-red-500 text-xs pl-1">
+                {errors.email.message}
+              </p>
+            )}
           </div>
-          <div className="space-y-2">
+
+          {/* Access Level */}
+          <div className="space-y-1">
             <div className="text-black-500">Access Level</div>
             <select
-              {...register("access_level")}
-              className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
+              {...register("access_level", {
+                required: "Access level is required",
+              })}
+              className={`rounded-2xl p-4 border w-full outline-none bg-white-500 ${errors.access_level ? "border-red-500" : "border-black-50 text-gray-300"}`}
             >
-              <option value={""} disabled>
+              <option value="" disabled>
                 Select Access Level
               </option>
-              <option value={"view"} className="flex flex-col">
-                <span>Viewer -</span>
-                <span> Can view shipment details and documents</span>
-              </option>
-              <option value={"edit"} className="flex flex-col">
-                <span>Editor -</span>
-                <span> Can upload documents</span>
-              </option>
+              <option value="view">Viewer - Can view details</option>
+              <option value="edit">Editor - Can upload documents</option>
             </select>
-          </div>
-          {/* <div className="py-4 px-3 rounded-[10px] border border-primary-blue bg-blue-50 w-full">
-            <h6 className="text-lg font-medium text-black-500 mb-3">
-              What happens next:
-            </h6>
-            <ul className="space-y-1.5">
-              <li className="flex items-center gap-2 text-[#082E55]">
-                <CheckMarkSvg className="size-4 text-blue-500" />
-                An email invitation will be sent to the collaborator
-              </li>
-              <li className="flex items-center gap-2 text-[#082E55]">
-                <CheckMarkSvg className="size-4 text-blue-500" />
-                They&rsquo;ll receive a secure link to accept the invitation
-              </li>
-              <li className="flex items-center gap-2 text-[#082E55]">
-                <CheckMarkSvg className="size-4 text-blue-500" />
-                Once accepted, they can immediately access AWB AWB-123-44569874
-              </li>
-              <li className="flex items-center gap-2 text-[#082E55]">
-                <CheckMarkSvg className="size-4 text-blue-500" />
-                You can resend the invitation or revoke access anytime
-              </li>
-            </ul>
-          </div> */}
-          {/* <div>
-            <button
-              onClick={() => setOpenEmailInvitation((prev) => !prev)}
-              className="rounded-2xl p-4 border cursor-pointer border-black-50 bg-white-500 w-full text-gray-300 outline-none flex items-center justify-between"
-            >
-              Preview invitation email
-              <DownArrowSvg />
-            </button>
-            {openEmailInvitation && (
-              <div className="p-2 sm:p-6 rounded-xl sm:rounded-2xl border border-black-100 space-y-4">
-                <div className="space-y-3">
-                  <div>
-                    <p className="text-xs text-[#6A7282]">To: </p>
-                    <p className="text-sm text-black-500">
-                      collaborator@example.com
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-xs text-[#6A7282]">Subject: </p>
-                    <p className="text-sm text-[#101828]">
-                      You&rsquo;ve been invited to collaborate on AWB: <br />
-                      <span className="text-[#3D8FBE]">AWB-123-44569874</span>
-                    </p>
-                  </div>
-                </div>
-                <hr className="text-[#A1A1A1]" />
-                <div className="space-y-3 text-sm">
-                  <div>
-                    <p>Hi there,</p>
-                    <p>
-                      You&rsquo;ve been invited to collaborate on shipment
-                      AWB-123-44569874 with viewer access
-                    </p>
-                  </div>
-                  <div className="rounded-[4px] bg-white-500 p-3 space-y-2">
-                    <p className="text-[#4A5565]">
-                      Access Level:{" "}
-                      <span className="text-[#4A5565] font-medium">Viewer</span>
-                    </p>
-                    <p className="text-[#4A5565]">
-                      • View shipment details and documents
-                    </p>
-                  </div>
-                  <button className="py-2.5 sm:py-4 px-4 sm:px-8 text-blue-500 text-white rounded-2xl bg-blue-500 text-lg font-medium cursor-pointer hover:bg-blue-500/85">
-                    Create New
-                  </button>
-                </div>
-              </div>
+            {errors.access_level && (
+              <p className="text-red-500 text-xs pl-1">
+                {errors.access_level.message}
+              </p>
             )}
-          </div> */}
-          <div className="flex items-center gap-3">
+          </div>
+
+          <div className="flex items-center gap-3 pt-4">
             <button
+              type="button"
               onClick={onClose}
-              className="flex cursor-pointer items-center justify-center py-2 px-4 sm:p-4 rounded-xl sm:rounded-2xl border text-sm sm:text-lg sm:flex-1 border-blue-500 bg-[#ECF4F9] text-blue-500 font-medium"
+              className="flex-1 py-4 rounded-2xl border border-blue-500 bg-[#ECF4F9] text-blue-500 font-medium cursor-pointer hover:bg-blue-100"
             >
               Cancel
             </button>
             <button
+              type="submit"
               disabled={addCollaboratorPending}
-              className="py-2 px-4 sm:p-4 flex items-center gap-1 text-blue-500 text-white rounded-xl sm:rounded-2xl flex-1 justify-center border bg-blue-500 text-sm sm:text-lg font-medium cursor-pointer hover:bg-blue-500/85"
+              className="flex-1 py-4 rounded-2xl bg-blue-500 text-white font-medium hover:bg-blue-500/70 cursor-pointer disabled:opacity-50"
             >
-              {/* <MailSvg className={"text-white"} /> */}
-              {/* Send Invitation */}
-              {addCollaboratorPending ? "Adding ... " : "Add New Collaborator"}
+              {addCollaboratorPending ? "Adding..." : "Add New Collaborator"}
             </button>
           </div>
         </form>

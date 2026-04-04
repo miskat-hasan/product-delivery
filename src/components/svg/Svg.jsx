@@ -722,7 +722,7 @@ export const LoaderSVG = () => {
       <circle
         fill="#3D8FBE"
         stroke="#3D8FBE"
-        stroke-width="15"
+        strokeWidth="15"
         r="15"
         cx="40"
         cy="100"
@@ -740,7 +740,7 @@ export const LoaderSVG = () => {
       <circle
         fill="#3D8FBE"
         stroke="#3D8FBE"
-        stroke-width="15"
+        strokeWidth="15"
         r="15"
         cx="100"
         cy="100"
@@ -758,7 +758,7 @@ export const LoaderSVG = () => {
       <circle
         fill="#3D8FBE"
         stroke="#3D8FBE"
-        stroke-width="15"
+        strokeWidth="15"
         r="15"
         cx="160"
         cy="100"

@@ -1,4 +1,5 @@
 "use client";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 
 const CloseSvg = () => (
@@ -7,7 +8,17 @@ const CloseSvg = () => (
   </svg>
 );
 
-const AddOtherChargeModal = ({ onClose, onAdd }) => {
+const AddOtherChargeModal = ({
+  onClose,
+  onAdd,
+  totalPieces = 0,
+  totalGrossWeight = 0,
+  totalChargeableWeight = 0,
+  totalDueCarrier = 0,
+  totalDueAgent = 0,
+  prepaidWeightCharge = 0,
+  collectWeightCharge = 0,
+}) => {
   const {
     register,
     handleSubmit,
@@ -30,6 +41,58 @@ const AddOtherChargeModal = ({ onClose, onAdd }) => {
   });
 
   const enableCalc = watch("enableCalculation");
+  const watchRate = watch("rate");
+  const watchRateBase = watch("rateBase");
+  const watchMethod = watch("method");
+  const watchMinimum = watch("minimum");
+  const watchMaximum = watch("maximum");
+
+  // ── Auto-calculate amount when Enable Calculation is checked ────
+  useEffect(() => {
+    if (!enableCalc) return;
+
+    const rate = parseFloat(watchRate) || 0;
+    const minimum = parseFloat(watchMinimum) || 0;
+    const maximum = parseFloat(watchMaximum) || 0;
+
+    // Resolve quantity based on selected rateBase
+    let quantity = 0;
+    if (watchRateBase === "gross_weight") quantity = totalGrossWeight;
+    else if (watchRateBase === "chargeable_weight") quantity = totalChargeableWeight;
+    else if (watchRateBase === "pieces") quantity = totalPieces;
+    else if (watchRateBase === "due_carrier")
+      quantity = prepaidWeightCharge + collectWeightCharge + totalDueCarrier;
+    else if (watchRateBase === "due_agent") quantity = totalDueAgent;
+
+    let calculated = rate * quantity;
+
+    if (watchMethod === "rate_x_qty_or_min") {
+      // Use minimum if it's higher than calculated
+      if (minimum > 0 && minimum > calculated) calculated = minimum;
+    } else if (watchMethod === "min_plus_rate_x_qty") {
+      calculated = minimum + calculated;
+    }
+
+    // Cap at maximum if set
+    if (maximum > 0 && calculated > maximum) calculated = maximum;
+
+    setValue("amount", calculated > 0 ? calculated.toFixed(2) : "");
+  }, [
+    enableCalc,
+    watchRate,
+    watchRateBase,
+    watchMethod,
+    watchMinimum,
+    watchMaximum,
+    totalGrossWeight,
+    totalChargeableWeight,
+    totalPieces,
+    totalDueCarrier,
+    totalDueAgent,
+    prepaidWeightCharge,
+    collectWeightCharge,
+    setValue,
+  ]);
 
   const onSubmit = (data) => {
     const payload = {
@@ -51,20 +114,20 @@ const AddOtherChargeModal = ({ onClose, onAdd }) => {
     onClose();
   };
 
+  const inp =
+    "w-full rounded-xl px-3 py-2.5 text-sm font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3D8FBE] border border-gray-400 hover:border-gray-700 transition-all duration-150";
+
   return (
     <div className="fixed inset-0 z-[99] flex items-center justify-center bg-[#333333CC]">
-      {/* Backdrop */}
       <div className="absolute inset-0" onClick={onClose} />
 
-      {/* Modal */}
       <div className="relative z-10 w-full bg-[#FEFEFE] max-w-[520px] max-h-[calc(100vh-50px)] overflow-y-auto px-6 py-[30px] rounded-3xl border border-[#3D8FBE] mx-3 shadow-xl">
-        
+
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-2.5 text-primary-black text-2xl font-medium">
-            Add
-          </div>
+          <div className="text-2xl font-medium">Add Other Charge</div>
           <button
+            type="button"
             onClick={onClose}
             className="size-8 flex items-center justify-center rounded-full bg-[#F3F3F5] hover:bg-[#e5e5e6] cursor-pointer transition-colors"
           >
@@ -72,52 +135,37 @@ const AddOtherChargeModal = ({ onClose, onAdd }) => {
           </button>
         </div>
 
-        {/* Form */}
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          
+
           {/* Description */}
           <div className="space-y-1.5">
-            <label className="leading-[1.45] font-medium text-sm text-gray-700">
-              Description
-            </label>
+            <label className="leading-[1.45] font-medium text-sm text-gray-700">Description</label>
             <input
               type="text"
-              {...register("description", { required: "Description is required" })}
+              {...register("description")}
               placeholder="Enter description"
-              className="w-full rounded-xl px-3 py-2.5 text-sm font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3D8FBE] border border-gray-400 hover:border-gray-700 transition-all duration-150"
+              className={inp}
             />
-            {errors.description && (
-              <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>
-            )}
           </div>
 
-          {/* Amount + Entitlement row */}
+          {/* Amount + Entitlement */}
           <div className="flex items-start gap-3">
-            {/* Amount */}
             <div className="space-y-1.5 flex-1">
-              <label className="leading-[1.45] font-medium text-sm text-gray-700">
-                Amount
-              </label>
+              <label className="leading-[1.45] font-medium text-sm text-gray-700">Amount</label>
               <input
                 type="number"
                 step="0.01"
-                {...register("amount", { required: "Amount is required" })}
+                {...register("amount")}
                 placeholder="0.00"
-                className="w-full rounded-xl px-3 py-2.5 text-sm font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3D8FBE] border border-gray-400 hover:border-gray-700 transition-all duration-150"
+                disabled={enableCalc}
+                className={`${inp} ${enableCalc ? "bg-neutral-200 cursor-not-allowed hover:border-gray-400" : ""}`}
               />
-              {errors.amount && (
-                <p className="text-red-500 text-xs mt-1">{errors.amount.message}</p>
-              )}
             </div>
-
-            {/* Entitlement */}
             <div className="space-y-1.5 flex-1">
-              <label className="leading-[1.45] font-medium text-sm text-gray-700">
-                Entitlement
-              </label>
+              <label className="leading-[1.45] font-medium text-sm text-gray-700">Entitlement</label>
               <select
                 {...register("entitlement")}
-                className="w-full rounded-xl px-3 py-2.5 text-sm font-normal leading-[1.45] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3D8FBE] border border-gray-400 hover:border-gray-700 transition-all duration-150 bg-white cursor-pointer"
+                className={`${inp} bg-white cursor-pointer`}
               >
                 <option value="due_agent">Due agent</option>
                 <option value="due_carrier">Due carrier</option>
@@ -125,11 +173,9 @@ const AddOtherChargeModal = ({ onClose, onAdd }) => {
             </div>
           </div>
 
-          {/* Rate calculation box */}
+          {/* Rate Calculation box */}
           <div className="border border-gray-300 rounded-xl p-4 bg-gray-50 space-y-3">
-            <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
-              Rate Calculation
-            </p>
+            <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Rate Calculation</p>
 
             {/* Enable calculation checkbox */}
             <div className="flex items-center gap-2">
@@ -137,7 +183,7 @@ const AddOtherChargeModal = ({ onClose, onAdd }) => {
                 id="enable-calc"
                 type="checkbox"
                 {...register("enableCalculation")}
-                className="h-4 w-4 rounded border-gray-300 text-blue-500 focus:ring-blue-400 cursor-pointer"
+                className="h-4 w-4 rounded border-gray-300 cursor-pointer accent-blue-500"
               />
               <label htmlFor="enable-calc" className="text-sm text-gray-600 cursor-pointer">
                 Enable calculation
@@ -145,37 +191,30 @@ const AddOtherChargeModal = ({ onClose, onAdd }) => {
             </div>
 
             {/* Conditional fields */}
-            <div
-              className={`space-y-3 transition-all duration-200 ${
-                enableCalc ? "opacity-100" : "opacity-40 pointer-events-none"
-              }`}
-            >
+            <div className={`space-y-3 transition-all duration-200 ${enableCalc ? "opacity-100" : "opacity-40 pointer-events-none"}`}>
+
               {/* Method */}
               <div className="space-y-1.5">
-                <label className="leading-[1.45] font-medium text-sm text-gray-700">
-                  Method
-                </label>
+                <label className="leading-[1.45] font-medium text-sm text-gray-700">Method</label>
                 <select
                   {...register("method")}
-                  className="w-full rounded-xl px-3 py-2.5 text-sm font-normal leading-[1.45] focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3D8FBE] border border-gray-400 hover:border-gray-700 transition-all duration-150 bg-white cursor-pointer"
+                  className={`${inp} bg-white cursor-pointer`}
                 >
                   <option value="rate_x_qty_or_min">(rate × quantity) or minimum</option>
-                  <option value="rate_x_qty">minimum + (rate × quantity)</option>
+                  <option value="min_plus_rate_x_qty">minimum + (rate × quantity)</option>
                 </select>
               </div>
 
-              {/* Rate row */}
+              {/* Rate × base */}
               <div className="space-y-1.5">
-                <label className="leading-[1.45] font-medium text-sm text-gray-700">
-                  Rate
-                </label>
+                <label className="leading-[1.45] font-medium text-sm text-gray-700">Rate</label>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
                     step="0.0001"
                     {...register("rate")}
                     placeholder="0.0000"
-                    className="flex-1 rounded-xl px-3 py-2.5 text-sm font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3D8FBE] border border-gray-400 hover:border-gray-700 transition-all duration-150"
+                    className={`flex-1 rounded-xl px-3 py-2.5 text-sm font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3D8FBE] border border-gray-400 hover:border-gray-700 transition-all duration-150`}
                   />
                   <span className="text-gray-500 text-sm font-medium">×</span>
                   <select
@@ -185,8 +224,8 @@ const AddOtherChargeModal = ({ onClose, onAdd }) => {
                     <option value="gross_weight">Gross weight</option>
                     <option value="chargeable_weight">Chargeable weight</option>
                     <option value="pieces">No. of pieces</option>
-                    <option value="fixed">Charges due carrier</option>
-                    <option value="fixed">Charges due agent</option>
+                    <option value="due_carrier">Charges due carrier</option>
+                    <option value="due_agent">Charges due agent</option>
                   </select>
                 </div>
               </div>
@@ -194,30 +233,36 @@ const AddOtherChargeModal = ({ onClose, onAdd }) => {
               {/* Minimum & Maximum */}
               <div className="flex items-center gap-3">
                 <div className="space-y-1.5 flex-1">
-                  <label className="leading-[1.45] font-medium text-sm text-gray-700">
-                    Minimum
-                  </label>
+                  <label className="leading-[1.45] font-medium text-sm text-gray-700">Minimum</label>
                   <input
                     type="number"
                     step="0.01"
                     {...register("minimum")}
                     placeholder="0.00"
-                    className="w-full rounded-xl px-3 py-2.5 text-sm font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3D8FBE] border border-gray-400 hover:border-gray-700 transition-all duration-150"
+                    className={`w-full rounded-xl px-3 py-2.5 text-sm font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3D8FBE] border border-gray-400 hover:border-gray-700 transition-all duration-150`}
                   />
                 </div>
                 <div className="space-y-1.5 flex-1">
-                  <label className="leading-[1.45] font-medium text-sm text-gray-700">
-                    Maximum
-                  </label>
+                  <label className="leading-[1.45] font-medium text-sm text-gray-700">Maximum</label>
                   <input
                     type="number"
                     step="0.01"
                     {...register("maximum")}
                     placeholder="0.00"
-                    className="w-full rounded-xl px-3 py-2.5 text-sm font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3D8FBE] border border-gray-400 hover:border-gray-700 transition-all duration-150"
+                    className={`w-full rounded-xl px-3 py-2.5 text-sm font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3D8FBE] border border-gray-400 hover:border-gray-700 transition-all duration-150`}
                   />
                 </div>
               </div>
+
+              {/* Live preview */}
+              {enableCalc && (
+                <div className="bg-white rounded-lg px-3 py-2 border border-gray-200 text-sm text-gray-600">
+                  Calculated amount:{" "}
+                  <span className="font-semibold text-gray-900">
+                    {watch("amount") || "0.00"}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
 

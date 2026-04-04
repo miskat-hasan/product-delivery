@@ -2,6 +2,7 @@
 import Swal from "sweetalert2";
 import useClientApi from "../useClientApi";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export const useAddCollaborator = () => {
   return useClientApi({
@@ -58,13 +59,11 @@ export const StoreAirWaybill = () => {
     key: ["store-airway-bill"],
     endpoint: "/api/form-submit",
     onSuccess: (data) => {
+      toast.success(data?.message);
       router.push(`/print-preview?id=${data?.data?.id}`);
     },
     onError: (err) => {
-      Swal.fire({
-        icon: "error",
-        text: err?.response?.data?.message,
-      });
+      toast.error(err?.response?.data?.message);
     },
   });
 };

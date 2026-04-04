@@ -23,18 +23,18 @@ const sidebarNavItem = [
     label: "Shipments",
     link: "/dashboard/shipments",
   },
-  {
-    id: "3",
-    icon: ReportsSvg,
-    label: "Reports",
-    link: "#",
-  },
-  {
-    id: "4",
-    icon: SettingsSvg,
-    label: "Settings",
-    link: "#",
-  },
+  // {
+  //   id: "3",
+  //   icon: ReportsSvg,
+  //   label: "Reports",
+  //   link: "#",
+  // },
+  // {
+  //   id: "4",
+  //   icon: SettingsSvg,
+  //   label: "Settings",
+  //   link: "#",
+  // },
   {
     id: "5",
     icon: LogoutSvg,
@@ -53,14 +53,14 @@ const Sidebar = () => {
         LOGO
       </div>
 
-      <div className="space-y-2 flex-1 flex flex-col">
+      <div className="space-y-2 flex-1 flex flex-col pb-4">
         {sidebarNavItem.map((item, index) =>
           item.label === "Log Out" ? (
             <button
               key={index}
               onClick={()=> logoutMutation()}
               className={`px-4 lg:px-8 xl:px-12 2xl:px-[82px] py-4 relative flex items-center gap-2.5 group hover:bg-primary-blue transition-all hover:text-white cursor-pointer rounded-r-lg text-xl ${
-                item.id === "4" && "mt-auto"
+                item.id === "5" && "mt-auto"
               } ${pathName === item.link && "bg-primary-blue transition-all text-white"}`}
             >
               <div

@@ -22,18 +22,18 @@ const sidebarNavItem = [
     label: "Shipments",
     link: "/dashboard/shipments",
   },
-  {
-    id: "3",
-    icon: ReportsSvg,
-    label: "Reports",
-    link: "/dashboard/reports",
-  },
-  {
-    id: "4",
-    icon: SettingsSvg,
-    label: "Settings",
-    link: "/dashboard/settings",
-  },
+  // {
+  //   id: "3",
+  //   icon: ReportsSvg,
+  //   label: "Reports",
+  //   link: "/dashboard/reports",
+  // },
+  // {
+  //   id: "4",
+  //   icon: SettingsSvg,
+  //   label: "Settings",
+  //   link: "/dashboard/settings",
+  // },
   {
     id: "5",
     icon: LogoutSvg,
@@ -59,13 +59,13 @@ const SidebarSmallDevice = ({onClose}) => {
           </button>
         </div>
 
-        <div className="space-y-2 flex-1 flex flex-col">
+        <div className="space-y-2 flex-1 flex flex-col pb-4">
           {sidebarNavItem.map((item, index) => (
             <Link
               key={index}
               href={item.link}
               className={`px-4 lg:px-8 xl:px-12 2xl:px-[82px] py-4 relative flex items-center gap-2.5 group hover:bg-primary-blue transition-all hover:text-white rounded-r-lg text-xl ${
-                item.id === "4" && "mt-auto"
+                item.id === "5" && "mt-auto"
               }`}
             >
               <div className="w-1.5 h-full absolute top-0 left-0 rounded-r-2xl group-hover:bg-[#082E55]" />
