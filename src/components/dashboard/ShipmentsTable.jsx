@@ -57,10 +57,10 @@ const ShipmentsTable = () => {
                 <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0]">
                   AWB Number
                 </th>
-                <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0]">
+                <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0] text-center">
                   Status
                 </th>
-                <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0]">
+                <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0] text-center">
                   Route
                 </th>
                 <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0]">
@@ -121,16 +121,16 @@ const ShipmentsTable = () => {
                         <td className="px-3 py-3.5 text-blue-500 font-medium">
                           {item?.awb_number}
                         </td>
-                        <td className="px-3 py-3.5">
+                        <td className="px-3 py-3.5 text-center">
                           <span
                             className={`p-2.5 rounded-full ${item?.status === "created" ? "text-green-400 bg-green-50" : "text-[#FFC107] bg-[#FFF9E6]"} `}
                           >
                             {item?.status}
                           </span>
                         </td>
-                        <td className="px-3 py-3.5 text-black-500">
-                          {item?.routes?.airport_of_departure} →{" "}
-                          {item?.routes?.airport_of_destination}
+                        <td className="px-3 py-3.5 text-black-500 text-center">
+                          {item?.routes?.departure} →{" "}
+                          {item?.routes?.destination}
                         </td>
                         <td className="px-3 py-3.5">
                           {item?.parties?.map((item, index) => (

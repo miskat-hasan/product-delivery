@@ -40,7 +40,7 @@ const ShipmentStatus = () => {
               </Link>
               <div className="flex items-center gap-4 mt-2">
                 <h4 className="text-lg md:text-2xl lg:text-[30px] font-medium text-black-500">
-                  AWB-2024-1234
+                  {data?.data?.awb_number}
                 </h4>
                 <div className="rounded-full max-md:text-sm px-2.5 py-1 bg-[#6F42C11A] text-[#6F42C1] h-fit">
                   With Custom
@@ -114,7 +114,7 @@ const ShipmentStatus = () => {
                 </div>
                 <div className="text-[#4A5565] flex items-center justify-between">
                   <p>MIA</p>
-                  <p>MGA</p>
+                  <p>{data?.data?.route_information?.destination}</p>
                 </div>
               </div>
               <div className="p-3 rounded-[14px] flex gap-3 bg-[#EAF6EC]">

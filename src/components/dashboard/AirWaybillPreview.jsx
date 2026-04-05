@@ -4,7 +4,8 @@ import React, { useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { GetSingleAirWayBill } from "@/hooks/api/dashboardApi";
 import useAuth from "@/hooks/useAuth";
-import { IoIosCheckmark, IoMdCheckmark } from "react-icons/io";
+import { IoMdCheckmark } from "react-icons/io";
+import Image from "next/image";
 
 const AirWaybillPreview = () => {
   const searchParams = useSearchParams();
@@ -101,7 +102,7 @@ const AirWaybillPreview = () => {
           <div id="capture-area">
             <div className="w-full max-w-[1218px] mx-auto py-10 bg-white">
               <div className="w-full">
-                <h5 className="flex text-lg font-bold justify-end pb-2 text-blue-500">
+                <h5 className="flex text-xl font-bold justify-end text-blue-500">
                   {billData?.consignment_details?.airline_prefix} -{" "}
                   {billData?.consignment_details?.serial_number}
                 </h5>
@@ -142,7 +143,24 @@ const AirWaybillPreview = () => {
                     </div>
                     {/* right side */}
                     <div className="flex flex-col preview-right-side border-l-2">
-                      <div className="px-2 ">
+                      <div className="px-2 relative">
+                        {billData?.logo && (
+                          <div className="absolute right-1 top-0">
+                            <figure className="h-14">
+                              <Image
+                                src={
+                                  process.env.NEXT_PUBLIC_SITE_URL +
+                                  "/" +
+                                  billData?.logo
+                                }
+                                width={100}
+                                height={80}
+                                alt="logo"
+                                className="object-cover size-full"
+                              />
+                            </figure>
+                          </div>
+                        )}
                         <p className="text-sm">Not Negotiable</p>
                         <h3 className="text-[27.5px] font-bold">Air Waybill</h3>
                         <div className="py-2 flex gap-4">
@@ -213,13 +231,13 @@ const AirWaybillPreview = () => {
                       <div className="grid grid-cols-2">
                         <div className="text-black text-sm flex flex-col px-2.5">
                           <p className="text-sm">Agent&rsquo;s IATA Code</p>
-                          <p className="text-lg pb-2 font-medium">
+                          <p className="text-lg pb-2 font-medium text-center">
                             {billData?.agent?.iata_code}
                           </p>
                         </div>
                         <div className="text-black text-sm border-l-2 flex flex-col px-2.5">
                           <p className="text-sm">Account No.</p>
-                          <p className="text-lg pb-2 font-medium">
+                          <p className="text-lg pb-2 font-medium text-center">
                             {billData?.agent?.account_number}
                           </p>
                         </div>
@@ -380,14 +398,18 @@ const AirWaybillPreview = () => {
                             PPD
                             <p className="leading-none text-center">
                               {billData?.charges_declaration?.wt_val ===
-                                "ppd" && <IoMdCheckmark size={18} />}
+                                "ppd" && (
+                                <IoMdCheckmark size={18} className="mx-auto" />
+                              )}
                             </p>
                           </p>
                           <p className="text-[11px] text-center border-r-2 flex-1">
                             COLL
                             <p className="leading-none">
                               {billData?.charges_declaration?.wt_val ===
-                                "coll" && <IoMdCheckmark size={18} />}
+                                "coll" && (
+                                <IoMdCheckmark size={18} className="mx-auto" />
+                              )}
                             </p>
                           </p>
                         </div>
@@ -397,18 +419,22 @@ const AirWaybillPreview = () => {
                           Other
                         </p>
                         <div className="flex flex-1">
-                          <p className="text-[11px] text-center pt-1 border-r-2 flex-1">
+                          <p className="text-[11px] text-center border-r-2 flex-1">
                             PPD
                             <p className="leading-none">
                               {billData?.charges_declaration?.other ===
-                                "ppd" && <IoMdCheckmark size={18} />}
+                                "ppd" && (
+                                <IoMdCheckmark size={18} className="mx-auto" />
+                              )}
                             </p>
                           </p>
-                          <p className="text-[11px] text-center pt-1 flex-1">
+                          <p className="text-[11px] text-center flex-1">
                             COLL
                             <p className="leading-none">
                               {billData?.charges_declaration?.other ===
-                                "coll" && <IoMdCheckmark size={18} />}
+                                "coll" && (
+                                <IoMdCheckmark size={18} className="mx-auto" />
+                              )}
                             </p>
                           </p>
                         </div>
@@ -472,7 +498,7 @@ const AirWaybillPreview = () => {
                     <div className="preview-right-side border-l-2 flex">
                       <div className="text-sm pb-2 px-1.5 border-r-2">
                         Amount of Insurance
-                        <p className="text-lg font-medium">
+                        <p className="text-lg font-medium text-center">
                           {billData?.charges_declaration?.amount_of_insurance}
                         </p>
                       </div>
@@ -506,7 +532,7 @@ const AirWaybillPreview = () => {
                         <div className="px-2 py-1 border-b-2 h-[68px] leading-none">
                           No. of RCP Pieces
                         </div>
-                        <div className="p-1">
+                        <div className="p-1 text-center">
                           {billData?.rate_description?.map((item, index) => (
                             <p key={index} className="text-lg font-medium">
                               {item?.pieces}
@@ -514,7 +540,7 @@ const AirWaybillPreview = () => {
                           ))}
                         </div>
                       </div>
-                      <div className="w-full h-[68px] border-t-2">
+                      <div className="w-full h-[68px] border-t-2 text-center">
                         {totalPieces}
                       </div>
                     </div>
@@ -523,7 +549,7 @@ const AirWaybillPreview = () => {
                         <div className="px-2 py-1 border-b-2 h-[68px] text-center">
                           Gross <br /> Weight
                         </div>
-                        <div className="p-1">
+                        <div className="p-1 text-center">
                           {billData?.rate_description?.map((item, index) => (
                             <p key={index} className="text-lg font-medium">
                               {item?.gross_weight}
@@ -531,7 +557,7 @@ const AirWaybillPreview = () => {
                           ))}
                         </div>
                       </div>
-                      <div className="w-full h-[68px] border-t-2">
+                      <div className="w-full h-[68px] border-t-2 text-center">
                         {grossWeight}
                       </div>
                     </div>
@@ -541,7 +567,7 @@ const AirWaybillPreview = () => {
                           kg <br />
                           lb
                         </p>
-                        <p>
+                        <p className="text-center">
                           {" "}
                           {billData?.rate_description?.map((item, index) => (
                             <p key={index} className="text-lg font-medium">
@@ -561,7 +587,7 @@ const AirWaybillPreview = () => {
                             Commodity <br />
                             Item No.
                           </p>
-                          <div className="p-1 border-l-2">
+                          <div className="p-1 border-l-2 text-center">
                             {billData?.rate_description?.map((item, index) => (
                               <p key={index} className="text-lg font-medium">
                                 {item?.item_no}
@@ -579,7 +605,7 @@ const AirWaybillPreview = () => {
                           Chargeable
                           <br /> Weight
                         </div>
-                        <div className="p-1">
+                        <div className="p-1 text-center">
                           {billData?.rate_description?.map((item, index) => (
                             <p key={index} className="text-lg font-medium">
                               {item?.charge_weight}
@@ -611,7 +637,7 @@ const AirWaybillPreview = () => {
                         {/* <div className="w-[77.976px] bg-black h-[1px] -rotate-45" /> */}
                         <p className="self-end">Charge</p>
                       </div>
-                      <div className="p-1">
+                      <div className="p-1 text-center">
                         {billData?.rate_description?.map((item, index) => (
                           <p key={index} className="text-lg font-medium">
                             ${item?.rate_charge}
@@ -625,7 +651,7 @@ const AirWaybillPreview = () => {
                         <div className="text-center h-[68px] text-xl border-b-2 flex pb-2 pt-0.5 justify-center">
                           Total
                         </div>
-                        <div className="p-1">
+                        <div className="p-1 text-center">
                           {billData?.rate_description?.map((item, index) => (
                             <p key={index} className="text-lg font-medium">
                               ${item?.total}
@@ -633,7 +659,7 @@ const AirWaybillPreview = () => {
                           ))}
                         </div>
                       </div>
-                      <div className="w-full h-[68px] border-t-2 text-lg font-medium">
+                      <div className="w-full h-[68px] border-t-2 text-lg font-medium text-center">
                         ${grandTotalRateDescription}
                       </div>
                     </div>
@@ -643,7 +669,7 @@ const AirWaybillPreview = () => {
                         Nature and Quantity of Goods (incl. Dimensions or
                         Volume)
                       </p>
-                      <div>
+                      <div className="text-center">
                         {billData?.rate_description?.map((item, index) => (
                           <p key={index} className="text-lg font-medium">
                             {item?.nature_and_quantity}
@@ -746,13 +772,15 @@ const AirWaybillPreview = () => {
                           </div>
                         </div>
                         <div className="grid grid-cols-2">
-                          <div className="border-r-2 h-[49.023px] p-1">
+                          <div className="border-r-2 h-[49.023px] p-1 text-center font-medium">
+                            $
                             {
                               billData?.charges_summary?.prepaid
                                 ?.valuation_charge
                             }
                           </div>
-                          <div className="p-1">
+                          <div className="p-1 text-center font-medium">
+                            $
                             {
                               billData?.charges_summary?.collect
                                 ?.valuation_charge
@@ -783,11 +811,11 @@ const AirWaybillPreview = () => {
                           </div>
                         </div>
                         <div className="grid grid-cols-2">
-                          <div className="border-r-2 h-[49.023px] p-1">
-                            {billData?.charges_summary?.prepaid?.tax}
+                          <div className="border-r-2 h-[49.023px] p-1 text-center font-medium">
+                            ${billData?.charges_summary?.prepaid?.tax}
                           </div>
-                          <div className="p-1">
-                            {billData?.charges_summary?.collect?.tax}
+                          <div className="p-1 text-center font-medium">
+                            ${billData?.charges_summary?.collect?.tax}
                           </div>
                         </div>
                       </div>
@@ -795,7 +823,7 @@ const AirWaybillPreview = () => {
                     {/* right */}
                     <div className="py-[2px] px-1.5 border-b-2 w-full flex flex-col">
                       Other Charges
-                      <div className="pt-2 text-lg font-medium flex flex-wrap gap-3">
+                      <div className="pt-2 text-lg font-medium flex flex-wrap gap-3 uppercase">
                         {billData?.other_charges?.map((item, i) => (
                           <p key={i}>
                             {item?.description}: ${item?.amount}
@@ -831,14 +859,14 @@ const AirWaybillPreview = () => {
                           </div>
                         </div>
                         <div className="grid grid-cols-2">
-                          <div className="border-r-2 h-[49.023px] p-1 text-lg font-medium">
+                          <div className="border-r-2 h-[49.023px] p-1 text-lg font-medium text-center">
                             $
                             {
                               billData?.charges_summary?.prepaid
                                 ?.other_charges_due_agent
                             }
                           </div>
-                          <div className="p-1 text-lg font-medium">
+                          <div className="p-1 text-lg font-medium text-center">
                             $
                             {
                               billData?.charges_summary?.collect
@@ -870,14 +898,14 @@ const AirWaybillPreview = () => {
                           </div>
                         </div>
                         <div className="grid grid-cols-2">
-                          <div className="border-r-2 h-[49.023px] p-1 text-lg font-medium">
+                          <div className="border-r-2 h-[49.023px] p-1 text-lg font-medium text-center">
                             $
                             {
                               billData?.charges_summary?.prepaid
                                 ?.other_charges_due_carrier
                             }
                           </div>
-                          <div className="p-1 text-lg font-medium">
+                          <div className="p-1 text-lg font-medium text-center">
                             $
                             {
                               billData?.charges_summary?.collect
@@ -940,7 +968,7 @@ const AirWaybillPreview = () => {
                               />
                             </svg>
                           </div>
-                          <div className="p-1 text-lg font-medium">
+                          <div className="p-1 text-lg font-medium text-center">
                             ${billData?.charges_summary?.prepaid?.total_prepaid}
                           </div>
                         </div>
@@ -964,7 +992,7 @@ const AirWaybillPreview = () => {
                               />
                             </svg>
                           </div>
-                          <div className="p-1 text-lg font-medium">
+                          <div className="p-1 text-lg font-medium text-center">
                             ${billData?.charges_summary?.collect?.total_collect}
                           </div>
                         </div>
@@ -988,7 +1016,7 @@ const AirWaybillPreview = () => {
                               strokeWidth="1.9688"
                             />
                           </svg>
-                          <div className="p-1">
+                          <div className="p-1 text-center font-medium">
                             {billData?.collect_charges?.currency_conv_rates}
                           </div>
                         </div>
@@ -1009,7 +1037,7 @@ const AirWaybillPreview = () => {
                               strokeWidth="1.9688"
                             />
                           </svg>
-                          <div className="p-1">
+                          <div className="p-1 font-medium text-center">
                             {billData?.collect_charges?.cc_charges}
                           </div>
                         </div>
@@ -1063,8 +1091,8 @@ const AirWaybillPreview = () => {
                             strokeWidth="1.9688"
                           />
                         </svg>
-                        <div className="p-1">
-                          {billData?.collect_charges?.charges_at_destination}
+                        <div className="p-1 font-medium">
+                          ${billData?.collect_charges?.charges_at_destination}
                         </div>
                       </div>
                     </div>
@@ -1089,8 +1117,8 @@ const AirWaybillPreview = () => {
                           strokeWidth="1.9688"
                         />
                       </svg>
-                      <div className="p-1">
-                        {billData?.collect_charges?.total_collect_charges}
+                      <div className="p-1 font-medium">
+                        ${billData?.collect_charges?.total_collect_charges}
                       </div>
                     </div>
                   </div>

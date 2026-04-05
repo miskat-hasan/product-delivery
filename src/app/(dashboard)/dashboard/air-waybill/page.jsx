@@ -10,6 +10,8 @@ import AirlineFinderModal from "@/components/dashboard/AirlineFinderModal";
 import AddOtherChargeModal from "@/components/dashboard/AddOtherChargeModal";
 import AddRateDescriptionModal from "@/components/dashboard/AddRateDescriptionModal";
 import { StoreAirWaybill } from "@/hooks/api/dashboardApi";
+import { FiUploadCloud } from "react-icons/fi";
+import Image from "next/image";
 
 const Page = () => {
   const { register, handleSubmit } = useForm({});
@@ -17,6 +19,9 @@ const Page = () => {
   // ── Contact finder ──────────────────────────────────────────────
   const [isContactFinderOpen, setIsContactFinderOpen] = useState(null);
   const [isAirlineFinderOpen, setIsAirlineFinderOpen] = useState(false);
+  const [preview, setPreview] = useState(null);
+  const [logoFile, setLogoFile] = useState(null);
+
   const [selectedContacts, setSelectedContacts] = useState({
     shipper: null,
     consignee: null,
@@ -72,6 +77,15 @@ const Page = () => {
     setRateDescriptions((prev) => [...prev, rate]);
   const handleDeleteRate = (index) =>
     setRateDescriptions((prev) => prev.filter((_, i) => i !== index));
+
+  // logo file
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      setLogoFile(file);
+      setPreview(URL.createObjectURL(file));
+    }
+  };
 
   // ── Charges declaration selects ─────────────────────────────────
   const [wtVal, setWtVal] = useState("ppd");
@@ -149,118 +163,138 @@ const Page = () => {
   const { mutate, isPending } = StoreAirWaybill();
 
   // ── Form submit ─────────────────────────────────────────────────
-  const onSubmit = (data) => {
-    const payload = {
-      issued_by: data.issued_by || "",
-      is_template: Number(data.is_template),
-      serial_id: data.serial_id || "",
-      consignment_details: {
-        airline_prefix: data.airline_prefix || "",
-        serial_number: data.serial_number || "",
-        origin: data.origin || "",
+const onSubmit = (data) => {
+  const payload = {
+    issued_by: data.issued_by || "",
+    is_template: data.is_template ? 1 : 0,
+    serial_id: data.serial_id || "",
+    consignment_details: {
+      airline_prefix: data.airline_prefix || "",
+      serial_number: data.serial_number || "",
+      origin: data.origin || "",
+    },
+    shipper: {
+      account_number: selectedContacts.shipper?.account_number || "",
+      name_address: selectedContacts.shipper?.name_address || "",
+    },
+    consignee: {
+      account_number: selectedContacts.consignee?.account_number || "",
+      name_address: selectedContacts.consignee?.name_address || "",
+    },
+    agent: {
+      account_number: selectedContacts.carriers_agent?.account_number || "",
+      name_address: selectedContacts.carriers_agent?.name_address || "",
+      iata_code: data.iata_code || "",
+    },
+    accounting_info: data.accounting_info || "",
+    flights_booking: {
+      departure: data.departure || "",
+      route: {
+        to_first_carrier: data.to_first_carrier || "",
+        by_first_carrier: data.by_first_carrier || "",
+        to_second_carrier: data.to_second_carrier || "",
+        by_second_carrier: data.by_second_carrier || "",
+        to_third_carrier: data.to_third_carrier || "",
+        by_third_carrier: data.by_third_carrier || "",
       },
-      shipper: {
-        account_number: selectedContacts.shipper?.account_number || "",
-        name_address: selectedContacts.shipper
-          ? `${selectedContacts.shipper.full_name}, ${selectedContacts.shipper.city}, ${selectedContacts.shipper.state}, ${selectedContacts.shipper.country}`
-          : "",
+      destination: data.destination || "",
+      flight: data.flight || "",
+      date: data.flight_date || "",
+    },
+    charges_declaration: {
+      currency: "usd",
+      chcg: data.chcg || "",
+      value_for_carriage: data.value_for_carriage || "",
+      wt_val: wtVal,
+      value_for_customs: data.value_for_customs || "",
+      other: otherDecl,
+      amount_of_insurance: data.amount_of_insurance || "",
+    },
+    handling_info: {
+      requirements: data.requirements || "",
+      sci: data.sci || "",
+    },
+    rate_description: rateDescriptions.map((r) => ({
+      pieces: r.pieces,
+      gross_weight: r.grossWeight,
+      k_l: r.kl,
+      item_no: r.itemNumber,
+      rate_class: r.rateClass,
+      charge_weight: r.chargeableWeight,
+      rate_charge: r.rateCharge,
+      total: r.total,
+      nature_and_quantity: r.natureQuantity,
+    })),
+    charges_summary: {
+      prepaid: {
+        weight_charge: String(prepaidWeightCharge),
+        valuation_charge: prepaidValuation,
+        tax: prepaidTax,
+        other_charges_due_agent: String(prepaidDueAgent),
+        other_charges_due_carrier: String(prepaidDueCarrier),
+        total_prepaid: String(prepaidTotal),
       },
-      consignee: {
-        account_number: selectedContacts.consignee?.account_number || "",
-        name_address: selectedContacts.consignee
-          ? `${selectedContacts.consignee.full_name}, ${selectedContacts.consignee.city}, ${selectedContacts.consignee.state}, ${selectedContacts.consignee.country}`
-          : "",
+      collect: {
+        weight_charge: String(collectWeightCharge),
+        valuation_charge: collectValuation,
+        tax: collectTax,
+        other_charges_due_agent: String(collectDueAgent),
+        other_charges_due_carrier: String(collectDueCarrier),
+        total_collect: String(collectTotal),
       },
-      agent: {
-        account_number: selectedContacts.carriers_agent?.account_number || "",
-        name_address: selectedContacts.carriers_agent
-          ? `${selectedContacts.carriers_agent.full_name}, ${selectedContacts.carriers_agent.city}, ${selectedContacts.carriers_agent.state}, ${selectedContacts.carriers_agent.country}`
-          : "",
-        iata_code: data.iata_code || "",
-      },
-      accounting_info: data.accounting_info || "",
-      flights_booking: {
-        departure: data.departure || "",
-        route: {
-          to_first_carrier: data.to_first_carrier || "",
-          by_first_carrier: data.by_first_carrier || "",
-          to_second_carrier: data.to_second_carrier || "",
-          by_second_carrier: data.by_second_carrier || "",
-          to_third_carrier: data.to_third_carrier || "",
-          by_third_carrier: data.by_third_carrier || "",
-        },
-        destination: data.destination || "",
-        flight: data.flight || "",
-        date: data.flight_date || "",
-      },
-      charges_declaration: {
-        currency: "usd",
-        chcg: data.chcg || "",
-        value_for_carriage: data.value_for_carriage || "",
-        wt_val: wtVal,
-        value_for_customs: data.value_for_customs || "",
-        other: otherDecl,
-        amount_of_insurance: data.amount_of_insurance || "",
-      },
-      handling_info: {
-        requirements: data.requirements || "",
-        sci: data.sci || "",
-      },
-      rate_description: rateDescriptions.map((r) => ({
-        pieces: r.pieces,
-        gross_weight: r.grossWeight,
-        k_l: r.kl,
-        item_no: r.itemNumber,
-        rate_class: r.rateClass,
-        charge_weight: r.chargeableWeight,
-        rate_charge: r.rateCharge,
-        total: r.total,
-        nature_and_quantity: r.natureQuantity,
-      })),
-      charges_summary: {
-        prepaid: {
-          weight_charge: String(prepaidWeightCharge),
-          valuation_charge: prepaidValuation,
-          tax: prepaidTax,
-          other_charges_due_agent: String(prepaidDueAgent),
-          other_charges_due_carrier: String(prepaidDueCarrier),
-          total_prepaid: String(prepaidTotal),
-        },
-        collect: {
-          weight_charge: String(collectWeightCharge),
-          valuation_charge: collectValuation,
-          tax: collectTax,
-          other_charges_due_agent: String(collectDueAgent),
-          other_charges_due_carrier: String(collectDueCarrier),
-          total_collect: String(collectTotal),
-        },
-      },
-      collect_charges: {
-        currency_conv_rates: data.currency_conv_rates || "",
-        cc_charges: data.cc_charges || "",
-        charges_at_destination: data.charges_at_destination || "",
-        total_collect_charges: data.total_collect_charges || "",
-      },
-      other_charges: otherCharges.map((c) => ({
-        description: c.description,
-        amount: c.amount,
-        entitlement: c.entitlement,
-      })),
-      shipper_certification: {
-        text: data.shipper_cert_text || "",
-        signature: data.shipper_cert_signature || "",
-      },
-      carrier_execution: {
-        execution: data.carrier_exec_text || "",
-        date: data.carrier_exec_date || "",
-        place: data.carrier_exec_place || "",
-        signature: data.carrier_exec_signature || "",
-      },
-    };
-
-    // console.log("Payload:", payload);
-    mutate(payload);
+    },
+    collect_charges: {
+      currency_conv_rates: data.currency_conv_rates || "",
+      cc_charges: data.cc_charges || "",
+      charges_at_destination: data.charges_at_destination || "",
+      total_collect_charges: data.total_collect_charges || "",
+    },
+    other_charges: otherCharges.map((c) => ({
+      description: c.description,
+      amount: c.amount,
+      entitlement: c.entitlement,
+    })),
+    shipper_certification: {
+      text: data.shipper_cert_text || "",
+      signature: data.shipper_cert_signature || "",
+    },
+    carrier_execution: {
+      execution: data.carrier_exec_text || "",
+      date: data.carrier_exec_date || "",
+      place: data.carrier_exec_place || "",
+      signature: data.carrier_exec_signature || "",
+    },
   };
+
+  const formData = new FormData();
+
+  // Helper to flatten object into FormData with bracket notation
+  const appendToFormData = (fd, data, parentKey = "") => {
+    if (data === null || data === undefined) {
+      fd.append(parentKey, "");
+    } else if (data instanceof File) {
+      fd.append(parentKey, data, data.name);
+    } else if (Array.isArray(data)) {
+      data.forEach((item, index) => {
+        appendToFormData(fd, item, `${parentKey}[${index}]`);
+      });
+    } else if (typeof data === "object") {
+      Object.entries(data).forEach(([key, value]) => {
+        appendToFormData(fd, value, parentKey ? `${parentKey}[${key}]` : key);
+      });
+    } else {
+      fd.append(parentKey, data);
+    }
+  };
+
+  appendToFormData(formData, payload);
+
+  if (logoFile) {
+    formData.append("logo", logoFile, logoFile.name);
+  }
+
+  mutate(formData);
+};
 
   // ── Shared input class ──────────────────────────────────────────
   const inp =
@@ -546,6 +580,43 @@ const Page = () => {
                 </div>
                 <input type="text" {...register("origin")} className={inp} />
               </div>
+            </div>
+
+            {/* air line logo */}
+            <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
+              <label className="block text-primary-text text-xl leading-[150%] mb-1">
+                You can add the Logo
+              </label>
+
+              <input
+                type="file"
+                accept="image/*"
+                id="logo"
+                className="hidden"
+                onChange={handleFileChange}
+              />
+
+              <label
+                htmlFor="logo"
+                className={`flex flex-col items-center justify-center border border-dashed bg-gradient-to-r from-[#F9FCFF] to-[#E3F2FD]/40 border-gray-300 rounded-[20px] cursor-pointer bg-gray-50 hover:border-teal-500 transition py-10`}
+              >
+                {preview ? (
+                  <img
+                    src={preview}
+                    alt="Uploaded preview"
+                    className="object-cover rounded-xl border border-gray-200 shadow-sm"
+                  />
+                ) : (
+                  <>
+                    <div className="bg-white border border-[#EAECF0] w-10 h-10 rounded-[10px] flex items-center justify-center mb-3">
+                      <FiUploadCloud className="text-[#6B7280] text-xl" />
+                    </div>
+                    <p className="text-lg text-sub-text">
+                      Click to upload the Logo
+                    </p>
+                  </>
+                )}
+              </label>
             </div>
 
             {/* Issuer */}
