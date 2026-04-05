@@ -4,14 +4,33 @@ import { useForm } from "react-hook-form";
 
 const CloseSvg = () => (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <path d="M15 5L5 15M5 5l10 10" stroke="#6B7280" strokeWidth="1.8" strokeLinecap="round" />
+    <path
+      d="M15 5L5 15M5 5l10 10"
+      stroke="#6B7280"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+    />
   </svg>
 );
 
-const RATE_CLASSES = ["", "Q", "S", "B", "M", "N", "R", "C", "U", "E", "Y", "K", "P"];
+const RATE_CLASSES = [
+  "",
+  "Q",
+  "S",
+  "B",
+  "M",
+  "N",
+  "R",
+  "C",
+  "U",
+  "E",
+  "Y",
+  "K",
+  "P",
+];
 
-const AddRateDescriptionModal = ({ onClose, onAdd }) => {
-  const { register, handleSubmit, watch, setValue } = useForm({
+const AddRateDescriptionModal = ({ onClose, onAdd, editData = null }) => {
+  const { register, handleSubmit, watch, setValue, reset } = useForm({
     defaultValues: {
       rateClass: "",
       itemNumber: "",
@@ -25,11 +44,29 @@ const AddRateDescriptionModal = ({ onClose, onAdd }) => {
     },
   });
 
+  // Pre-fill form when editing
+  useEffect(() => {
+    if (editData) {
+      reset({
+        pieces: editData.pieces || "",
+        grossWeight: editData.grossWeight || "",
+        kl: editData.kl || "K",
+        rateClass: editData.rateClass || "",
+        itemNumber: editData.itemNumber || "",
+        chargeableWeight: editData.chargeableWeight || "",
+        rateCharge: editData.rateCharge || "",
+        total: editData.total || "",
+        natureQuantity: editData.natureQuantity || "",
+      });
+    }
+  }, [editData, reset]);
+
   const watchGrossWeight = watch("grossWeight");
   const watchChargeableWeight = watch("chargeableWeight");
   const watchRateCharge = watch("rateCharge");
 
-  const hasGrossWeight = watchGrossWeight !== "" && !isNaN(parseFloat(watchGrossWeight));
+  const hasGrossWeight =
+    watchGrossWeight !== "" && !isNaN(parseFloat(watchGrossWeight));
 
   // If gross weight is entered, mirror it into chargeable weight
   useEffect(() => {
@@ -68,17 +105,19 @@ const AddRateDescriptionModal = ({ onClose, onAdd }) => {
     "w-full rounded-xl px-3 py-2 text-sm font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-[#3D8FBE] border border-gray-400 hover:border-gray-700 transition-all duration-150 bg-white";
   const disabledCls =
     "w-full rounded-xl px-3 py-2 text-sm font-normal leading-[1.45] border border-gray-300 bg-neutral-100 text-gray-500 cursor-not-allowed";
-  const labelCls = "leading-[1.45] font-medium text-sm text-gray-700 mb-1 block";
+  const labelCls =
+    "leading-[1.45] font-medium text-sm text-gray-700 mb-1 block";
 
   return (
     <div className="fixed inset-0 z-[99] flex items-center justify-center bg-[#333333CC]">
       <div className="absolute inset-0" onClick={onClose} />
 
       <div className="relative z-10 w-full bg-[#FEFEFE] max-w-[760px] max-h-[calc(100vh-40px)] overflow-y-auto px-6 py-[28px] rounded-3xl border border-[#3D8FBE] mx-3 shadow-xl">
-
         {/* Header */}
         <div className="flex items-center justify-between mb-5">
-          <div className="text-2xl font-medium text-gray-800">Add Rate Description</div>
+          <div className="text-2xl font-medium text-gray-800">
+            {editData ? "Edit Rate Description" : "Add Rate Description"}
+          </div>
           <button
             type="button"
             onClick={onClose}
@@ -90,15 +129,21 @@ const AddRateDescriptionModal = ({ onClose, onAdd }) => {
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="grid grid-cols-2 gap-4">
-
             {/* LEFT — Information */}
             <div className="border border-gray-200 rounded-2xl p-4 bg-gray-50 space-y-3">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Information</p>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">
+                Information
+              </p>
 
               {/* Pieces */}
               <div>
                 <label className={labelCls}>Pieces</label>
-                <input type="number" {...register("pieces")} placeholder="0" className={inputCls} />
+                <input
+                  type="number"
+                  {...register("pieces")}
+                  placeholder="0"
+                  className={inputCls}
+                />
               </div>
 
               {/* Gross weight + K/L */}
@@ -126,14 +171,23 @@ const AddRateDescriptionModal = ({ onClose, onAdd }) => {
               <div>
                 <label className={labelCls}>Rate class</label>
                 <select {...register("rateClass")} className={inputCls}>
-                  {RATE_CLASSES.map((r) => <option key={r} value={r}>{r}</option>)}
+                  {RATE_CLASSES.map((r) => (
+                    <option key={r} value={r}>
+                      {r}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               {/* Item number */}
               <div>
                 <label className={labelCls}>Item number</label>
-                <input type="text" {...register("itemNumber")} placeholder="Enter item number" className={inputCls} />
+                <input
+                  type="text"
+                  {...register("itemNumber")}
+                  placeholder="Enter item number"
+                  className={inputCls}
+                />
               </div>
 
               {/* Chargeable weight */}
@@ -152,7 +206,13 @@ const AddRateDescriptionModal = ({ onClose, onAdd }) => {
               {/* Rate/Charge */}
               <div>
                 <label className={labelCls}>Rate / Charge</label>
-                <input type="number" step="0.0001" {...register("rateCharge")} placeholder="0.0000" className={inputCls} />
+                <input
+                  type="number"
+                  step="0.0001"
+                  {...register("rateCharge")}
+                  placeholder="0.0000"
+                  className={inputCls}
+                />
               </div>
 
               {/* Total — always disabled */}
@@ -170,7 +230,9 @@ const AddRateDescriptionModal = ({ onClose, onAdd }) => {
 
             {/* RIGHT — Nature and quantity */}
             <div className="border border-gray-200 rounded-2xl p-4 bg-gray-50 space-y-3">
-              <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Nature and quantity of goods</p>
+              <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">
+                Nature and quantity of goods
+              </p>
               <textarea
                 rows={8}
                 {...register("natureQuantity")}
@@ -203,7 +265,7 @@ const AddRateDescriptionModal = ({ onClose, onAdd }) => {
               type="submit"
               className="py-2.5 px-8 rounded-2xl w-[152px] bg-blue-500 text-white font-medium hover:bg-blue-500/85 transition-colors cursor-pointer"
             >
-              Accept
+              {editData ? "Save" : "Accept"}
             </button>
           </div>
         </form>

@@ -4,12 +4,18 @@ import { useForm } from "react-hook-form";
 
 const CloseSvg = () => (
   <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-    <path d="M15 5L5 15M5 5l10 10" stroke="#6B7280" strokeWidth="1.8" strokeLinecap="round" />
+    <path
+      d="M15 5L5 15M5 5l10 10"
+      stroke="#6B7280"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+    />
   </svg>
 );
 
 const AddOtherChargeModal = ({
   onClose,
+  editData = null,
   onAdd,
   totalPieces = 0,
   totalGrossWeight = 0,
@@ -19,14 +25,7 @@ const AddOtherChargeModal = ({
   prepaidWeightCharge = 0,
   collectWeightCharge = 0,
 }) => {
-  const {
-    register,
-    handleSubmit,
-    watch,
-    reset,
-    setValue,
-    formState: { errors },
-  } = useForm({
+  const { register, handleSubmit, watch, reset, setValue } = useForm({
     defaultValues: {
       description: "",
       amount: "",
@@ -39,6 +38,24 @@ const AddOtherChargeModal = ({
       maximum: "",
     },
   });
+
+  // Pre-fill form when editing
+  useEffect(() => {
+    if (editData) {
+      reset({
+        description: editData.description || "",
+        amount: editData.amount || "",
+        entitlement:
+          editData.entitlement === "DUE AGENT" ? "due_agent" : "due_carrier",
+        enableCalculation: !!editData.calculation,
+        method: editData.calculation?.method || "rate_x_qty_or_min",
+        rate: editData.calculation?.rate || "",
+        rateBase: editData.calculation?.rateBase || "gross_weight",
+        minimum: editData.calculation?.minimum || "",
+        maximum: editData.calculation?.maximum || "",
+      });
+    }
+  }, [editData, reset]);
 
   const enableCalc = watch("enableCalculation");
   const watchRate = watch("rate");
@@ -58,7 +75,8 @@ const AddOtherChargeModal = ({
     // Resolve quantity based on selected rateBase
     let quantity = 0;
     if (watchRateBase === "gross_weight") quantity = totalGrossWeight;
-    else if (watchRateBase === "chargeable_weight") quantity = totalChargeableWeight;
+    else if (watchRateBase === "chargeable_weight")
+      quantity = totalChargeableWeight;
     else if (watchRateBase === "pieces") quantity = totalPieces;
     else if (watchRateBase === "due_carrier")
       quantity = prepaidWeightCharge + collectWeightCharge + totalDueCarrier;
@@ -98,7 +116,8 @@ const AddOtherChargeModal = ({
     const payload = {
       description: data.description,
       amount: data.amount,
-      entitlement: data.entitlement === "due_agent" ? "DUE AGENT" : "DUE CARRIER",
+      entitlement:
+        data.entitlement === "due_agent" ? "DUE AGENT" : "DUE CARRIER",
       ...(data.enableCalculation && {
         calculation: {
           method: data.method,
@@ -122,10 +141,11 @@ const AddOtherChargeModal = ({
       <div className="absolute inset-0" onClick={onClose} />
 
       <div className="relative z-10 w-full bg-[#FEFEFE] max-w-[520px] max-h-[calc(100vh-50px)] overflow-y-auto px-6 py-[30px] rounded-3xl border border-[#3D8FBE] mx-3 shadow-xl">
-
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
-          <div className="text-2xl font-medium">Add Other Charge</div>
+          <div className="text-2xl font-medium">
+            {editData ? "Edit Other Charge" : "Add Other Charge"}
+          </div>
           <button
             type="button"
             onClick={onClose}
@@ -136,10 +156,11 @@ const AddOtherChargeModal = ({
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-
           {/* Description */}
           <div className="space-y-1.5">
-            <label className="leading-[1.45] font-medium text-sm text-gray-700">Description</label>
+            <label className="leading-[1.45] font-medium text-sm text-gray-700">
+              Description
+            </label>
             <input
               type="text"
               {...register("description")}
@@ -151,7 +172,9 @@ const AddOtherChargeModal = ({
           {/* Amount + Entitlement */}
           <div className="flex items-start gap-3">
             <div className="space-y-1.5 flex-1">
-              <label className="leading-[1.45] font-medium text-sm text-gray-700">Amount</label>
+              <label className="leading-[1.45] font-medium text-sm text-gray-700">
+                Amount
+              </label>
               <input
                 type="number"
                 step="0.01"
@@ -162,7 +185,9 @@ const AddOtherChargeModal = ({
               />
             </div>
             <div className="space-y-1.5 flex-1">
-              <label className="leading-[1.45] font-medium text-sm text-gray-700">Entitlement</label>
+              <label className="leading-[1.45] font-medium text-sm text-gray-700">
+                Entitlement
+              </label>
               <select
                 {...register("entitlement")}
                 className={`${inp} bg-white cursor-pointer`}
@@ -175,7 +200,9 @@ const AddOtherChargeModal = ({
 
           {/* Rate Calculation box */}
           <div className="border border-gray-300 rounded-xl p-4 bg-gray-50 space-y-3">
-            <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide">Rate Calculation</p>
+            <p className="text-sm font-semibold text-gray-600 uppercase tracking-wide">
+              Rate Calculation
+            </p>
 
             {/* Enable calculation checkbox */}
             <div className="flex items-center gap-2">
@@ -185,29 +212,41 @@ const AddOtherChargeModal = ({
                 {...register("enableCalculation")}
                 className="h-4 w-4 rounded border-gray-300 cursor-pointer accent-blue-500"
               />
-              <label htmlFor="enable-calc" className="text-sm text-gray-600 cursor-pointer">
+              <label
+                htmlFor="enable-calc"
+                className="text-sm text-gray-600 cursor-pointer"
+              >
                 Enable calculation
               </label>
             </div>
 
             {/* Conditional fields */}
-            <div className={`space-y-3 transition-all duration-200 ${enableCalc ? "opacity-100" : "opacity-40 pointer-events-none"}`}>
-
+            <div
+              className={`space-y-3 transition-all duration-200 ${enableCalc ? "opacity-100" : "opacity-40 pointer-events-none"}`}
+            >
               {/* Method */}
               <div className="space-y-1.5">
-                <label className="leading-[1.45] font-medium text-sm text-gray-700">Method</label>
+                <label className="leading-[1.45] font-medium text-sm text-gray-700">
+                  Method
+                </label>
                 <select
                   {...register("method")}
                   className={`${inp} bg-white cursor-pointer`}
                 >
-                  <option value="rate_x_qty_or_min">(rate × quantity) or minimum</option>
-                  <option value="min_plus_rate_x_qty">minimum + (rate × quantity)</option>
+                  <option value="rate_x_qty_or_min">
+                    (rate × quantity) or minimum
+                  </option>
+                  <option value="min_plus_rate_x_qty">
+                    minimum + (rate × quantity)
+                  </option>
                 </select>
               </div>
 
               {/* Rate × base */}
               <div className="space-y-1.5">
-                <label className="leading-[1.45] font-medium text-sm text-gray-700">Rate</label>
+                <label className="leading-[1.45] font-medium text-sm text-gray-700">
+                  Rate
+                </label>
                 <div className="flex items-center gap-2">
                   <input
                     type="number"
@@ -233,7 +272,9 @@ const AddOtherChargeModal = ({
               {/* Minimum & Maximum */}
               <div className="flex items-center gap-3">
                 <div className="space-y-1.5 flex-1">
-                  <label className="leading-[1.45] font-medium text-sm text-gray-700">Minimum</label>
+                  <label className="leading-[1.45] font-medium text-sm text-gray-700">
+                    Minimum
+                  </label>
                   <input
                     type="number"
                     step="0.01"
@@ -243,7 +284,9 @@ const AddOtherChargeModal = ({
                   />
                 </div>
                 <div className="space-y-1.5 flex-1">
-                  <label className="leading-[1.45] font-medium text-sm text-gray-700">Maximum</label>
+                  <label className="leading-[1.45] font-medium text-sm text-gray-700">
+                    Maximum
+                  </label>
                   <input
                     type="number"
                     step="0.01"
@@ -279,7 +322,7 @@ const AddOtherChargeModal = ({
               type="submit"
               className="py-2.5 px-8 rounded-2xl w-[152px] bg-blue-500 text-white font-medium hover:bg-blue-500/85 transition-colors cursor-pointer"
             >
-              Accept
+              {editData ? "Save" : "Accept"}
             </button>
           </div>
         </form>

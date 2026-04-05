@@ -27,7 +27,7 @@ const Topbar = () => {
       <div className="flex gap-2 sm:gap-6 items-center">
         <div
           onClick={() => setOpenNotificationBar((prev) => !prev)}
-          className="relative cursor-pointer"
+          className="relative cursor-pointer max-lg:hidden"
         >
           <div className="absolute top-0 right-0 size-5 flex items-center text-white text-sm font-medium justify-center rounded-full bg-[#FF0000]">
             3

@@ -11,16 +11,21 @@ import AddOtherChargeModal from "@/components/dashboard/AddOtherChargeModal";
 import AddRateDescriptionModal from "@/components/dashboard/AddRateDescriptionModal";
 import { StoreAirWaybill } from "@/hooks/api/dashboardApi";
 import { FiUploadCloud } from "react-icons/fi";
-import Image from "next/image";
 
 const Page = () => {
-  const { register, handleSubmit } = useForm({});
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({});
 
   // ── Contact finder ──────────────────────────────────────────────
   const [isContactFinderOpen, setIsContactFinderOpen] = useState(null);
   const [isAirlineFinderOpen, setIsAirlineFinderOpen] = useState(false);
   const [preview, setPreview] = useState(null);
   const [logoFile, setLogoFile] = useState(null);
+  const [editingRateIndex, setEditingRateIndex] = useState(null);
+  const [editingChargeIndex, setEditingChargeIndex] = useState(null);
 
   const [selectedContacts, setSelectedContacts] = useState({
     shipper: null,
@@ -38,11 +43,25 @@ const Page = () => {
   // ── Other charges ───────────────────────────────────────────────
   const [isAddChargeOpen, setIsAddChargeOpen] = useState(false);
   const [otherCharges, setOtherCharges] = useState([
-    { description: "lorem", amount: "10", entitlement: "DUE AGENT" },
+    { description: "DAE", amount: "10", entitlement: "DUE AGENT" },
   ]);
 
-  const handleAddCharge = (charge) =>
-    setOtherCharges((prev) => [...prev, charge]);
+  const handleEditCharge = (charge, index) => {
+    setEditingChargeIndex(index);
+    setIsAddChargeOpen(true);
+  };
+
+  const handleSaveCharge = (charge) => {
+    if (editingChargeIndex !== null) {
+      setOtherCharges((prev) =>
+        prev.map((c, i) => (i === editingChargeIndex ? charge : c)),
+      );
+      setEditingChargeIndex(null);
+    } else {
+      setOtherCharges((prev) => [...prev, charge]);
+    }
+  };
+
   const handleDeleteCharge = (index) =>
     setOtherCharges((prev) => prev.filter((_, i) => i !== index));
 
@@ -73,8 +92,22 @@ const Page = () => {
     },
   ]);
 
-  const handleAddRate = (rate) =>
-    setRateDescriptions((prev) => [...prev, rate]);
+  const handleEditRate = (rate, index) => {
+    setEditingRateIndex(index);
+    setIsAddRateOpen(true);
+  };
+
+  const handleSaveRate = (rate) => {
+    if (editingRateIndex !== null) {
+      setRateDescriptions((prev) =>
+        prev.map((r, i) => (i === editingRateIndex ? rate : r)),
+      );
+      setEditingRateIndex(null);
+    } else {
+      setRateDescriptions((prev) => [...prev, rate]);
+    }
+  };
+
   const handleDeleteRate = (index) =>
     setRateDescriptions((prev) => prev.filter((_, i) => i !== index));
 
@@ -163,138 +196,138 @@ const Page = () => {
   const { mutate, isPending } = StoreAirWaybill();
 
   // ── Form submit ─────────────────────────────────────────────────
-const onSubmit = (data) => {
-  const payload = {
-    issued_by: data.issued_by || "",
-    is_template: data.is_template ? 1 : 0,
-    serial_id: data.serial_id || "",
-    consignment_details: {
-      airline_prefix: data.airline_prefix || "",
-      serial_number: data.serial_number || "",
-      origin: data.origin || "",
-    },
-    shipper: {
-      account_number: selectedContacts.shipper?.account_number || "",
-      name_address: selectedContacts.shipper?.name_address || "",
-    },
-    consignee: {
-      account_number: selectedContacts.consignee?.account_number || "",
-      name_address: selectedContacts.consignee?.name_address || "",
-    },
-    agent: {
-      account_number: selectedContacts.carriers_agent?.account_number || "",
-      name_address: selectedContacts.carriers_agent?.name_address || "",
-      iata_code: data.iata_code || "",
-    },
-    accounting_info: data.accounting_info || "",
-    flights_booking: {
-      departure: data.departure || "",
-      route: {
-        to_first_carrier: data.to_first_carrier || "",
-        by_first_carrier: data.by_first_carrier || "",
-        to_second_carrier: data.to_second_carrier || "",
-        by_second_carrier: data.by_second_carrier || "",
-        to_third_carrier: data.to_third_carrier || "",
-        by_third_carrier: data.by_third_carrier || "",
+  const onSubmit = (data) => {
+    const payload = {
+      issued_by: data.issued_by || "",
+      is_template: data.is_template ? 1 : 0,
+      serial_id: data.serial_id || "",
+      consignment_details: {
+        airline_prefix: data.airline_prefix || "",
+        serial_number: data.serial_number || "",
+        origin: data.origin || "",
       },
-      destination: data.destination || "",
-      flight: data.flight || "",
-      date: data.flight_date || "",
-    },
-    charges_declaration: {
-      currency: "usd",
-      chcg: data.chcg || "",
-      value_for_carriage: data.value_for_carriage || "",
-      wt_val: wtVal,
-      value_for_customs: data.value_for_customs || "",
-      other: otherDecl,
-      amount_of_insurance: data.amount_of_insurance || "",
-    },
-    handling_info: {
-      requirements: data.requirements || "",
-      sci: data.sci || "",
-    },
-    rate_description: rateDescriptions.map((r) => ({
-      pieces: r.pieces,
-      gross_weight: r.grossWeight,
-      k_l: r.kl,
-      item_no: r.itemNumber,
-      rate_class: r.rateClass,
-      charge_weight: r.chargeableWeight,
-      rate_charge: r.rateCharge,
-      total: r.total,
-      nature_and_quantity: r.natureQuantity,
-    })),
-    charges_summary: {
-      prepaid: {
-        weight_charge: String(prepaidWeightCharge),
-        valuation_charge: prepaidValuation,
-        tax: prepaidTax,
-        other_charges_due_agent: String(prepaidDueAgent),
-        other_charges_due_carrier: String(prepaidDueCarrier),
-        total_prepaid: String(prepaidTotal),
+      shipper: {
+        account_number: selectedContacts.shipper?.account_number || "",
+        name_address: selectedContacts.shipper?.name_address || "",
       },
-      collect: {
-        weight_charge: String(collectWeightCharge),
-        valuation_charge: collectValuation,
-        tax: collectTax,
-        other_charges_due_agent: String(collectDueAgent),
-        other_charges_due_carrier: String(collectDueCarrier),
-        total_collect: String(collectTotal),
+      consignee: {
+        account_number: selectedContacts.consignee?.account_number || "",
+        name_address: selectedContacts.consignee?.name_address || "",
       },
-    },
-    collect_charges: {
-      currency_conv_rates: data.currency_conv_rates || "",
-      cc_charges: data.cc_charges || "",
-      charges_at_destination: data.charges_at_destination || "",
-      total_collect_charges: data.total_collect_charges || "",
-    },
-    other_charges: otherCharges.map((c) => ({
-      description: c.description,
-      amount: c.amount,
-      entitlement: c.entitlement,
-    })),
-    shipper_certification: {
-      text: data.shipper_cert_text || "",
-      signature: data.shipper_cert_signature || "",
-    },
-    carrier_execution: {
-      execution: data.carrier_exec_text || "",
-      date: data.carrier_exec_date || "",
-      place: data.carrier_exec_place || "",
-      signature: data.carrier_exec_signature || "",
-    },
-  };
+      agent: {
+        account_number: selectedContacts.carriers_agent?.account_number || "",
+        name_address: selectedContacts.carriers_agent?.name_address || "",
+        iata_code: data.iata_code || "",
+      },
+      accounting_info: data.accounting_info || "",
+      flights_booking: {
+        departure: data.departure || "",
+        route: {
+          to_first_carrier: data.to_first_carrier || "",
+          by_first_carrier: data.by_first_carrier || "",
+          to_second_carrier: data.to_second_carrier || "",
+          by_second_carrier: data.by_second_carrier || "",
+          to_third_carrier: data.to_third_carrier || "",
+          by_third_carrier: data.by_third_carrier || "",
+        },
+        destination: data.destination || "",
+        flight: data.flight || "",
+        date: data.flight_date || "",
+      },
+      charges_declaration: {
+        currency: "usd",
+        chcg: data.chcg || "",
+        value_for_carriage: data.value_for_carriage || "",
+        wt_val: wtVal,
+        value_for_customs: data.value_for_customs || "",
+        other: otherDecl,
+        amount_of_insurance: data.amount_of_insurance || "",
+      },
+      handling_info: {
+        requirements: data.requirements || "",
+        sci: data.sci || "",
+      },
+      rate_description: rateDescriptions.map((r) => ({
+        pieces: r.pieces,
+        gross_weight: r.grossWeight,
+        k_l: r.kl,
+        item_no: r.itemNumber,
+        rate_class: r.rateClass,
+        charge_weight: r.chargeableWeight,
+        rate_charge: r.rateCharge,
+        total: r.total,
+        nature_and_quantity: r.natureQuantity,
+      })),
+      charges_summary: {
+        prepaid: {
+          weight_charge: String(prepaidWeightCharge),
+          valuation_charge: prepaidValuation,
+          tax: prepaidTax,
+          other_charges_due_agent: String(prepaidDueAgent),
+          other_charges_due_carrier: String(prepaidDueCarrier),
+          total_prepaid: String(prepaidTotal),
+        },
+        collect: {
+          weight_charge: String(collectWeightCharge),
+          valuation_charge: collectValuation,
+          tax: collectTax,
+          other_charges_due_agent: String(collectDueAgent),
+          other_charges_due_carrier: String(collectDueCarrier),
+          total_collect: String(collectTotal),
+        },
+      },
+      collect_charges: {
+        currency_conv_rates: data.currency_conv_rates || "",
+        cc_charges: data.cc_charges || "",
+        charges_at_destination: data.charges_at_destination || "",
+        total_collect_charges: data.total_collect_charges || "",
+      },
+      other_charges: otherCharges.map((c) => ({
+        description: c.description,
+        amount: c.amount,
+        entitlement: c.entitlement,
+      })),
+      shipper_certification: {
+        text: data.shipper_cert_text || "",
+        signature: data.shipper_cert_signature || "",
+      },
+      carrier_execution: {
+        execution: data.carrier_exec_text || "",
+        date: data.carrier_exec_date || "",
+        place: data.carrier_exec_place || "",
+        signature: data.carrier_exec_signature || "",
+      },
+    };
 
-  const formData = new FormData();
+    const formData = new FormData();
 
-  // Helper to flatten object into FormData with bracket notation
-  const appendToFormData = (fd, data, parentKey = "") => {
-    if (data === null || data === undefined) {
-      fd.append(parentKey, "");
-    } else if (data instanceof File) {
-      fd.append(parentKey, data, data.name);
-    } else if (Array.isArray(data)) {
-      data.forEach((item, index) => {
-        appendToFormData(fd, item, `${parentKey}[${index}]`);
-      });
-    } else if (typeof data === "object") {
-      Object.entries(data).forEach(([key, value]) => {
-        appendToFormData(fd, value, parentKey ? `${parentKey}[${key}]` : key);
-      });
-    } else {
-      fd.append(parentKey, data);
+    // Helper to flatten object into FormData with bracket notation
+    const appendToFormData = (fd, data, parentKey = "") => {
+      if (data === null || data === undefined) {
+        fd.append(parentKey, "");
+      } else if (data instanceof File) {
+        fd.append(parentKey, data, data.name);
+      } else if (Array.isArray(data)) {
+        data.forEach((item, index) => {
+          appendToFormData(fd, item, `${parentKey}[${index}]`);
+        });
+      } else if (typeof data === "object") {
+        Object.entries(data).forEach(([key, value]) => {
+          appendToFormData(fd, value, parentKey ? `${parentKey}[${key}]` : key);
+        });
+      } else {
+        fd.append(parentKey, data);
+      }
+    };
+
+    appendToFormData(formData, payload);
+
+    if (logoFile) {
+      formData.append("logo", logoFile, logoFile.name);
     }
+
+    mutate(formData);
   };
-
-  appendToFormData(formData, payload);
-
-  if (logoFile) {
-    formData.append("logo", logoFile, logoFile.name);
-  }
-
-  mutate(formData);
-};
 
   // ── Shared input class ──────────────────────────────────────────
   const inp =
@@ -559,8 +592,14 @@ const onSubmit = (data) => {
                   Airline prefix
                 </div>
                 <input
-                  type="text"
-                  {...register("airline_prefix")}
+                  type="number"
+                  {...register("airline_prefix", {
+                    onChange: (e) => {
+                      if (e.target.value.length > 3) {
+                        e.target.value = e.target.value.slice(0, 3);
+                      }
+                    },
+                  })}
                   className={inp}
                 />
               </div>
@@ -569,8 +608,14 @@ const onSubmit = (data) => {
                   Serial number
                 </div>
                 <input
-                  type="text"
-                  {...register("serial_number")}
+                  type="number"
+                  {...register("serial_number", {
+                    onChange: (e) => {
+                      if (e.target.value.length > 8) {
+                        e.target.value = e.target.value.slice(0, 8);
+                      }
+                    },
+                  })}
                   className={inp}
                 />
               </div>
@@ -578,14 +623,23 @@ const onSubmit = (data) => {
                 <div className="leading-[1.45] font-medium text-sm sm:text-base text-gray-700">
                   Origin
                 </div>
-                <input type="text" {...register("origin")} className={inp} />
+                <input
+                  type="text"
+                  className={inp}
+                  {...register("origin", {
+                    onChange: (e) => {
+                      e.target.value = e.target.value.toUpperCase().slice(0, 3);
+                    },
+                  })}
+                  maxLength={3}
+                />
               </div>
             </div>
 
             {/* air line logo */}
             <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
               <label className="block text-primary-text text-xl leading-[150%] mb-1">
-                You can add the Logo
+                Logo
               </label>
 
               <input
@@ -611,9 +665,7 @@ const onSubmit = (data) => {
                     <div className="bg-white border border-[#EAECF0] w-10 h-10 rounded-[10px] flex items-center justify-center mb-3">
                       <FiUploadCloud className="text-[#6B7280] text-xl" />
                     </div>
-                    <p className="text-lg text-sub-text">
-                      Click to upload the Logo
-                    </p>
+                    <p className="text-sub-text">Click to upload the Logo</p>
                   </>
                 )}
               </label>
@@ -671,10 +723,16 @@ const onSubmit = (data) => {
                     {...register("chcg", {
                       maxLength: {
                         value: 2,
+                        message: "Maximum value is two character.",
                       },
                     })}
                     className={inp}
                   />
+                  {errors?.chcg && (
+                    <p className="text-red-500 text-xs pl-1">
+                      {errors?.chcg?.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -685,7 +743,7 @@ const onSubmit = (data) => {
                     Value for carriage
                   </div>
                   <input
-                    type="text"
+                    type="number"
                     {...register("value_for_carriage")}
                     className={inp}
                   />
@@ -712,7 +770,7 @@ const onSubmit = (data) => {
                     Value for customs
                   </div>
                   <input
-                    type="text"
+                    type="number"
                     {...register("value_for_customs")}
                     className={inp}
                   />
@@ -738,7 +796,7 @@ const onSubmit = (data) => {
                   Amount of insurance
                 </div>
                 <input
-                  type="text"
+                  type="number"
                   {...register("amount_of_insurance")}
                   className={inp}
                 />
@@ -852,6 +910,7 @@ const onSubmit = (data) => {
                         <div className="flex items-center gap-2">
                           <button
                             type="button"
+                            onClick={() => handleEditRate(row, i)}
                             className="text-blue-500 hover:text-blue-700 cursor-pointer"
                           >
                             <FaRegPenToSquare />
@@ -928,7 +987,7 @@ const onSubmit = (data) => {
                       Valuation charge
                     </div>
                     <input
-                      type="text"
+                      type="number"
                       value={prepaidValuation}
                       onChange={(e) => setPrepaidValuation(e.target.value)}
                       className={inp}
@@ -939,7 +998,7 @@ const onSubmit = (data) => {
                       Tax
                     </div>
                     <input
-                      type="text"
+                      type="number"
                       value={prepaidTax}
                       onChange={(e) => setPrepaidTax(e.target.value)}
                       className={inp}
@@ -1003,7 +1062,7 @@ const onSubmit = (data) => {
                       Valuation charge
                     </div>
                     <input
-                      type="text"
+                      type="number"
                       value={collectValuation}
                       onChange={(e) => setCollectValuation(e.target.value)}
                       className={inp}
@@ -1014,7 +1073,7 @@ const onSubmit = (data) => {
                       Tax
                     </div>
                     <input
-                      type="text"
+                      type="number"
                       value={collectTax}
                       onChange={(e) => setCollectTax(e.target.value)}
                       className={inp}
@@ -1068,7 +1127,7 @@ const onSubmit = (data) => {
                     Currency conv. rates
                   </div>
                   <input
-                    type="text"
+                    type="number"
                     {...register("currency_conv_rates")}
                     className={inp}
                   />
@@ -1078,7 +1137,7 @@ const onSubmit = (data) => {
                     CC charges
                   </div>
                   <input
-                    type="text"
+                    type="number"
                     {...register("cc_charges")}
                     className={inp}
                   />
@@ -1090,7 +1149,7 @@ const onSubmit = (data) => {
                     Charges at destination
                   </div>
                   <input
-                    type="text"
+                    type="number"
                     {...register("charges_at_destination")}
                     className={inp}
                   />
@@ -1100,7 +1159,7 @@ const onSubmit = (data) => {
                     Total collect charges
                   </div>
                   <input
-                    type="text"
+                    type="number"
                     {...register("total_collect_charges")}
                     className={inp}
                   />
@@ -1173,6 +1232,7 @@ const onSubmit = (data) => {
                           <div className="flex items-center gap-2">
                             <button
                               type="button"
+                              onClick={() => handleEditCharge(charge, i)}
                               className="text-blue-500 hover:text-blue-700 cursor-pointer"
                             >
                               <FaRegPenToSquare />
@@ -1311,10 +1371,34 @@ const onSubmit = (data) => {
           onSelect={(data) => console.log(data)}
         />
       )}
+
+      {isAddRateOpen && (
+        <AddRateDescriptionModal
+          onClose={() => {
+            setIsAddRateOpen(false);
+            setEditingRateIndex(null);
+          }}
+          onAdd={handleSaveRate}
+          editData={
+            editingRateIndex !== null
+              ? rateDescriptions[editingRateIndex]
+              : null
+          }
+        />
+      )}
+
       {isAddChargeOpen && (
         <AddOtherChargeModal
-          onClose={() => setIsAddChargeOpen(false)}
-          onAdd={handleAddCharge}
+          onClose={() => {
+            setIsAddChargeOpen(false);
+            setEditingChargeIndex(null);
+          }}
+          onAdd={handleSaveCharge}
+          editData={
+            editingChargeIndex !== null
+              ? otherCharges[editingChargeIndex]
+              : null
+          }
           totalPieces={totalPieces}
           totalGrossWeight={totalGrossWeight}
           totalChargeableWeight={totalChargeableWeight}
@@ -1322,12 +1406,6 @@ const onSubmit = (data) => {
           totalDueAgent={prepaidDueAgent + collectDueAgent}
           prepaidWeightCharge={prepaidWeightCharge}
           collectWeightCharge={collectWeightCharge}
-        />
-      )}
-      {isAddRateOpen && (
-        <AddRateDescriptionModal
-          onClose={() => setIsAddRateOpen(false)}
-          onAdd={handleAddRate}
         />
       )}
     </section>

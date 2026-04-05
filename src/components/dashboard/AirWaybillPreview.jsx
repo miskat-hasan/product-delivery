@@ -394,7 +394,7 @@ const AirWaybillPreview = () => {
                           WT/VAL
                         </p>
                         <div className="flex flex-1">
-                          <p className="text-[11px] text-center border-r-2 flex-1">
+                          <div className="text-[11px] text-center border-r-2 flex-1">
                             PPD
                             <p className="leading-none text-center">
                               {billData?.charges_declaration?.wt_val ===
@@ -402,8 +402,8 @@ const AirWaybillPreview = () => {
                                 <IoMdCheckmark size={18} className="mx-auto" />
                               )}
                             </p>
-                          </p>
-                          <p className="text-[11px] text-center border-r-2 flex-1">
+                          </div>
+                          <div className="text-[11px] text-center border-r-2 flex-1">
                             COLL
                             <p className="leading-none">
                               {billData?.charges_declaration?.wt_val ===
@@ -411,7 +411,7 @@ const AirWaybillPreview = () => {
                                 <IoMdCheckmark size={18} className="mx-auto" />
                               )}
                             </p>
-                          </p>
+                          </div>
                         </div>
                       </div>
                       <div className="w-[77px] flex flex-col h-full">
@@ -419,7 +419,7 @@ const AirWaybillPreview = () => {
                           Other
                         </p>
                         <div className="flex flex-1">
-                          <p className="text-[11px] text-center border-r-2 flex-1">
+                          <div className="text-[11px] text-center border-r-2 flex-1">
                             PPD
                             <p className="leading-none">
                               {billData?.charges_declaration?.other ===
@@ -427,8 +427,8 @@ const AirWaybillPreview = () => {
                                 <IoMdCheckmark size={18} className="mx-auto" />
                               )}
                             </p>
-                          </p>
-                          <p className="text-[11px] text-center flex-1">
+                          </div>
+                          <div className="text-[11px] text-center flex-1">
                             COLL
                             <p className="leading-none">
                               {billData?.charges_declaration?.other ===
@@ -436,7 +436,7 @@ const AirWaybillPreview = () => {
                                 <IoMdCheckmark size={18} className="mx-auto" />
                               )}
                             </p>
-                          </p>
+                          </div>
                         </div>
                       </div>
                       <div className="w-[130px] text-[9px] text-center border-l-2">
@@ -567,14 +567,14 @@ const AirWaybillPreview = () => {
                           kg <br />
                           lb
                         </p>
-                        <p className="text-center">
+                        <div className="text-center">
                           {" "}
                           {billData?.rate_description?.map((item, index) => (
                             <p key={index} className="text-lg font-medium">
                               {item?.k_l}
                             </p>
                           ))}
-                        </p>
+                        </div>
                       </div>
                     </div>
                     <div className="w-[22.838px] bg-[#D9D9D9] border-r-2" />
