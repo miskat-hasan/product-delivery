@@ -1,8 +1,25 @@
 "use client";
-import Swal from "sweetalert2";
 import useClientApi from "../useClientApi";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+
+export const useGetUserProfile = () => {
+  return useClientApi({
+    method: "get",
+    isPrivate: true,
+    key: ["get-user-profile"],
+    endpoint: "/api/profile",
+  });
+};
+
+export const useUpdateUserProfile = () => {
+  return useClientApi({
+    method: "put",
+    isPrivate: true,
+    key: ["update-user-profile"],
+    endpoint: "/api/profile-update",
+  });
+};
 
 export const useAddCollaborator = () => {
   return useClientApi({
@@ -102,3 +119,36 @@ export const DeleteShipment = (id) => {
     endpoint: `/api/delete/${id}`,
   });
 };
+
+export const GetALLTemplates = () => {
+  return useClientApi({
+    method: "get",
+    isPrivate: true,
+    key: ["get-all-templates"],
+    endpoint: `/api/templates`,
+  });
+};
+
+export const GetSingleTemplate = (id) => {
+  return useClientApi({
+    method: "get",
+    isPrivate: true,
+    key: ["get-single-template"],
+    endpoint: `/api/templates/${id}/`,
+  });
+};
+
+    export const DeleteTemplate = () => {
+      return useClientApi({
+        method: "delete",
+        isPrivate: true,
+      });
+    };
+
+export const useChangePassword = () => {
+  return useClientApi({
+    method: "post",
+    isPrivate: true,
+    endpoint: "/api/change-password"
+  })
+}

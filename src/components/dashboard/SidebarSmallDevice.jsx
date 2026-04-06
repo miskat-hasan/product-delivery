@@ -8,7 +8,6 @@ import {
 } from "../svg/Svg";
 import { MdClose } from "react-icons/md";
 
-
 const sidebarNavItem = [
   {
     id: "1",
@@ -22,18 +21,24 @@ const sidebarNavItem = [
     label: "Shipments",
     link: "/dashboard/shipments",
   },
+  {
+    id: "3",
+    icon: ReportsSvg,
+    label: "Templates",
+    link: "/dashboard/templates",
+  },
   // {
   //   id: "3",
   //   icon: ReportsSvg,
   //   label: "Reports",
   //   link: "/dashboard/reports",
   // },
-  // {
-  //   id: "4",
-  //   icon: SettingsSvg,
-  //   label: "Settings",
-  //   link: "/dashboard/settings",
-  // },
+  {
+    id: "4",
+    icon: SettingsSvg,
+    label: "Settings",
+    link: "/dashboard/settings",
+  },
   {
     id: "5",
     icon: LogoutSvg,
@@ -42,20 +47,19 @@ const sidebarNavItem = [
   },
 ];
 
-const SidebarSmallDevice = ({onClose}) => {
+const SidebarSmallDevice = ({ onClose }) => {
   return (
     <div
       onClick={onClose}
-      className="absolute w-full h-screen top-0 left-0 bg-black/20 xl:hidden"
+      className="absolute w-full h-screen top-0 left-0 bg-black/20 xl:hidden z-[999]"
     >
       <div
-        className={`w-[80%] xs:w-[60%] sm:w-[280px] h-screen flex flex-col shrink-0 overflow-y-auto bg-white-50`}
+        className={`w-[80%] xs:w-[60%] sm:w-[280px] h-screen flex flex-col shrink-0 overflow-y-auto bg-white-50 z-[999]`}
       >
         <div className="text-[40px] flex justify-between font-bold text-black-500 text-left px-4 lg:px-8 xl:px-12 2xl:text-center my-5">
           LOGO
           <button onClick={onClose} className="cursor-pointer">
-
-          <MdClose className="text-2xl" />
+            <MdClose className="text-2xl" />
           </button>
         </div>
 

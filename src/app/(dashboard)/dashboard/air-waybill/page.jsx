@@ -301,7 +301,6 @@ const Page = () => {
 
     const formData = new FormData();
 
-    // Helper to flatten object into FormData with bracket notation
     const appendToFormData = (fd, data, parentKey = "") => {
       if (data === null || data === undefined) {
         fd.append(parentKey, "");

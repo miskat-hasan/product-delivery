@@ -23,18 +23,24 @@ const sidebarNavItem = [
     label: "Shipments",
     link: "/dashboard/shipments",
   },
+  {
+    id: "3",
+    icon: ReportsSvg,
+    label: "Templates",
+    link: "/dashboard/templates",
+  },
   // {
   //   id: "3",
   //   icon: ReportsSvg,
   //   label: "Reports",
   //   link: "#",
   // },
-  // {
-  //   id: "4",
-  //   icon: SettingsSvg,
-  //   label: "Settings",
-  //   link: "#",
-  // },
+  {
+    id: "4",
+    icon: SettingsSvg,
+    label: "Settings",
+    link: "/dashboard/settings",
+  },
   {
     id: "5",
     icon: LogoutSvg,
@@ -60,7 +66,7 @@ const Sidebar = () => {
               key={index}
               onClick={()=> logoutMutation()}
               className={`px-4 lg:px-8 xl:px-12 2xl:px-[82px] py-4 relative flex items-center gap-2.5 group hover:bg-primary-blue transition-all hover:text-white cursor-pointer rounded-r-lg text-xl ${
-                item.id === "5" && "mt-auto"
+                item.id === "4" && "mt-auto"
               } ${pathName === item.link && "bg-primary-blue transition-all text-white"}`}
             >
               <div

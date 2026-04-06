@@ -6,6 +6,8 @@ import { DeleteShipment, GetAllShipments } from "@/hooks/api/dashboardApi";
 import Swal from "sweetalert2";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { GoArrowUpRight } from "react-icons/go";
+import { FiDownload, FiTrash2 } from "react-icons/fi";
 
 const ShipmentsTable = () => {
   const [openActionBar, setOpenActionBar] = useState(null);
@@ -22,18 +24,27 @@ const ShipmentsTable = () => {
     DeleteShipment(selectedItem);
 
   const handleDeleteShipment = (id) => {
-    setSelectedItem(id);
-    deleteMutation(id, {
-      onSuccess: (data) => {
-        setSelectedItem(null);
-        setOpenActionBar(null);
-        toast.success(data?.message);
-        queryClient.invalidateQueries(["get-all-shipments"]);
-      },
-      onError: (err) => {
-        toast.error(err?.response?.data?.message);
-      },
-    });
+    const confirmed = window.confirm(
+      "Are you sure you want to delete this shipment?",
+    );
+
+    if (confirmed) {
+      setSelectedItem(id);
+
+      deleteMutation(id, {
+        onSuccess: (data) => {
+          setSelectedItem(null);
+          setOpenActionBar(null);
+          toast.success(data?.message || "Shipment deleted successfully");
+          queryClient.invalidateQueries(["get-all-shipments"]);
+        },
+        onError: (err) => {
+          toast.error(
+            err?.response?.data?.message || "Failed to delete shipment",
+          );
+        },
+      });
+    }
   };
 
   return (
@@ -49,7 +60,7 @@ const ShipmentsTable = () => {
         </Link>
       </div>
 
-      <div className="bg-white-50 rounded-2xl md:p-6">
+      <div className="bg-wite-50 rounded-2xl md:p-6">
         <div className="overflow-x-auto w-full min-h-[180px]">
           <table className="min-w-[1000px] w-full whitespace-nowrap">
             <thead>
@@ -150,37 +161,52 @@ const ShipmentsTable = () => {
                             </div>
                           )}
                         </td>
-                        <td className="px-3 py-3.5 relative">
-                          <div className="flex items-center justify-center">
-                            <button
-                              onClick={() =>
-                                setOpenActionBar((prev) =>
-                                  prev == null || prev !== idx ? idx : null,
-                                )
-                              }
-                              className="cursor-pointer"
+                        <td className="px-3 py-3.5 flex">
+                          <div className="relative inline-block mx-auto">
+                            <div className="flex items-center justify-center">
+                              <button
+                                onClick={() =>
+                                  setOpenActionBar((prev) =>
+                                    prev == null || prev !== idx ? idx : null,
+                                  )
+                                }
+                                className={`cursor-pointer`}
+                              >
+                                <ThreeDotSvg
+                                  className={
+                                    openActionBar == idx &&
+                                    "text-blue-500 scale-125"
+                                  }
+                                />
+                              </button>
+                            </div>
+                            <div
+                              className={`bg-white flex flex-col absolute w-[90px] text-sm rounded-md right-0 z-10 border overflow-hidden border-[#EBEBEB] divide-y divide-[#EBEBEB] duration-300 transition ${idx > shipmentsData?.data?.length - 3 ? "bottom-4 origin-bottom-right" : " origin-top-right"} ${openActionBar == idx ? "opacity-100 scale-100" : "opacity-0  scale-0"}`}
                             >
-                              <ThreeDotSvg />
-                            </button>
-                          </div>
-                          {openActionBar == idx && (
-                            <div className="bg-white flex flex-col z-[9999] absolute w-[120px] right-0 border border-[#EBEBEB] divide-y divide-[#EBEBEB]">
                               <button
                                 onClick={() => handleDeleteShipment(item?.id)}
-                                className={`px-4 py-2.5 text-black-500 w-full ${deletePending ? "cursor-not-allowed" : "cursor-pointer"}`}
+                                className={`px-3 py-1.5 hover:bg-gray-100 transition duration-300 text-black-500 w-full ${deletePending ? "cursor-not-allowed" : "cursor-pointer"}`}
                                 disabled={deletePending}
                               >
-                                {deletePending ? "Deleting ..." : "Deleted"}
+                                {deletePending ? "Deleting ..." : "Delete"}
                               </button>
                               <Link
                                 href={`/dashboard/shipment-status?id=${item?.id}`}
                               >
-                                <button className="px-4 py-2.5 text-black-500 cursor-pointer w-full">
+                                <button className="px-3 py-1.5 text-black-500 cursor-pointer w-full hover:bg-gray-100 transition duration-300">
                                   Status
                                 </button>
                               </Link>
+                              <button
+                                onClick={() => handleDeleteShipment(item?.id)}
+                                className={`px-3 py-1.5 text-black-500 w-full cursor-pointer hover:bg-gray-100 transition duration-300`}
+                                // disabled={deletePending}
+                              >
+                                {/* {deletePending ? "Deleting ..." : "Delete"} */}
+                                Export
+                              </button>
                             </div>
-                          )}
+                          </div>
                         </td>
                       </tr>
                     ))
