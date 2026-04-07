@@ -31,7 +31,10 @@ const Page = () => {
                 </div>
               ))
           : data?.data?.map((item, index) => (
-              <Link key={item?.id} href={""}>
+              <Link
+                key={item?.id}
+                href={`../dashboard/air-waybill?id=${item?.id}`}
+              >
                 <div className="flex xs: w-[170px] flex-col items-center gap-[12px]">
                   <figure className="h-[218px] self-stretch rounded-[16px] overflow-hidden">
                     <Image
@@ -43,7 +46,8 @@ const Page = () => {
                     />
                   </figure>
                   <h5 className="text-[#3D8FBE] text-center text-[16px] font-medium not-italic leading-[24px]">
-                    AWB-123-12345678
+                    {/* AWB-{item?.serial_id} */}
+                    {item?.template_name}
                   </h5>
                 </div>
               </Link>

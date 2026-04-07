@@ -133,22 +133,33 @@ export const GetSingleTemplate = (id) => {
   return useClientApi({
     method: "get",
     isPrivate: true,
+    enabled: !!id,
     key: ["get-single-template"],
-    endpoint: `/api/templates/${id}/`,
+    endpoint: `/api/templates/${id}`,
   });
 };
 
-    export const DeleteTemplate = () => {
-      return useClientApi({
-        method: "delete",
-        isPrivate: true,
-      });
-    };
+export const DeleteTemplate = () => {
+  return useClientApi({
+    method: "delete",
+    isPrivate: true,
+  });
+};
 
 export const useChangePassword = () => {
   return useClientApi({
     method: "post",
     isPrivate: true,
-    endpoint: "/api/change-password"
-  })
-}
+    endpoint: "/api/change-password",
+  });
+};
+
+// get all airports
+export const useGetAllAirports = () => {
+  return useClientApi({
+    method: "get",
+    isPrivate: true,
+    key: ["get-all-airports"],
+    endpoint: "/api/airports",
+  });
+};

@@ -88,11 +88,11 @@ const AirWaybillPreview = () => {
   );
 
   return (
-    <div>
+    <div className="overflow-x-auto">
       {isLoading ? (
         <p className="text-center py-5">Loading Preview ...</p>
       ) : (
-        <div>
+        <div className="w-[1500px] mx-auto">
           <button
             onClick={captureForm}
             className="top-6 transition size-12 text-2xl flex items-center justify-center bg-white border-black border-2 hover:bg-black hover:text-white rounded cursor-pointer absolute right-10"
@@ -112,7 +112,7 @@ const AirWaybillPreview = () => {
                       {billData?.consignment_details?.airline_prefix}
                     </p>
                     <div className="w-[61px] h-[45px] text-xl uppercase text-center pb-2 flex flex-col justify-end font-bold border-l-2 border-r-2">
-                      {billData?.consignment_details?.origin}
+                      {billData?.consignment_details?.origin?.split("/")[0]}
                     </div>
                     <p className="text-blue-500 flex flex-col justify-end text-xl text-end font-bold pb-2 pl-1">
                       {billData?.consignment_details?.serial_number}
@@ -135,7 +135,7 @@ const AirWaybillPreview = () => {
                           </p>
                         </div>
                         <div className="px-4">
-                          <p className="text-lg font-medium">
+                          <p className="font-medium">
                             {billData?.shipper?.name_address}
                           </p>
                         </div>
@@ -163,7 +163,7 @@ const AirWaybillPreview = () => {
                         )}
                         <p className="text-sm">Not Negotiable</p>
                         <h3 className="text-[27.5px] font-bold">Air Waybill</h3>
-                        <div className="py-2 flex gap-4">
+                        <div className="pt-2">
                           <p className="text-sm">Issued by</p>
                           <p className="text-xl">{billData?.issued_by}</p>
                         </div>
@@ -191,7 +191,7 @@ const AirWaybillPreview = () => {
                           </p>
                         </div>
                         <div className="px-4">
-                          <p className="text-lg font-medium">
+                          <p className="font-medium">
                             {billData?.consignee?.name_address}
                           </p>
                         </div>
@@ -223,7 +223,7 @@ const AirWaybillPreview = () => {
                           <p className="text-sm">
                             Issuing Carrier&rsquo;s Agent Name and City
                           </p>
-                          <p className="text-lg font-medium">
+                          <p className="font-medium">
                             {billData?.agent?.name_address}
                           </p>
                         </div>
@@ -248,14 +248,14 @@ const AirWaybillPreview = () => {
                           Requested Routing
                         </div>
                         <p className="pb-2 font-medium text-center">
-                          {billData?.flights_booking?.departure}
+                          {billData?.flights_booking?.departure?.replace(/\(.*?\)$/, "").trim()}
                         </p>
                       </div>
                     </div>
                     {/* right */}
                     <div className="preview-right-side text-sm px-2 flex flex-col border-l-2">
                       <p>Accounting Information</p>
-                      <p className="text-xl text-center font-medium">
+                      <p className="text-lg text-center font-medium">
                         {billData?.accounting_info}
                       </p>
                     </div>
@@ -318,8 +318,8 @@ const AirWaybillPreview = () => {
                     <div className="preview-left-side flex h-[70.471px]">
                       <div className="w-[74.814px] text-xs p-0.5 h-full border-r-2 flex flex-col">
                         <p className="text-sm px-1 font-medium">To</p>
-                        <p className="leading-none">
-                          {billData?.route?.to_first_carrier}
+                        <p className="leading-none uppercase">
+                          {billData?.flights_booking?.route?.to_first_carrier?.split("/")[0]}
                         </p>
                       </div>
                       <div>
@@ -345,32 +345,32 @@ const AirWaybillPreview = () => {
                             </svg>
                           </div>
                         </div>
-                        <div className="px-2">
-                          {billData?.route?.by_first_carrier}
+                        <div className="px-2 uppercase">
+                          {billData?.flights_booking?.route?.by_first_carrier?.split("/")[0]}
                         </div>
                       </div>
                       <div className="w-[60px] text-sm px-1 font-medium h-full border-l-2">
                         to
-                        <p className="leading-none">
-                          {billData?.route?.to_second_carrier}
+                        <p className="leading-none uppercase">
+                          {billData?.flights_booking?.route?.to_second_carrier?.split("/")[0]}
                         </p>
                       </div>
                       <div className="w-[55px] text-sm px-1 font-medium h-full border-l-2">
                         by
-                        <p className="leading-none">
-                          {billData?.route?.by_second_carrier}
+                        <p className="leading-none uppercase">
+                          {billData?.flights_booking?.route?.by_second_carrier?.split("/")[0]}
                         </p>
                       </div>
                       <div className="w-[60px] text-sm px-1 font-medium h-full border-l-2">
                         to
-                        <p className="leading-none">
-                          {billData?.route?.to_third_carrier}
+                        <p className="leading-none uppercase">
+                          {billData?.flights_booking?.route?.to_third_carrier?.split("/")[0]}
                         </p>
                       </div>
                       <div className="w-[55px] text-sm px-1 font-medium h-full border-l-2">
                         by
-                        <p className="leading-none">
-                          {billData?.route?.by_third_carrier}
+                        <p className="leading-none uppercase">
+                          {billData?.flights_booking?.route?.by_third_carrier?.split("/")[0]}
                         </p>
                       </div>
                     </div>
@@ -460,7 +460,7 @@ const AirWaybillPreview = () => {
                       <div className="border-2 text-sm text-center pb-2">
                         Airport of Destination
                         <p className="text-lg">
-                          {billData?.flights_booking?.destination}
+                          {billData?.flights_booking?.destination?.replace(/\(.*?\)$/, "").trim()}
                         </p>
                       </div>
                       <div className="border-l-2">
@@ -471,7 +471,7 @@ const AirWaybillPreview = () => {
                           <svg
                             xmlns="http://www.w3.org/2000/svg"
                             width="248"
-                            height="45"
+                            height="40"
                             viewBox="0 0 248 55"
                             fill="none"
                             // className="mx-auto"
@@ -518,15 +518,15 @@ const AirWaybillPreview = () => {
                         {billData?.handling_info?.requirements}
                       </p>
                     </div>
-                    <div className="h-[75.602px] w-[230px] border-l-2 border-t-2 ml-auto text-center self-end-safe p-1">
+                    <div className="h-[55.602px] w-[230px] border-l-2 border-t-2 ml-auto text-center self-end-safe px-1">
                       SCI
-                      <p className="text-lg pb-2">
+                      <p className="text-lg">
                         {billData?.handling_info?.sci}
                       </p>
                     </div>
                   </div>
                   {/* separator */}
-                  <div className="h-[500px] border-b-2 flex">
+                  <div className="min-h-[500px] h-full border-b-2 flex">
                     <div className="w-[75.602px] border-r-2 flex justify-between flex-col">
                       <div>
                         <div className="px-2 py-1 border-b-2 h-[68px] leading-none">
@@ -540,7 +540,7 @@ const AirWaybillPreview = () => {
                           ))}
                         </div>
                       </div>
-                      <div className="w-full h-[68px] border-t-2 text-center">
+                      <div className="w-full h-[68px] border-t-2 text-center font-medium">
                         {totalPieces}
                       </div>
                     </div>
@@ -557,7 +557,7 @@ const AirWaybillPreview = () => {
                           ))}
                         </div>
                       </div>
-                      <div className="w-full h-[68px] border-t-2 text-center">
+                      <div className="w-full h-[68px] border-t-2 text-center font-medium">
                         {grossWeight}
                       </div>
                     </div>
@@ -741,10 +741,10 @@ const AirWaybillPreview = () => {
                           </div>
                         </div>
                         <div className="grid grid-cols-2">
-                          <div className="border-r-2 h-[40.557px] p-1 text-center font-medium">
+                          <div className="border-r-2 h-[32.023px] px-1 text-center font-medium">
                             ${billData?.charges_summary?.prepaid?.weight_charge}
                           </div>
-                          <div className="p-1 text-center font-medium">
+                          <div className="px-1 text-center font-medium">
                             ${billData?.charges_summary?.collect?.weight_charge}
                           </div>
                         </div>
@@ -772,14 +772,14 @@ const AirWaybillPreview = () => {
                           </div>
                         </div>
                         <div className="grid grid-cols-2">
-                          <div className="border-r-2 h-[49.023px] p-1 text-center font-medium">
+                          <div className="border-r-2 h-[32.023px] px-1 text-center font-medium">
                             $
                             {
                               billData?.charges_summary?.prepaid
                                 ?.valuation_charge
                             }
                           </div>
-                          <div className="p-1 text-center font-medium">
+                          <div className="px-1 text-center font-medium">
                             $
                             {
                               billData?.charges_summary?.collect
@@ -811,10 +811,10 @@ const AirWaybillPreview = () => {
                           </div>
                         </div>
                         <div className="grid grid-cols-2">
-                          <div className="border-r-2 h-[49.023px] p-1 text-center font-medium">
+                          <div className="border-r-2 h-[32.023px] px-1 text-center font-medium">
                             ${billData?.charges_summary?.prepaid?.tax}
                           </div>
-                          <div className="p-1 text-center font-medium">
+                          <div className="px-1 text-center font-medium">
                             ${billData?.charges_summary?.collect?.tax}
                           </div>
                         </div>
@@ -859,14 +859,14 @@ const AirWaybillPreview = () => {
                           </div>
                         </div>
                         <div className="grid grid-cols-2">
-                          <div className="border-r-2 h-[49.023px] p-1 text-lg font-medium text-center">
+                          <div className="border-r-2 h-[32.023px] px-1 text-lg font-medium text-center">
                             $
                             {
                               billData?.charges_summary?.prepaid
                                 ?.other_charges_due_agent
                             }
                           </div>
-                          <div className="p-1 text-lg font-medium text-center">
+                          <div className="px-1 text-lg font-medium text-center">
                             $
                             {
                               billData?.charges_summary?.collect
@@ -898,14 +898,14 @@ const AirWaybillPreview = () => {
                           </div>
                         </div>
                         <div className="grid grid-cols-2">
-                          <div className="border-r-2 h-[49.023px] p-1 text-lg font-medium text-center">
+                          <div className="border-r-2 h-[32.023px] px-1 text-lg font-medium text-center">
                             $
                             {
                               billData?.charges_summary?.prepaid
                                 ?.other_charges_due_carrier
                             }
                           </div>
-                          <div className="p-1 text-lg font-medium text-center">
+                          <div className="px-1 text-lg font-medium text-center">
                             $
                             {
                               billData?.charges_summary?.collect
@@ -915,8 +915,8 @@ const AirWaybillPreview = () => {
                         </div>
                       </div>
                       <div className="grid grid-cols-2 divide-x-2">
-                        <div className="h-[75.602px] bg-[#D9D9D9]" />
-                        <div className="h-[75.602px] bg-[#D9D9D9]" />
+                        <div className="min-h-[35.602px] h-full bg-[#D9D9D9]" />
+                        <div className="min-h-[35.602px] h-full bg-[#D9D9D9]" />
                       </div>
                     </div>
                     {/* right side */}
@@ -947,7 +947,7 @@ const AirWaybillPreview = () => {
                     {/* mini left */}
                     <div className="mini-preview-left-side shrink-0 border-r-2">
                       {/* Total prepaid & total collect */}
-                      <div className="grid grid-cols-2 divide-x-2 border-b-2 h-[75.602px]">
+                      <div className="grid grid-cols-2 divide-x-2 border-b-2 h-[60.602px]">
                         <div className="flex flex-col">
                           <div className="relative w-full flex justify-center">
                             <p className="absolute top-[-2px] text-sm left-1/2 -translate-x-1/2 text-nowrap">
@@ -968,7 +968,7 @@ const AirWaybillPreview = () => {
                               />
                             </svg>
                           </div>
-                          <div className="p-1 text-lg font-medium text-center">
+                          <div className="px-1 text-lg font-medium text-center">
                             ${billData?.charges_summary?.prepaid?.total_prepaid}
                           </div>
                         </div>
@@ -992,13 +992,13 @@ const AirWaybillPreview = () => {
                               />
                             </svg>
                           </div>
-                          <div className="p-1 text-lg font-medium text-center">
+                          <div className="px-1 text-lg font-medium text-center">
                             ${billData?.charges_summary?.collect?.total_collect}
                           </div>
                         </div>
                       </div>
                       {/* Currency */}
-                      <div className="grid grid-cols-2 divide-x-2 h-[75.602px] bg-[#D9D9D9]">
+                      <div className="grid grid-cols-2 divide-x-2 h-[60.602px] bg-[#D9D9D9]">
                         <div className="relative w-full">
                           <p className="absolute top-[-2px] text-sm left-1/2 -translate-x-1/2 text-nowrap">
                             Currency Conversion Rates
@@ -1016,7 +1016,7 @@ const AirWaybillPreview = () => {
                               strokeWidth="1.9688"
                             />
                           </svg>
-                          <div className="p-1 text-center font-medium">
+                          <div className="px-1 text-center font-medium">
                             {billData?.collect_charges?.currency_conv_rates}
                           </div>
                         </div>
@@ -1037,7 +1037,7 @@ const AirWaybillPreview = () => {
                               strokeWidth="1.9688"
                             />
                           </svg>
-                          <div className="p-1 font-medium text-center">
+                          <div className="px-1 font-medium text-center">
                             {billData?.collect_charges?.cc_charges}
                           </div>
                         </div>
@@ -1045,7 +1045,7 @@ const AirWaybillPreview = () => {
                     </div>
                     {/* right side */}
                     <div className="w-full flex flex-col justify-end">
-                      <div className="pb-3 mx-1 flex items-center justify-between">
+                      <div className=" mx-1 flex items-center justify-between">
                         <p className="text-center uppercase text-lg font-medium">
                           {billData?.carrier_execution?.date}
                         </p>
@@ -1056,7 +1056,7 @@ const AirWaybillPreview = () => {
                           {billData?.carrier_execution?.signature}
                         </p>
                       </div>
-                      <div className="border-t-2 border-dashed pt-[18px] pb-3 mx-1 flex items-center justify-between">
+                      <div className="border-t-2 border-dashed  pb-3 mx-1 flex items-center justify-between">
                         <p>Executed on (date)</p>
                         <p>at (place)</p>
                         <p>Signature of Issuing Carrier or its Agent</p>
@@ -1069,9 +1069,9 @@ const AirWaybillPreview = () => {
                   {/* mini left side */}
                   <div className="mini-preview-left-side shrink-0 border-r-2">
                     {/* Destination */}
-                    <div className="grid grid-cols-2 divide-x-2 border-b-2 h-[75.602px] bg-[#D9D9D9]">
+                    <div className="grid grid-cols-2 divide-x-2 border-b-2 h-[55.602px] bg-[#D9D9D9]">
                       <div className="w-full flex items-center justify-center text-center">
-                        For Carrier&rsquo;s Use only at Destination
+                        For Carrier&rsquo;s Use only at Destination 
                       </div>
                       <div className="relative w-full flex flex-col items-center">
                         <p className="absolute top-[-2px] text-sm left-1/2 -translate-x-1/2 text-nowrap">
@@ -1091,7 +1091,7 @@ const AirWaybillPreview = () => {
                             strokeWidth="1.9688"
                           />
                         </svg>
-                        <div className="p-1 font-medium">
+                        <div className="px-1 font-medium">
                           ${billData?.collect_charges?.charges_at_destination}
                         </div>
                       </div>
@@ -1117,7 +1117,7 @@ const AirWaybillPreview = () => {
                           strokeWidth="1.9688"
                         />
                       </svg>
-                      <div className="p-1 font-medium">
+                      <div className="px-1 font-medium">
                         ${billData?.collect_charges?.total_collect_charges}
                       </div>
                     </div>

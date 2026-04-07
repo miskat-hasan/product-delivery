@@ -181,7 +181,7 @@ const ShipmentsTable = () => {
                               </button>
                             </div>
                             <div
-                              className={`bg-white flex flex-col absolute w-[90px] text-sm rounded-md right-0 z-10 border overflow-hidden border-[#EBEBEB] divide-y divide-[#EBEBEB] duration-300 transition ${idx > shipmentsData?.data?.length - 3 ? "bottom-4 origin-bottom-right" : " origin-top-right"} ${openActionBar == idx ? "opacity-100 scale-100" : "opacity-0  scale-0"}`}
+                              className={`bg-white flex flex-col absolute w-[90px] text-sm rounded-md right-0 z-10 border overflow-hidden border-[#EBEBEB] divide-y divide-[#EBEBEB] duration-300 transition ${shipmentsData?.data?.length > 3 && idx > shipmentsData?.data?.length - 3 ? "bottom-4 origin-bottom-right" : " origin-top-right"} ${openActionBar == idx ? "opacity-100 scale-100" : "opacity-0  scale-0"}`}
                             >
                               <button
                                 onClick={() => handleDeleteShipment(item?.id)}
@@ -197,14 +197,13 @@ const ShipmentsTable = () => {
                                   Status
                                 </button>
                               </Link>
-                              <button
-                                onClick={() => handleDeleteShipment(item?.id)}
-                                className={`px-3 py-1.5 text-black-500 w-full cursor-pointer hover:bg-gray-100 transition duration-300`}
-                                // disabled={deletePending}
+                              <Link
+                                href={`/print-preview?id=${item?.id}`}
                               >
-                                {/* {deletePending ? "Deleting ..." : "Delete"} */}
-                                Export
-                              </button>
+                                <button className="px-3 py-1.5 text-black-500 cursor-pointer w-full hover:bg-gray-100 transition duration-300">
+                                  Export
+                                </button>
+                              </Link>
                             </div>
                           </div>
                         </td>

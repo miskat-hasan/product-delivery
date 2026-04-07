@@ -100,7 +100,9 @@ const Page = () => {
         email: data.data.email || "",
       });
       if (data?.data?.avatar_path) {
-        setAvatarPreview(process.env.NEXT_PUBLIC_SITE_URL + "/" + data?.data?.avatar_path);
+        setAvatarPreview(
+          process.env.NEXT_PUBLIC_SITE_URL + "/" + data?.data?.avatar_path,
+        );
       }
     }
   }, [data, reset]);
@@ -204,7 +206,8 @@ const Page = () => {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="flex py-[10px] px-[20px] justify-center items-center gap-[14px] self-stretch rounded-[16px] border border-solid border-[#A1A1A1] text-[#333] text-center text-[14px] font-medium not-italic leading-6 cursor-pointer"            >
+              className="flex py-[10px] px-[20px] justify-center items-center gap-[14px] self-stretch rounded-[16px] border border-solid border-[#A1A1A1] text-[#333] text-center text-[14px] font-medium not-italic leading-6 cursor-pointer hover:bg-gray-100 transition duration-300"
+            >
               Upload Photo
             </button>
           </div>
@@ -283,7 +286,7 @@ const Page = () => {
         onSubmit={handleSubmitPwd(onSubmitPassword)}
         className="flex max-w-[1072px] py-10 px-6 flex-col gap-10 bg-[#FEFEFE] mt-5"
       >
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* Current Password */}
           <div className="flex flex-col items-start gap-[8px]">
             <div className="text-[#333] text-2xl font-normal not-italic leading-[36px]">

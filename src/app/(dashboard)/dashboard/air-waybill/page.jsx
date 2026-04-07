@@ -1,7 +1,7 @@
 "use client";
 
 import { useForm } from "react-hook-form";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { MdPermContactCalendar } from "react-icons/md";
 import { FaRegPenToSquare, FaRegTrashCan } from "react-icons/fa6";
 import Link from "next/link";
@@ -9,15 +9,31 @@ import ContactFinder from "@/components/dashboard/ContactFinder";
 import AirlineFinderModal from "@/components/dashboard/AirlineFinderModal";
 import AddOtherChargeModal from "@/components/dashboard/AddOtherChargeModal";
 import AddRateDescriptionModal from "@/components/dashboard/AddRateDescriptionModal";
-import { StoreAirWaybill } from "@/hooks/api/dashboardApi";
+import {
+  GetSingleTemplate,
+  StoreAirWaybill,
+  useGetAllAirports,
+} from "@/hooks/api/dashboardApi";
 import { FiUploadCloud } from "react-icons/fi";
+import AirportComboBox from "@/components/ui/CompoBox";
+import { useSearchParams } from "next/navigation";
 
 const Page = () => {
+  const params = useSearchParams();
+  const id = params.get("id");
+
   const {
     register,
     handleSubmit,
+    watch,
+    reset,
     formState: { errors },
   } = useForm({});
+
+  const { data: awbFormData, isLoading: awbFormDataLoading } =
+    GetSingleTemplate(id);
+
+  console.log(awbFormData);
 
   // ── Contact finder ──────────────────────────────────────────────
   const [isContactFinderOpen, setIsContactFinderOpen] = useState(null);
@@ -40,11 +56,17 @@ const Page = () => {
     }));
   };
 
+  // ── Combo box field states ──────────────────────────────────────
+  const [originValue, setOriginValue] = useState("");
+  const [toFirstCarrierValue, setToFirstCarrierValue] = useState("");
+  const [toSecondCarrierValue, setToSecondCarrierValue] = useState("");
+  const [toThirdCarrierValue, setToThirdCarrierValue] = useState("");
+  const [departureValue, setDepartureValue] = useState("");
+  const [destinationValue, setDestinationValue] = useState("");
+  
   // ── Other charges ───────────────────────────────────────────────
   const [isAddChargeOpen, setIsAddChargeOpen] = useState(false);
-  const [otherCharges, setOtherCharges] = useState([
-    { description: "DAE", amount: "10", entitlement: "DUE AGENT" },
-  ]);
+  const [otherCharges, setOtherCharges] = useState([]);
 
   const handleEditCharge = (charge, index) => {
     setEditingChargeIndex(index);
@@ -67,30 +89,7 @@ const Page = () => {
 
   // ── Rate descriptions ───────────────────────────────────────────
   const [isAddRateOpen, setIsAddRateOpen] = useState(false);
-  const [rateDescriptions, setRateDescriptions] = useState([
-    {
-      pieces: "23",
-      grossWeight: "10",
-      kl: "K",
-      rateClass: "",
-      itemNumber: "23",
-      chargeableWeight: "50",
-      rateCharge: "20",
-      total: "220",
-      natureQuantity: "1410",
-    },
-    {
-      pieces: "31",
-      grossWeight: "20",
-      kl: "K",
-      rateClass: "",
-      itemNumber: "5",
-      chargeableWeight: "10",
-      rateCharge: "20",
-      total: "220",
-      natureQuantity: "D.M.S (cm) 54*40*31 : 31 PCS",
-    },
-  ]);
+  const [rateDescriptions, setRateDescriptions] = useState([]);
 
   const handleEditRate = (rate, index) => {
     setEditingRateIndex(index);
@@ -129,6 +128,110 @@ const Page = () => {
   const [prepaidTax, setPrepaidTax] = useState("");
   const [collectValuation, setCollectValuation] = useState("");
   const [collectTax, setCollectTax] = useState("");
+
+  // ── Pre-fill form when template data loads ──────────────────────
+  useEffect(() => {
+    if (!awbFormData?.data) return;
+    const d = awbFormData.data;
+
+    reset({
+      issued_by: d.issued_by || "",
+      is_template: d.is_template === 1,
+      template_name: d.template_name || "",
+      serial_id: d.serial_id || "",
+      airline_prefix: d.consignment_details?.airline_prefix || "",
+      serial_number: d.consignment_details?.serial_number || "",
+      iata_code: d.agent?.iata_code || "",
+      accounting_info: d.accounting_info || "",
+      by_first_carrier: d.flights_booking?.route?.by_first_carrier || "",
+      by_second_carrier: d.flights_booking?.route?.by_second_carrier || "",
+      by_third_carrier: d.flights_booking?.route?.by_third_carrier || "",
+      flight: d.flights_booking?.flight || "",
+      flight_date: d.flights_booking?.date || "",
+      chcg: d.charges_declaration?.chcg || "",
+      value_for_carriage: d.charges_declaration?.value_for_carriage || "",
+      value_for_customs: d.charges_declaration?.value_for_customs || "",
+      amount_of_insurance: d.charges_declaration?.amount_of_insurance || "",
+      requirements: d.handling_info?.requirements || "",
+      sci: d.handling_info?.sci || "",
+      currency_conv_rates: d.collect_charges?.currency_conv_rates || "",
+      cc_charges: d.collect_charges?.cc_charges || "",
+      charges_at_destination: d.collect_charges?.charges_at_destination || "",
+      total_collect_charges: d.collect_charges?.total_collect_charges || "",
+      shipper_cert_text: d.shipper_certification?.text || "",
+      shipper_cert_signature: d.shipper_certification?.signature || "",
+      carrier_exec_text: d.carrier_execution?.execution || "",
+      carrier_exec_date: d.carrier_execution?.date || "",
+      carrier_exec_place: d.carrier_execution?.place || "",
+      carrier_exec_signature: d.carrier_execution?.signature || "",
+    });
+
+    setOriginValue(d.consignment_details?.origin || "");
+    setDepartureValue(d.flights_booking?.departure || "");
+    setDestinationValue(d.flights_booking?.destination || "");
+    setToFirstCarrierValue(d.flights_booking?.route?.to_first_carrier || "");
+    setToSecondCarrierValue(d.flights_booking?.route?.to_second_carrier || "");
+    setToThirdCarrierValue(d.flights_booking?.route?.to_third_carrier || "");
+
+    setSelectedContacts({
+      shipper: d.shipper
+        ? {
+            account_number: d.shipper.account_number || "",
+            name_address: d.shipper.name_address || "",
+          }
+        : null,
+      consignee: d.consignee
+        ? {
+            account_number: d.consignee.account_number || "",
+            name_address: d.consignee.name_address || "",
+          }
+        : null,
+      carriers_agent: d.agent
+        ? {
+            account_number: d.agent.account_number || "",
+            name_address: d.agent.name_address || "",
+          }
+        : null,
+    });
+
+    setWtVal(d.charges_declaration?.wt_val || "ppd");
+    setOtherDecl(d.charges_declaration?.other || "ppd");
+
+    setPrepaidValuation(d.charges_summary?.prepaid?.valuation_charge || "");
+    setPrepaidTax(d.charges_summary?.prepaid?.tax || "");
+    setCollectValuation(d.charges_summary?.collect?.valuation_charge || "");
+    setCollectTax(d.charges_summary?.collect?.tax || "");
+
+    if (Array.isArray(d.rate_description)) {
+      setRateDescriptions(
+        d.rate_description.map((r) => ({
+          pieces: r.pieces || "",
+          grossWeight: r.gross_weight || "",
+          kl: r.k_l || "",
+          rateClass: r.rate_class || "",
+          itemNumber: r.item_no || "",
+          chargeableWeight: r.charge_weight || "",
+          rateCharge: r.rate_charge || "",
+          total: r.total || "",
+          natureQuantity: r.nature_and_quantity || "",
+        })),
+      );
+    }
+
+    if (Array.isArray(d.other_charges)) {
+      setOtherCharges(
+        d.other_charges.map((c) => ({
+          description: c.description || "",
+          amount: c.amount || "",
+          entitlement: c.entitlement || "",
+        })),
+      );
+    }
+
+    if (d.logo) {
+      setPreview(process.env.NEXT_PUBLIC_SITE_URL + "/" + d.logo);
+    }
+  }, [awbFormData]);
 
   // ── Derived totals from rate descriptions ───────────────────────
   const totalPieces = rateDescriptions.reduce(
@@ -195,16 +298,25 @@ const Page = () => {
 
   const { mutate, isPending } = StoreAirWaybill();
 
+  // ── GET All Airports DATA ─────────────────────────────────────────────────
+  const { data: airportData, isLoading: airportDataLoading } =
+    useGetAllAirports();
+  const airports = airportData?.data || [];
+
+  // ── Watch is_template checkbox ──────────────────────────────────
+  const isTemplate = watch("is_template");
+
   // ── Form submit ─────────────────────────────────────────────────
   const onSubmit = (data) => {
     const payload = {
       issued_by: data.issued_by || "",
       is_template: data.is_template ? 1 : 0,
+      template_name: data.is_template ? data.template_name || "" : "",
       serial_id: data.serial_id || "",
       consignment_details: {
         airline_prefix: data.airline_prefix || "",
         serial_number: data.serial_number || "",
-        origin: data.origin || "",
+        origin: originValue || "",
       },
       shipper: {
         account_number: selectedContacts.shipper?.account_number || "",
@@ -221,16 +333,16 @@ const Page = () => {
       },
       accounting_info: data.accounting_info || "",
       flights_booking: {
-        departure: data.departure || "",
+        departure: departureValue || "",
         route: {
-          to_first_carrier: data.to_first_carrier || "",
+          to_first_carrier: toFirstCarrierValue || "",
           by_first_carrier: data.by_first_carrier || "",
-          to_second_carrier: data.to_second_carrier || "",
+          to_second_carrier: toSecondCarrierValue || "",
           by_second_carrier: data.by_second_carrier || "",
-          to_third_carrier: data.to_third_carrier || "",
+          to_third_carrier: toThirdCarrierValue || "",
           by_third_carrier: data.by_third_carrier || "",
         },
-        destination: data.destination || "",
+        destination: destinationValue || "",
         flight: data.flight || "",
         date: data.flight_date || "",
       },
@@ -330,7 +442,7 @@ const Page = () => {
 
   // ── Shared input class ──────────────────────────────────────────
   const inp =
-    "w-full rounded-xl px-3 py-2.5 text-sm sm:text-base font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 border border-gray-400 hover:border-gray-700 transition-all duration-150";
+    "w-full rounded-xl px-3 py-2.5 text-sm sm:text-base font-normal leading-[1.45] placeholder:text-gray-400 focus:outline-none focus-visible:ring-2 focus-visible:ring-gray-300 border border-gray-400 hover:border-gray-700 transition-all duration-150 uppercase placeholder:capitalize";
 
   const inpDisabled = `${inp} disabled:bg-neutral-200`;
 
@@ -474,7 +586,14 @@ const Page = () => {
                 <div className="leading-[1.45] font-medium text-sm sm:text-base text-gray-700">
                   Departure
                 </div>
-                <input type="text" {...register("departure")} className={inp} />
+                <AirportComboBox
+                  airports={airports}
+                  mode="short"
+                  value={departureValue?.replace(/\(.*?\)$/, "").trim()}
+                  onChange={setDepartureValue}
+                  className={inp}
+                  placeholder="Search airport..."
+                />
               </div>
 
               {/* Route */}
@@ -485,9 +604,11 @@ const Page = () => {
                     <div className="leading-[1.45] font-medium text-sm sm:text-base text-gray-700">
                       To
                     </div>
-                    <input
-                      type="text"
-                      {...register("to_first_carrier")}
+                    <AirportComboBox
+                      airports={airports}
+                      mode="prefix"
+                      value={toFirstCarrierValue?.split("/")[0]}
+                      onChange={setToFirstCarrierValue}
                       className={inp}
                     />
                   </div>
@@ -497,7 +618,13 @@ const Page = () => {
                     </div>
                     <input
                       type="text"
-                      {...register("by_first_carrier")}
+                      {...register("by_first_carrier", {
+                        onChange: (e) => {
+                          if (e.target.value.length > 3) {
+                            e.target.value = e.target.value.slice(0, 3);
+                          }
+                        },
+                      })}
                       className={inp}
                     />
                   </div>
@@ -507,9 +634,11 @@ const Page = () => {
                     <div className="leading-[1.45] font-medium text-sm sm:text-base text-gray-700">
                       To
                     </div>
-                    <input
-                      type="text"
-                      {...register("to_second_carrier")}
+                    <AirportComboBox
+                      airports={airports}
+                      mode="prefix"
+                      value={toSecondCarrierValue?.split("/")[0]}
+                      onChange={setToSecondCarrierValue}
                       className={inp}
                     />
                   </div>
@@ -519,7 +648,13 @@ const Page = () => {
                     </div>
                     <input
                       type="text"
-                      {...register("by_second_carrier")}
+                      {...register("by_second_carrier", {
+                        onChange: (e) => {
+                          if (e.target.value.length > 3) {
+                            e.target.value = e.target.value.slice(0, 3);
+                          }
+                        },
+                      })}
                       className={inp}
                     />
                   </div>
@@ -527,9 +662,11 @@ const Page = () => {
                     <div className="leading-[1.45] font-medium text-sm sm:text-base text-gray-700">
                       To
                     </div>
-                    <input
-                      type="text"
-                      {...register("to_third_carrier")}
+                    <AirportComboBox
+                      airports={airports}
+                      mode="prefix"
+                      value={toThirdCarrierValue?.split("/")[0]}
+                      onChange={setToThirdCarrierValue}
                       className={inp}
                     />
                   </div>
@@ -539,7 +676,13 @@ const Page = () => {
                     </div>
                     <input
                       type="text"
-                      {...register("by_third_carrier")}
+                      {...register("by_third_carrier", {
+                        onChange: (e) => {
+                          if (e.target.value.length > 3) {
+                            e.target.value = e.target.value.slice(0, 3);
+                          }
+                        },
+                      })}
                       className={inp}
                     />
                   </div>
@@ -550,10 +693,13 @@ const Page = () => {
                 <div className="leading-[1.45] font-medium text-sm sm:text-base text-gray-700">
                   Destination
                 </div>
-                <input
-                  type="text"
-                  {...register("destination")}
+                <AirportComboBox
+                  airports={airports}
+                  mode="short"
+                  value={destinationValue?.replace(/\(.*?\)$/, "").trim()}
+                  onChange={setDestinationValue}
                   className={inp}
+                  placeholder="Search airport..."
                 />
               </div>
 
@@ -564,7 +710,13 @@ const Page = () => {
                   <div className="space-y-1 flex-1">
                     <input
                       type="text"
-                      {...register("flight")}
+                      {...register("flight", {
+                        onChange: (e) => {
+                          if (e.target.value.length > 10) {
+                            e.target.value = e.target.value.slice(0, 10);
+                          }
+                        },
+                      })}
                       placeholder="Flight"
                       className={inp}
                     />
@@ -622,15 +774,13 @@ const Page = () => {
                 <div className="leading-[1.45] font-medium text-sm sm:text-base text-gray-700">
                   Origin
                 </div>
-                <input
-                  type="text"
+                <AirportComboBox
+                  airports={airports}
+                  mode="prefix"
+                  value={originValue?.split("/")[0]}
+                  onChange={setOriginValue}
                   className={inp}
-                  {...register("origin", {
-                    onChange: (e) => {
-                      e.target.value = e.target.value.toUpperCase().slice(0, 3);
-                    },
-                  })}
-                  maxLength={3}
+                  placeholder="Search airport..."
                 />
               </div>
             </div>
@@ -677,7 +827,21 @@ const Page = () => {
                 <div className="leading-[1.45] font-medium text-sm sm:text-base text-gray-700">
                   Issued by
                 </div>
-                <textarea rows={5} {...register("issued_by")} className={inp} />
+                <textarea
+                  rows={5}
+                  {...register("issued_by", {
+                    maxLength: {
+                      value: 100,
+                      message: "Maximum value is 100 character.",
+                    },
+                  })}
+                  className={inp}
+                />
+                {errors?.issued_by && (
+                  <p className="text-red-500 text-xs pl-1">
+                    {errors?.issued_by?.message}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -690,9 +854,19 @@ const Page = () => {
                 </div>
                 <textarea
                   rows={5}
-                  {...register("accounting_info")}
+                  {...register("accounting_info", {
+                    maxLength: {
+                      value: 150,
+                      message: "Maximum value is 150 character.",
+                    },
+                  })}
                   className={inp}
                 />
+                {errors?.accounting_info && (
+                  <p className="text-red-500 text-xs pl-1">
+                    {errors?.accounting_info?.message}
+                  </p>
+                )}
               </div>
             </div>
 
@@ -722,7 +896,7 @@ const Page = () => {
                     {...register("chcg", {
                       maxLength: {
                         value: 2,
-                        message: "Maximum value is two character.",
+                        message: "Maximum value is 2 character.",
                       },
                     })}
                     className={inp}
@@ -812,9 +986,19 @@ const Page = () => {
               </div>
               <textarea
                 rows={4}
-                {...register("requirements")}
+                {...register("requirements", {
+                  maxLength: {
+                    value: 200,
+                    message: "Maximum value is 200 character.",
+                  },
+                })}
                 className={inp}
               />
+              {errors?.requirements && (
+                <p className="text-red-500 text-xs pl-1">
+                  {errors?.requirements?.message}
+                </p>
+              )}
             </div>
             <div className="flex items-center gap-2 w-full">
               <div className="space-y-1">
@@ -873,58 +1057,69 @@ const Page = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {rateDescriptions.map((row, i) => (
-                    <tr
-                      key={i}
-                      className="border-b hover:bg-gray-50 transition-all"
-                    >
-                      <td className="px-3 sm:px-6 py-3 text-gray-800">
-                        {row.pieces}
-                      </td>
-                      <td className="px-3 sm:px-6 py-3 text-gray-800">
-                        {row.grossWeight}
-                      </td>
-                      <td className="px-3 sm:px-6 py-3 text-gray-800">
-                        {row.kl}
-                      </td>
-                      <td className="px-3 sm:px-6 py-3 text-gray-800">
-                        {row.rateClass}
-                      </td>
-                      <td className="px-3 sm:px-6 py-3 text-gray-800">
-                        {row.itemNumber}
-                      </td>
-                      <td className="px-3 sm:px-6 py-3 text-gray-800">
-                        {row.chargeableWeight}
-                      </td>
-                      <td className="px-3 sm:px-6 py-3 text-gray-800">
-                        {row.rateCharge}
-                      </td>
-                      <td className="px-3 sm:px-6 py-3 text-gray-800">
-                        {row.total}
-                      </td>
-                      <td className="px-3 sm:px-6 py-3 text-gray-800">
-                        {row.natureQuantity}
-                      </td>
-                      <td className="px-3 sm:px-6 py-3">
-                        <div className="flex items-center gap-2">
-                          <button
-                            type="button"
-                            onClick={() => handleEditRate(row, i)}
-                            className="text-blue-500 hover:text-blue-700 cursor-pointer"
-                          >
-                            <FaRegPenToSquare />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => handleDeleteRate(i)}
-                            className="text-red-500 hover:text-red-700 cursor-pointer"
-                          >
-                            <FaRegTrashCan />
-                          </button>
-                        </div>
+                  {rateDescriptions.length > 0 ? (
+                    rateDescriptions.map((row, i) => (
+                      <tr
+                        key={i}
+                        className="border-b hover:bg-gray-50 transition-all"
+                      >
+                        <td className="px-3 sm:px-6 py-3 text-gray-800">
+                          {row.pieces}
+                        </td>
+                        <td className="px-3 sm:px-6 py-3 text-gray-800">
+                          {row.grossWeight}
+                        </td>
+                        <td className="px-3 sm:px-6 py-3 text-gray-800">
+                          {row.kl}
+                        </td>
+                        <td className="px-3 sm:px-6 py-3 text-gray-800">
+                          {row.rateClass}
+                        </td>
+                        <td className="px-3 sm:px-6 py-3 text-gray-800">
+                          {row.itemNumber}
+                        </td>
+                        <td className="px-3 sm:px-6 py-3 text-gray-800">
+                          {row.chargeableWeight}
+                        </td>
+                        <td className="px-3 sm:px-6 py-3 text-gray-800">
+                          {row.rateCharge}
+                        </td>
+                        <td className="px-3 sm:px-6 py-3 text-gray-800">
+                          {row.total}
+                        </td>
+                        <td className="px-3 sm:px-6 py-3 text-gray-800">
+                          {row.natureQuantity}
+                        </td>
+                        <td className="px-3 sm:px-6 py-3">
+                          <div className="flex items-center gap-2">
+                            <button
+                              type="button"
+                              onClick={() => handleEditRate(row, i)}
+                              className="text-blue-500 hover:text-blue-700 cursor-pointer"
+                            >
+                              <FaRegPenToSquare />
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteRate(i)}
+                              className="text-red-500 hover:text-red-700 cursor-pointer"
+                            >
+                              <FaRegTrashCan />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td
+                        className="px-3 pt-4 text-center text-gray-400"
+                        colSpan={10}
+                      >
+                        no rate description added
                       </td>
                     </tr>
-                  ))}
+                  )}
                   {/* Total label row */}
                   <tr>
                     <td
@@ -962,6 +1157,87 @@ const Page = () => {
 
           {/* ── BOTTOM LEFT ── */}
           <div className="space-y-2 max-md:col-span-2">
+            {/* Other charges */}
+            <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
+              <h6 className="text-xl">Other charges</h6>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  className="bg-gray-200 px-4 py-1.5 rounded-md border border-gray-400 shadow text-sm cursor-pointer hover:bg-gray-100"
+                  onClick={() => setIsAddChargeOpen(true)}
+                >
+                  Add
+                </button>
+              </div>
+              <div className="overflow-x-auto pt-2">
+                <table className="w-full text-sm sm:text-base text-left text-gray-700">
+                  <thead className="bg-gray-50 text-black capitalize font-semibold">
+                    <tr>
+                      <th className="px-3 sm:px-6 py-2 text-nowrap text-base">
+                        Description
+                      </th>
+                      <th className="px-3 sm:px-6 text-nowrap text-base">
+                        Amount
+                      </th>
+                      <th className="px-3 sm:px-6 text-nowrap text-base">
+                        Entitlement
+                      </th>
+                      <th className="px-3 sm:px-6 py-2 text-nowrap text-base">
+                        Action
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {otherCharges.length > 0 ? (
+                      otherCharges.map((charge, i) => (
+                        <tr
+                          key={i}
+                          className="border-b hover:bg-gray-50 transition-all"
+                        >
+                          <td className="px-3 sm:px-6 py-3 text-gray-800">
+                            {charge.description}
+                          </td>
+                          <td className="px-3 sm:px-6 py-3 text-gray-800">
+                            {charge.amount}
+                          </td>
+                          <td className="px-3 sm:px-6 py-3 text-gray-800">
+                            {charge.entitlement}
+                          </td>
+                          <td className="px-3 sm:px-6 py-3">
+                            <div className="flex items-center gap-2">
+                              <button
+                                type="button"
+                                onClick={() => handleEditCharge(charge, i)}
+                                className="text-blue-500 hover:text-blue-700 cursor-pointer"
+                              >
+                                <FaRegPenToSquare />
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteCharge(i)}
+                                className="text-red-500 hover:text-red-700 cursor-pointer"
+                              >
+                                <FaRegTrashCan />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      ))
+                    ) : (
+                      <tr>
+                        <td
+                          className="px-3 pt-4 text-center text-gray-400"
+                          colSpan={10}
+                        >
+                          no other charges added
+                        </td>
+                      </tr>
+                    )}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
             {/* Charges summary */}
             <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
               <h6 className="text-xl">Charges summary</h6>
@@ -1116,7 +1392,10 @@ const Page = () => {
                 </div>
               </div>
             </div>
+          </div>
 
+          {/* ── BOTTOM RIGHT ── */}
+          <div className="space-y-2 max-md:col-span-2">
             {/* Collect charges */}
             <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
               <h6 className="text-xl">Collect charges</h6>
@@ -1165,92 +1444,6 @@ const Page = () => {
                 </div>
               </div>
             </div>
-            <div className="bg-white max-md:hidden rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
-              <label
-                htmlFor="save_as_template"
-                className="flex items-center gap-2"
-              >
-                <input
-                  type="checkbox"
-                  name="save_as_template"
-                  {...register("is_template")}
-                />
-                Save as Template
-              </label>
-            </div>
-          </div>
-
-          {/* ── BOTTOM RIGHT ── */}
-          <div className="space-y-2 max-md:col-span-2">
-            {/* Other charges */}
-            <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
-              <h6 className="text-xl">Other charges</h6>
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  className="bg-gray-200 px-4 py-1.5 rounded-md border border-gray-400 shadow text-sm cursor-pointer hover:bg-gray-100"
-                  onClick={() => setIsAddChargeOpen(true)}
-                >
-                  Add
-                </button>
-              </div>
-              <div className="overflow-x-auto pt-2">
-                <table className="w-full text-sm sm:text-base text-left text-gray-700">
-                  <thead className="bg-gray-50 text-black capitalize font-semibold">
-                    <tr>
-                      <th className="px-3 sm:px-6 py-2 text-nowrap text-base">
-                        Description
-                      </th>
-                      <th className="px-3 sm:px-6 text-nowrap text-base">
-                        Amount
-                      </th>
-                      <th className="px-3 sm:px-6 text-nowrap text-base">
-                        Entitlement
-                      </th>
-                      <th className="px-3 sm:px-6 py-2 text-nowrap text-base">
-                        Action
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {otherCharges.map((charge, i) => (
-                      <tr
-                        key={i}
-                        className="border-b hover:bg-gray-50 transition-all"
-                      >
-                        <td className="px-3 sm:px-6 py-3 text-gray-800">
-                          {charge.description}
-                        </td>
-                        <td className="px-3 sm:px-6 py-3 text-gray-800">
-                          {charge.amount}
-                        </td>
-                        <td className="px-3 sm:px-6 py-3 text-gray-800">
-                          {charge.entitlement}
-                        </td>
-                        <td className="px-3 sm:px-6 py-3">
-                          <div className="flex items-center gap-2">
-                            <button
-                              type="button"
-                              onClick={() => handleEditCharge(charge, i)}
-                              className="text-blue-500 hover:text-blue-700 cursor-pointer"
-                            >
-                              <FaRegPenToSquare />
-                            </button>
-                            <button
-                              type="button"
-                              onClick={() => handleDeleteCharge(i)}
-                              className="text-red-500 hover:text-red-700 cursor-pointer"
-                            >
-                              <FaRegTrashCan />
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
 
             {/* Shipper's certification */}
             <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
@@ -1267,7 +1460,13 @@ const Page = () => {
                   </div>
                   <input
                     type="text"
-                    {...register("shipper_cert_signature")}
+                    {...register("shipper_cert_signature", {
+                      onChange: (e) => {
+                        if (e.target.value.length > 80) {
+                          e.target.value = e.target.value.slice(0, 80);
+                        }
+                      },
+                    })}
                     className={inp}
                   />
                 </div>
@@ -1300,7 +1499,13 @@ const Page = () => {
                     </div>
                     <input
                       type="text"
-                      {...register("carrier_exec_place")}
+                      {...register("carrier_exec_place", {
+                        onChange: (e) => {
+                          if (e.target.value.length > 30) {
+                            e.target.value = e.target.value.slice(0, 30);
+                          }
+                        },
+                      })}
                       className={inp}
                     />
                   </div>
@@ -1311,13 +1516,21 @@ const Page = () => {
                   </div>
                   <input
                     type="text"
-                    {...register("carrier_exec_signature")}
+                    {...register("carrier_exec_signature", {
+                      onChange: (e) => {
+                        if (e.target.value.length > 30) {
+                          e.target.value = e.target.value.slice(0, 30);
+                        }
+                      },
+                    })}
                     className={inp}
                   />
                 </div>
               </div>
             </div>
-            <div className="bg-white md:hidden rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
+
+            {/* Save as Template */}
+            <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
               <label
                 htmlFor="save_as_template"
                 className="flex items-center gap-2"
@@ -1329,6 +1542,19 @@ const Page = () => {
                 />
                 Save as Template
               </label>
+              {isTemplate && (
+                <div className="space-y-1">
+                  <div className="leading-[1.45] font-medium text-sm sm:text-base text-gray-700">
+                    Template name
+                  </div>
+                  <input
+                    type="text"
+                    {...register("template_name")}
+                    placeholder="Enter template name"
+                    className={inp}
+                  />
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1365,10 +1591,7 @@ const Page = () => {
         />
       )}
       {isAirlineFinderOpen && (
-        <AirlineFinderModal
-          onClose={() => setIsAirlineFinderOpen(false)}
-          onSelect={(data) => console.log(data)}
-        />
+        <AirlineFinderModal onClose={() => setIsAirlineFinderOpen(false)} />
       )}
 
       {isAddRateOpen && (
