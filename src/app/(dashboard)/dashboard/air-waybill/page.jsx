@@ -15,7 +15,7 @@ import {
   useGetAllAirports,
 } from "@/hooks/api/dashboardApi";
 import { FiUploadCloud } from "react-icons/fi";
-import AirportComboBox from "@/components/ui/CompoBox";
+import AirportComboBox from "@/components/ui/ComboBox";
 import { useSearchParams } from "next/navigation";
 
 const Page = () => {

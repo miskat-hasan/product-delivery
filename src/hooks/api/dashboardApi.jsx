@@ -1,4 +1,5 @@
 "use client";
+import { useQueryClient } from "@tanstack/react-query";
 import useClientApi from "../useClientApi";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
@@ -161,5 +162,32 @@ export const useGetAllAirports = () => {
     isPrivate: true,
     key: ["get-all-airports"],
     endpoint: "/api/airports",
+  });
+};
+
+// update form status & report
+export const useUpdateFormStatus = (id) => {
+  return useClientApi({
+    method: "put",
+    isPrivate: true,
+    endpoint: `/api/update/form/${id}`,
+    onSuccess: (data) => {
+      toast.success(data?.message || "Data updated successfully");
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.message || "something went wrong");
+    },
+  });
+};
+
+// remove a collaborator
+export const useDeleteCollaborator = () => {
+  return useClientApi({
+    method: "delete",
+    isPrivate: true,
+
+    onError: (err) => {
+      toast.error(err?.response?.data?.message || "something went wrong");
+    },
   });
 };

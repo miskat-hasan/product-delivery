@@ -1,21 +1,37 @@
 "use client";
-import { GetSingleShipment } from "@/hooks/api/dashboardApi";
+import {
+  GetSingleShipment,
+  useUpdateFormStatus,
+} from "@/hooks/api/dashboardApi";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
+import { FaArrowLeft } from "react-icons/fa6";
+import { useEffect, useState } from "react";
 import {
   ClockSvg,
-  DownloadSvg,
-  EditPenSVG,
-  FileSVG,
   LocationSvg,
   PackageSvg,
   PlaneSvg,
   UsersSvg,
-} from "../svg/Svg";
-import Link from "next/link";
-import { FaArrowLeft } from "react-icons/fa6";
-import { useState } from "react";
+} from "@/components/svg/Svg";
+import { useForm } from "react-hook-form";
 
-const ShipmentStatus = ({ id }) => {
-  const [isEdit, setIsEdit] = useState(false);
+const Page = () => {
+  const params = useSearchParams();
+
+  const id = params.get("id");
+
+  const {
+    register,
+    reset,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      status: "",
+      report: "",
+    },
+  });
 
   const { data, isLoading } = GetSingleShipment(id);
 
@@ -40,13 +56,31 @@ const ShipmentStatus = ({ id }) => {
       return accumulator + (Number(item.total) || 0);
     }, 0) ?? 0;
 
+  useEffect(() => {
+    if (data) {
+      reset({
+        status: data?.data?.form?.status || "",
+        report: data?.data?.form?.report || "",
+      });
+    }
+  }, [data, reset]);
+
+  const { mutate, isPending } = useUpdateFormStatus(id);
+
+  const onSubmit = (data) => {
+    mutate(data);
+  };
+
   return (
     <div>
       {isLoading ? (
         <p>Loading ...</p>
       ) : (
-        <div className="py-[24px] px-1 md:px-[60px] space-y-[50px]">
-          <div className="flex max-sm:gap-4 max-lg:flex-col max-lg:items-start justify-between items-end">
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          className="py-[24px] px-1 md:px-[60px] space-y-[50px]"
+        >
+          <div className="flex max-sm:gap-4 max-sm:flex-col max-sm:items-start justify-between items-end">
             <div className="space-y-2">
               <Link
                 href={"/dashboard"}
@@ -71,24 +105,19 @@ const ShipmentStatus = ({ id }) => {
               </p>
             </div>
 
-            <div className="flex items-center gap-4  max-md:flex-wrap">
-              <Link href={`edit?id=${id}`}>
-                <button
-                  // onClick={() => setIsEdit(true)}
-                  className="flex items-center justify-center px-6 py-2.5 h-fit gap-2.5 rounded-lg border border-blue-500 bg-[#ECF4F9] text-blue-500 font-medium cursor-pointer hover:bg-[#d6e9f5] transition duration-300"
-                >
-                  <EditPenSVG />
-                  Edit
-                </button>
-              </Link>
-              <button className="flex items-center justify-center px-6 py-2.5 h-fit gap-2.5 rounded-lg border border-blue-500 bg-[#ECF4F9] text-blue-500 font-medium">
-                <FileSVG />
-                Documents
-              </button>
-              <button className="flex items-center justify-center px-6 py-2.5 h-fit gap-2.5 rounded-lg border border-blue-500 bg-[#ECF4F9] text-blue-500 font-medium">
-                <DownloadSvg />
-                Download Documents
-              </button>
+            <div>
+              <p className="text-primary-black mb-2">Change the Status</p>
+              <select
+                {...register("status")}
+                className="flex w-[221px] p-[16px] justify-between items-center rounded-[16px] border border-black-100 bg-[#F5F5F5] text-[#6B6B6B] cursor-pointer"
+              >
+                <option value={"created"}>Created</option>
+                <option value={"pending"}>Pending</option>
+                <option value={"Accepted"}>Accepted</option>
+                <option value={"in_customs"}>In Customs</option>
+                <option value={"out_for_delivery"}>Out For Delivery</option>
+                <option value={"delivered"}>Delivered</option>
+              </select>
             </div>
           </div>
           {/* Progress Bar */}
@@ -139,7 +168,7 @@ const ShipmentStatus = ({ id }) => {
                 </div>
                 <div className="text-[#6A7282] flex items-center justify-between">
                   <p className="text-[#101828] font-medium pr-1">
-                    {data?.data?.form?.flights_booking?.departure?.match(
+                    {data?.data?.route_information?.departure?.match(
                       /\(([^)]+)\)/,
                     )?.[1] || "N/A"}
                   </p>
@@ -149,22 +178,18 @@ const ShipmentStatus = ({ id }) => {
                     <div className="flex-1 h-[1px] bg-black-300" />
                   </div>
                   <p className="text-[#101828] font-medium pl-1">
-                    {data?.data?.form?.flights_booking?.destination?.match(
+                    {data?.data?.route_information?.destination?.match(
                       /\(([^)]+)\)/,
                     )?.[1] || "N/A"}
                   </p>
                 </div>
                 <div className="text-[#4A5565] flex items-center justify-between">
                   <p>
-                    {
-                      data?.data?.form?.flights_booking?.departure?.split(
-                        "/",
-                      )?.[0]
-                    }
+                    {data?.data?.route_information?.departure?.split("/")?.[0]}
                   </p>
                   <p>
                     {
-                      data?.data?.form?.flights_booking?.destination?.split(
+                      data?.data?.route_information?.destination?.split(
                         "/",
                       )?.[0]
                     }
@@ -176,7 +201,7 @@ const ShipmentStatus = ({ id }) => {
                 <div>
                   <p className="text-[#28A745]">Expected Delivery</p>
                   <p className="text-[#1C7731] text-lg font-medium">
-                    {data?.data?.form?.flights_booking?.date}
+                    {data?.data?.route_information?.date}
                   </p>
                 </div>
               </div>
@@ -233,8 +258,8 @@ const ShipmentStatus = ({ id }) => {
                 </h5>
               </div>
               <div className="grid grid-cols-2 gap-6">
-                {data?.data?.form?.parties?.length > 0 ? (
-                  data?.data?.form?.parties?.map((item, index) => (
+                {data?.data?.parties?.length > 0 ? (
+                  data?.data?.parties?.map((item, index) => (
                     <div key={index} className="flex flex-col">
                       <p className="text-[#6A7282] mb-1">{item?.role}</p>
                       <p className="text-[#101828] font-medium">{item?.name}</p>
@@ -247,10 +272,28 @@ const ShipmentStatus = ({ id }) => {
               </div>
             </div>
           </div>
-        </div>
+
+          <div className="flex flex-col">
+            <p className="text-primary-black mb-2">Report</p>
+            <textarea
+              rows={4}
+              {...register("report")}
+              className="text-primary-black p-4 rounded-2xl border border-black-100 w-full bg-[#FEFEFE]"
+            ></textarea>
+            <div className="flex items-center justify-end mt-4">
+              <button
+                type="submit"
+                disabled={isPending}
+                className="px-6 py-2.5 rounded-2xl border border-blue-500 bg-[#ECF4F9] text-blue-500 font-medium cursor-pointer hover:bg-[#d4ecfc] transition duration-300 disabled:opacity-70"
+              >
+                {isPending ? "Saving ..." : "Save Change"}
+              </button>
+            </div>
+          </div>
+        </form>
       )}
     </div>
   );
 };
 
-export default ShipmentStatus;
+export default Page;

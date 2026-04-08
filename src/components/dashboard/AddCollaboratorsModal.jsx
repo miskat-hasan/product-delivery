@@ -1,18 +1,20 @@
 "use client";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { CloseSvg, MailSvg } from "../svg/Svg";
 import {
   useAddCollaborator,
   useGetCollaboratorContent,
 } from "@/hooks/api/dashboardApi";
-import Swal from "sweetalert2";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
+import { useState, useRef, useEffect } from "react";
 
 const AddCollaboratorsModal = ({ onClose }) => {
   const {
     handleSubmit,
     register,
+    setValue,
+    control,
     formState: { errors },
   } = useForm({
     defaultValues: {
@@ -25,10 +27,57 @@ const AddCollaboratorsModal = ({ onClose }) => {
   });
 
   const queryClient = useQueryClient();
+
+  // Combobox state
+  const [searchQuery, setSearchQuery] = useState("");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [selectedCollaborator, setSelectedCollaborator] = useState(null);
+  const comboboxRef = useRef(null);
+
+  const selectedRole = useWatch({ control, name: "role" });
+
   const { data: collaborateContent, isLoading: collaborateContentLoading } =
     useGetCollaboratorContent();
   const { mutate: addCollaboratorMutation, isPending: addCollaboratorPending } =
     useAddCollaborator();
+
+  // Close dropdown on outside click
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (comboboxRef.current && !comboboxRef.current.contains(e.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  // Reset name/email when role changes
+  useEffect(() => {
+    setSelectedCollaborator(null);
+    setSearchQuery("");
+    setValue("name", "");
+    setValue("email", "");
+  }, [selectedRole, setValue]);
+
+  // Filter collaborators by selected role and search query
+  const allCollaborators = collaborateContent?.data?.user ?? [];
+  const filteredCollaborators = allCollaborators.filter((c) => {
+    const matchesRole = !selectedRole || c.role === selectedRole;
+    const matchesSearch =
+      !searchQuery ||
+      c.full_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      c.email.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesRole && matchesSearch;
+  });
+
+  const handleSelectCollaborator = (collaborator) => {
+    setSelectedCollaborator(collaborator);
+    setSearchQuery(collaborator.full_name);
+    setValue("name", collaborator.full_name, { shouldValidate: true });
+    setValue("email", collaborator.email, { shouldValidate: true });
+    setIsDropdownOpen(false);
+  };
 
   const onSubmit = (data) => {
     addCollaboratorMutation(data, {
@@ -68,10 +117,10 @@ const AddCollaboratorsModal = ({ onClose }) => {
               <option value="" disabled>
                 Select Collaborator role
               </option>
+              <option value="carriers_agent">Carriers Agent</option>
               <option value="consignee">Consignee</option>
               <option value="custom_broker">Customs Broker</option>
-              <option value="driver">Delivery Driver</option>
-              <option value="carriers_agent">Carriers Agent</option>
+              <option value="driver">Driver</option>
               <option value="shipper">Shipper</option>
             </select>
             {errors.role && (
@@ -110,20 +159,97 @@ const AddCollaboratorsModal = ({ onClose }) => {
             )}
           </div>
 
-          {/* Name */}
+          {/* Name — Combobox */}
           <div className="space-y-1">
             <div className="text-black-500">Full Name</div>
-            <input
-              {...register("name", { required: "Name is required" })}
-              placeholder="Enter name"
-              className={`rounded-2xl p-4 border w-full outline-none bg-white-500 ${errors.name ? "border-red-500" : "border-black-50 text-gray-300"}`}
-            />
+            {/* Hidden input for react-hook-form registration */}
+            <input type="hidden" {...register("name", { required: "Name is required" })} />
+            <div ref={comboboxRef} className="relative">
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => {
+                  setSearchQuery(e.target.value);
+                  setIsDropdownOpen(true);
+                  // Clear selection if user edits
+                  if (selectedCollaborator && e.target.value !== selectedCollaborator.full_name) {
+                    setSelectedCollaborator(null);
+                    setValue("name", "", { shouldValidate: true });
+                    setValue("email", "");
+                  }
+                }}
+                onFocus={() => setIsDropdownOpen(true)}
+                placeholder={
+                  !selectedRole
+                    ? "Select a role first"
+                    : "Search by name or email"
+                }
+                disabled={!selectedRole}
+                className={`rounded-2xl p-4 border w-full outline-none bg-white-500 ${
+                  errors.name ? "border-red-500" : "border-black-50 text-gray-300"
+                } ${!selectedRole ? "opacity-60 cursor-not-allowed" : ""}`}
+              />
+
+              {/* Dropdown arrow */}
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="16"
+                  height="16"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </div>
+
+              {/* Dropdown list */}
+              {isDropdownOpen && selectedRole && (
+                <div className="absolute z-50 mt-1 w-full bg-white rounded-2xl border border-black-50 shadow-lg max-h-52 overflow-y-auto">
+                  {collaborateContentLoading ? (
+                    <div className="p-4 text-gray-400 text-sm">Loading...</div>
+                  ) : filteredCollaborators.length > 0 ? (
+                    filteredCollaborators.map((collaborator, index) => (
+                      <button
+                        key={index}
+                        type="button"
+                        onMouseDown={() => handleSelectCollaborator(collaborator)}
+                        className={`w-full text-left px-4 py-3 hover:bg-[#ECF4F9] transition-colors flex flex-col gap-0.5 ${
+                          index !== filteredCollaborators.length - 1
+                            ? "border-b border-gray-100"
+                            : ""
+                        } ${
+                          selectedCollaborator?.email === collaborator.email
+                            ? "bg-[#ECF4F9]"
+                            : ""
+                        }`}
+                      >
+                        <span className="text-sm font-medium text-gray-800">
+                          {collaborator.full_name}
+                        </span>
+                        <span className="text-xs text-gray-400">
+                          {collaborator.email}
+                        </span>
+                      </button>
+                    ))
+                  ) : (
+                    <div className="p-4 text-gray-400 text-sm">
+                      No collaborators found
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
             {errors.name && (
               <p className="text-red-500 text-xs pl-1">{errors.name.message}</p>
             )}
           </div>
 
-          {/* Email */}
+          {/* Email — auto-filled, disabled */}
           <div className="space-y-1">
             <div className="text-black-500">Email Address</div>
             <input
@@ -134,8 +260,11 @@ const AddCollaboratorsModal = ({ onClose }) => {
                   message: "Invalid email format",
                 },
               })}
-              placeholder="Enter email"
-              className={`rounded-2xl p-4 border w-full outline-none bg-white-500 ${errors.email ? "border-red-500" : "border-black-50 text-gray-300"}`}
+              disabled
+              placeholder="Auto-filled from selected name"
+              className={`rounded-2xl p-4 border w-full outline-none bg-white-500 opacity-70 cursor-not-allowed ${
+                errors.email ? "border-red-500" : "border-black-50 text-gray-300"
+              }`}
             />
             {errors.email && (
               <p className="text-red-500 text-xs pl-1">

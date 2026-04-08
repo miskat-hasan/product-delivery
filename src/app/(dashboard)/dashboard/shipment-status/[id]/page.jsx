@@ -1,10 +1,12 @@
 import ShipmentStatus from "@/components/dashboard/ShipmentStatus";
 import { Suspense } from "react";
 
-const page = () => {
+const page = async ({ params }) => {
+  const { id } = await params;
+
   return (
     <Suspense fallback={<div>Loading preview...</div>}>
-      <ShipmentStatus />
+      <ShipmentStatus id={id} />
     </Suspense>
   );
 };

@@ -1,13 +1,18 @@
 "use client";
 import { useState } from "react";
 import ShipmentsTable from "../../../components/dashboard/ShipmentsTable";
-import { PackageSvg } from "../../../components/svg/Svg";
+import { PackageSvg, RightArrowSVG } from "../../../components/svg/Svg";
 import AddCollaboratorsModal from "@/components/dashboard/AddCollaboratorsModal";
 import { useGetAllCollaborator } from "@/hooks/api/dashboardApi";
+import DeleteCollaboratorModal from "@/components/dashboard/DeleteCollaboratorModal";
 
 const Dashboard = () => {
   const [isAddCollaboratorsModalOpen, setIsAddCollaboratorsModalOpen] =
     useState(false);
+
+  const [selectedCollaborator, setSelectedCollaborator] = useState(null);
+  console.log(selectedCollaborator);
+
   const { data: collaboratorData, isLoading: collaboratorDataLoading } =
     useGetAllCollaborator();
 
@@ -19,6 +24,10 @@ const Dashboard = () => {
     month: "long",
     year: "numeric",
   }).format(today);
+
+  const setActiveCollaborator = (data) => {
+    setSelectedCollaborator(data ?? []);
+  };
 
   return (
     <div className="space-y-7">
@@ -99,8 +108,20 @@ const Dashboard = () => {
                       <p className="font-medium text-black-500">{item.name}</p>
                       <p className="text-sm text-[#A1A1A1]">{item.email}</p>
                     </div>
-                    <div className="text-blue-500 text-xs font-medium px-1.5 sm:px-4 py-1.5 bg-[#ECF4F9] rounded-full">
-                      {item.role}
+                    <div className="flex items-center gap-2.5">
+                      <div className="text-blue-500 text-xs font-medium px-1.5 sm:px-4 py-1.5 bg-[#ECF4F9] rounded-full">
+                        {item.role}
+                      </div>
+                      <button
+                        onClick={() => setActiveCollaborator(item)}
+                        className="cursor-pointer group"
+                      >
+                        <RightArrowSVG
+                          className={
+                            "group-hover:translate-x-2 transition duration-300"
+                          }
+                        />
+                      </button>
                     </div>
                   </div>
                 ))
@@ -113,6 +134,12 @@ const Dashboard = () => {
       {isAddCollaboratorsModalOpen && (
         <AddCollaboratorsModal
           onClose={() => setIsAddCollaboratorsModalOpen(false)}
+        />
+      )}
+      {selectedCollaborator && (
+        <DeleteCollaboratorModal
+          onClose={() => setSelectedCollaborator(null)}
+          collaboratorData={selectedCollaborator}
         />
       )}
     </div>

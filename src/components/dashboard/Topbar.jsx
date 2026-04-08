@@ -25,7 +25,7 @@ const Topbar = () => {
         Welcome Back, {user?.full_name}!
       </h6>
       <div className="flex gap-2 sm:gap-6 items-center">
-        <div
+        {/* <div
           onClick={() => setOpenNotificationBar((prev) => !prev)}
           className="relative cursor-pointer max-lg:hidden"
         >
@@ -33,7 +33,7 @@ const Topbar = () => {
             3
           </div>
           <NotificationSvg />
-        </div>
+        </div> */}
 
         <div className="flex items-center gap-2">
           <figure className="size-[44px] rounded-full overflow-hidden flex items-center justify-center border">

@@ -8,6 +8,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { GoArrowUpRight } from "react-icons/go";
 import { FiDownload, FiTrash2 } from "react-icons/fi";
+import { BsArrowRight } from "react-icons/bs";
 
 const ShipmentsTable = () => {
   const [openActionBar, setOpenActionBar] = useState(null);
@@ -78,7 +79,7 @@ const ShipmentsTable = () => {
                   Parties
                 </th>
                 <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0]">
-                  Documents
+                  Reports
                 </th>
                 <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0] text-center">
                   Actions
@@ -140,8 +141,21 @@ const ShipmentsTable = () => {
                           </span>
                         </td>
                         <td className="px-3 py-3.5 text-black-500 text-center">
-                          {item?.routes?.departure} →{" "}
-                          {item?.routes?.destination}
+                          <div className="flex items-center gap-2">
+                            <p className="flex-1 text-right">
+                              {item?.routes?.departure?.match(
+                                /\(([^)]+)\)/,
+                              )?.[1] || "N/A"}{" "}
+                            </p>
+                            <p className="">
+                              <BsArrowRight />
+                            </p>
+                            <p className="flex-1 text-left">
+                              {item?.routes?.destination?.match(
+                                /\(([^)]+)\)/,
+                              )?.[1] || "N/A"}
+                            </p>
+                          </div>
                         </td>
                         <td className="px-3 py-3.5">
                           {item?.parties?.map((item, index) => (
@@ -191,15 +205,13 @@ const ShipmentsTable = () => {
                                 {deletePending ? "Deleting ..." : "Delete"}
                               </button>
                               <Link
-                                href={`/dashboard/shipment-status?id=${item?.id}`}
+                                href={`/dashboard/shipment-status/${item?.id}`}
                               >
                                 <button className="px-3 py-1.5 text-black-500 cursor-pointer w-full hover:bg-gray-100 transition duration-300">
                                   Status
                                 </button>
                               </Link>
-                              <Link
-                                href={`/print-preview?id=${item?.id}`}
-                              >
+                              <Link href={`/print-preview?id=${item?.id}`}>
                                 <button className="px-3 py-1.5 text-black-500 cursor-pointer w-full hover:bg-gray-100 transition duration-300">
                                   Export
                                 </button>
