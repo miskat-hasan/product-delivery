@@ -110,7 +110,13 @@ const ShipmentStatus = ({ id }) => {
                 )}
               </div>
               <p className="text-black-300">
-                Created on <strong>{new Date(data?.data?.form?.created_at).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}</strong>
+                Created on{" "}
+                <strong>
+                  {new Date(data?.data?.form?.created_at).toLocaleDateString(
+                    "en-US",
+                    { day: "2-digit", month: "short", year: "numeric" },
+                  )}
+                </strong>
               </p>
             </div>
 

@@ -51,7 +51,7 @@ const sidebarNavItem = [
 
 const Sidebar = () => {
   const pathName = usePathname();
-  
+
   const { mutateAsync: logoutMutation, isPending } = useLogout();
   return (
     <div className="w-[80%] xs:w-[60%] sm:w-[280px] xl:w-[316px] 2xl:w-[330px] h-screen flex flex-col shrink-0 overflow-y-auto bg-white-50 max-xl:hidden">
@@ -64,7 +64,7 @@ const Sidebar = () => {
           item.label === "Log Out" ? (
             <button
               key={index}
-              onClick={()=> logoutMutation()}
+              onClick={() => logoutMutation()}
               className={`px-4 lg:px-8 xl:px-12 2xl:px-[82px] py-4 relative flex items-center gap-2.5 group hover:bg-primary-blue transition-all hover:text-white cursor-pointer rounded-r-lg text-xl ${
                 item.id === "4" && "mt-auto"
               } ${pathName === item.link && "bg-primary-blue transition-all text-white"}`}

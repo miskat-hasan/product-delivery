@@ -165,7 +165,9 @@ const ShipmentsTable = () => {
                           ))}
                         </td>
                         <td className="px-3 py-3.5 text-center">
-                          <div className="text-primary-black truncate">{item?.documents ?? "N/A"}</div>
+                          <div className="text-primary-black truncate">
+                            {item?.documents ?? "N/A"}
+                          </div>
                         </td>
                         <td className="px-3 py-3.5 flex">
                           <div className="relative inline-block mx-auto">

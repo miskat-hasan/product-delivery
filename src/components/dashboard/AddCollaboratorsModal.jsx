@@ -163,7 +163,10 @@ const AddCollaboratorsModal = ({ onClose }) => {
           <div className="space-y-1">
             <div className="text-black-500">Full Name</div>
             {/* Hidden input for react-hook-form registration */}
-            <input type="hidden" {...register("name", { required: "Name is required" })} />
+            <input
+              type="hidden"
+              {...register("name", { required: "Name is required" })}
+            />
             <div ref={comboboxRef} className="relative">
               <input
                 type="text"
@@ -172,7 +175,10 @@ const AddCollaboratorsModal = ({ onClose }) => {
                   setSearchQuery(e.target.value);
                   setIsDropdownOpen(true);
                   // Clear selection if user edits
-                  if (selectedCollaborator && e.target.value !== selectedCollaborator.full_name) {
+                  if (
+                    selectedCollaborator &&
+                    e.target.value !== selectedCollaborator.full_name
+                  ) {
                     setSelectedCollaborator(null);
                     setValue("name", "", { shouldValidate: true });
                     setValue("email", "");
@@ -186,7 +192,9 @@ const AddCollaboratorsModal = ({ onClose }) => {
                 }
                 disabled={!selectedRole}
                 className={`rounded-2xl p-4 border w-full outline-none bg-white-500 ${
-                  errors.name ? "border-red-500" : "border-black-50 text-gray-300"
+                  errors.name
+                    ? "border-red-500"
+                    : "border-black-50 text-gray-300"
                 } ${!selectedRole ? "opacity-60 cursor-not-allowed" : ""}`}
               />
 
@@ -217,7 +225,9 @@ const AddCollaboratorsModal = ({ onClose }) => {
                       <button
                         key={index}
                         type="button"
-                        onMouseDown={() => handleSelectCollaborator(collaborator)}
+                        onMouseDown={() =>
+                          handleSelectCollaborator(collaborator)
+                        }
                         className={`w-full text-left px-4 py-3 hover:bg-[#ECF4F9] transition-colors flex flex-col gap-0.5 ${
                           index !== filteredCollaborators.length - 1
                             ? "border-b border-gray-100"
@@ -263,7 +273,9 @@ const AddCollaboratorsModal = ({ onClose }) => {
               disabled
               placeholder="Auto-filled from selected name"
               className={`rounded-2xl p-4 border w-full outline-none bg-white-500 opacity-70 cursor-not-allowed ${
-                errors.email ? "border-red-500" : "border-black-50 text-gray-300"
+                errors.email
+                  ? "border-red-500"
+                  : "border-black-50 text-gray-300"
               }`}
             />
             {errors.email && (
