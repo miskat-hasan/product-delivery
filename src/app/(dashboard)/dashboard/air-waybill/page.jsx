@@ -63,7 +63,7 @@ const Page = () => {
   const [toThirdCarrierValue, setToThirdCarrierValue] = useState("");
   const [departureValue, setDepartureValue] = useState("");
   const [destinationValue, setDestinationValue] = useState("");
-  
+
   // ── Other charges ───────────────────────────────────────────────
   const [isAddChargeOpen, setIsAddChargeOpen] = useState(false);
   const [otherCharges, setOtherCharges] = useState([]);
@@ -894,9 +894,10 @@ const Page = () => {
                   <input
                     type="text"
                     {...register("chcg", {
-                      maxLength: {
-                        value: 2,
-                        message: "Maximum value is 2 character.",
+                      onChange: (e) => {
+                        if (e.target.value.length > 2) {
+                          e.target.value = e.target.value.slice(0, 2);
+                        }
                       },
                     })}
                     className={inp}

@@ -61,8 +61,8 @@ const ShipmentsTable = () => {
         </Link>
       </div>
 
-      <div className="bg-wite-50 rounded-2xl md:p-6">
-        <div className="overflow-x-auto w-full min-h-[180px]">
+      <div className="bg-wite-50 rounded-2xl md:px-6">
+        <div className="overflow-x-auto w-full min-h-[200px]">
           <table className="min-w-[1000px] w-full whitespace-nowrap">
             <thead>
               <tr className="text-left">
@@ -75,10 +75,10 @@ const ShipmentsTable = () => {
                 <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0] text-center">
                   Route
                 </th>
-                <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0]">
+                <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0] text-center">
                   Parties
                 </th>
-                <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0]">
+                <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0] text-center">
                   Reports
                 </th>
                 <th className="px-3 sm:text-xl font-medium text-black-500 border-b pb-6 border-[#C0C0C0] text-center">
@@ -157,23 +157,15 @@ const ShipmentsTable = () => {
                             </p>
                           </div>
                         </td>
-                        <td className="px-3 py-3.5">
+                        <td className="px-3 py-3.5 text-center">
                           {item?.parties?.map((item, index) => (
                             <p key={index} className="text-black-300">
                               {item}
                             </p>
                           ))}
                         </td>
-                        <td className="px-3 py-3.5">
-                          {item.documents ? (
-                            <div className="flex items-center gap-1 text-[#28A745]">
-                              <CheckMarkSvg className="size-4" /> Complete
-                            </div>
-                          ) : (
-                            <div className="flex items-center gap-1 text-[#DC3545]">
-                              <WrongSvg className="size-4" /> missing
-                            </div>
-                          )}
+                        <td className="px-3 py-3.5 text-center">
+                          <div className="text-primary-black truncate">{item?.documents ?? "N/A"}</div>
                         </td>
                         <td className="px-3 py-3.5 flex">
                           <div className="relative inline-block mx-auto">

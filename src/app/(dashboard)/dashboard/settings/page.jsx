@@ -173,13 +173,13 @@ const Page = () => {
       {/* ── Profile Section ── */}
       <form
         onSubmit={handleSubmit(onSubmitProfile)}
-        className="flex w-full max-w-[1072px] py-10 px-6 flex-col justify-center items-end gap-10 bg-[#FEFEFE] mt-5 mb-10"
+        className="flex w-full max-w-[1072px] py-10 px-3 md:px-6 flex-col justify-center items-end gap-10 bg-[#FEFEFE] mt-5 mb-10"
       >
         <div className="flex flex-wrap justify-between items-start self-stretch gap-6">
           {/* Avatar */}
-          <div className="flex w-[280px] flex-col items-center gap-6 px-7">
+          <div className="flex w-[280px] flex-col items-center gap-6 px-3 md:px-7">
             <div
-              className="size-[223px] rounded-full border border-[#A1A1A1] overflow-hidden bg-gray-100 flex items-center justify-center cursor-pointer"
+              className="size-[150px] md:size-[223px] rounded-full border border-[#A1A1A1] overflow-hidden bg-gray-100 flex items-center justify-center cursor-pointer"
               onClick={() => fileInputRef.current?.click()}
             >
               {isLoading ? (
@@ -216,7 +216,7 @@ const Page = () => {
           <div className="flex flex-col items-start gap-[20px] flex-1 min-w-[280px]">
             {/* Full Name */}
             <div className="flex flex-col items-start gap-[8px] w-full">
-              <div className="text-[#333] text-2xl font-normal not-italic leading-[36px]">
+              <div className="text-[#333] text-lg md:text-2xl font-normal not-italic leading-[36px]">
                 Full Name
               </div>
               {isLoading ? (
@@ -231,7 +231,7 @@ const Page = () => {
                       message: "Name must be at least 2 characters",
                     },
                   })}
-                  className="flex w-full h-[70px] p-[16px] items-center gap-[13px] shrink-0 rounded-[16px] border border-solid border-[#A1A1A1] text-[#6B6B6B] text-[18px] font-normal not-italic leading-[27px] outline-none focus:border-blue-400"
+                  className="flex w-full md:h-[70px] py-3 px-2 md:p-[16px] items-center gap-[13px] shrink-0 rounded-[16px] border border-solid border-[#A1A1A1] text-[#6B6B6B] text-[18px] font-normal not-italic leading-[27px] outline-none focus:border-blue-400"
                 />
               )}
               {errors.full_name && (
@@ -243,7 +243,7 @@ const Page = () => {
 
             {/* Email (read-only) */}
             <div className="flex flex-col items-start gap-[8px] w-full">
-              <div className="text-[#333] text-2xl font-normal not-italic leading-[36px]">
+              <div className="text-[#333] text-lg md:text-2xl font-normal not-italic leading-[36px]">
                 Email
               </div>
               {isLoading ? (
@@ -253,7 +253,7 @@ const Page = () => {
                   type="text"
                   disabled
                   {...register("email")}
-                  className="rounded-[16px] border border-solid border-[#A1A1A1] bg-[#F5F5F5] flex w-full h-[70px] p-[16px] items-center gap-[13px] shrink-0 text-[#6B6B6B] text-[18px] font-normal not-italic leading-[27px] cursor-not-allowed"
+                  className="rounded-[16px] border border-solid border-[#A1A1A1] bg-[#F5F5F5] flex w-full md:h-[70px] py-3 px-2 md:p-[16px] items-center gap-[13px] shrink-0 text-[#6B6B6B] text-[18px] font-normal not-italic leading-[27px] cursor-not-allowed"
                 />
               )}
             </div>
@@ -261,18 +261,18 @@ const Page = () => {
         </div>
 
         {/* Buttons */}
-        <div className="flex justify-end items-start gap-[16px]">
+        <div className="flex justify-center md:justify-end max-md:w-full md:items-start gap-[16px]">
           <button
             type="button"
             onClick={handleProfileReset}
-            className="flex w-[132px] py-[12px] px-[20px] justify-center items-center gap-[14px] rounded-[16px] border border-solid border-[#B6BAC3] text-[#262626] text-center text-[16px] font-medium not-italic leading-[26px] cursor-pointer hover:bg-gray-100 transition duration-300"
+            className="flex md:w-[132px] py-2 md:py-[12px] px-[20px] justify-center items-center gap-[14px] rounded-[16px] border border-solid border-[#B6BAC3] text-[#262626] text-center text-[16px] font-medium not-italic leading-[26px] cursor-pointer hover:bg-gray-100 transition duration-300"
           >
             Reset
           </button>
           <button
             type="submit"
             disabled={updatePending}
-            className="flex w-[167px] py-[12px] px-[20px] justify-center items-center gap-[14px] rounded-[16px] bg-[#3D8FBE] text-[#FFF] text-center text-[16px] font-medium not-italic leading-[26px] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer hover:bg-[#3D8FBE]/80 transition duration-300"
+            className="flex md:w-[167px] py-2 md:py-[12px] px-[20px] justify-center items-center gap-[14px] rounded-[16px] bg-[#3D8FBE] text-[#FFF] text-center text-[16px] font-medium not-italic leading-[26px] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer hover:bg-[#3D8FBE]/80 transition duration-300"
           >
             {updatePending ? "Updating..." : "Update Profile"}
           </button>
@@ -284,12 +284,12 @@ const Page = () => {
 
       <form
         onSubmit={handleSubmitPwd(onSubmitPassword)}
-        className="flex max-w-[1072px] py-10 px-6 flex-col gap-10 bg-[#FEFEFE] mt-5"
+        className="flex max-w-[1072px] py-10 px-3 md:px-6 flex-col gap-10 bg-[#FEFEFE] mt-5"
       >
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-6">
           {/* Current Password */}
           <div className="flex flex-col items-start gap-[8px]">
-            <div className="text-[#333] text-2xl font-normal not-italic leading-[36px]">
+            <div className="text-[#333] text-lg md:text-2xl font-normal not-italic leading-[36px]">
               Current Password
             </div>
             <div className="relative w-full">
@@ -298,7 +298,7 @@ const Page = () => {
                 {...registerPwd("current_password", {
                   required: "Current password is required",
                 })}
-                className="flex h-[70px] p-[16px] pr-[50px] items-center gap-[13px] shrink-0 w-full rounded-[16px] border border-solid border-[#A1A1A1] text-[#6B6B6B] text-[18px] outline-none focus:border-blue-400"
+                className="flex md:h-[70px] p-3 md:p-[16px] pr-[50px] items-center gap-[13px] shrink-0 w-full rounded-[16px] border border-solid border-[#A1A1A1] text-[#6B6B6B] text-[18px] outline-none focus:border-blue-400"
               />
               <button
                 type="button"
@@ -320,7 +320,7 @@ const Page = () => {
 
           {/* New Password */}
           <div className="flex flex-col items-start gap-[8px]">
-            <div className="text-[#333] text-2xl font-normal not-italic leading-[36px]">
+            <div className="text-[#333] text-lg md:text-2xl font-normal not-italic leading-[36px]">
               New Password
             </div>
             <div className="relative w-full">
@@ -333,7 +333,7 @@ const Page = () => {
                     message: "Password must be at least 8 characters",
                   },
                 })}
-                className="flex h-[70px] p-[16px] pr-[50px] items-center gap-[13px] shrink-0 w-full rounded-[16px] border border-solid border-[#A1A1A1] text-[#6B6B6B] text-[18px] outline-none focus:border-blue-400"
+                className="flex md:h-[70px] p-3 md:p-[16px] pr-[50px] items-center gap-[13px] shrink-0 w-full rounded-[16px] border border-solid border-[#A1A1A1] text-[#6B6B6B] text-[18px] outline-none focus:border-blue-400"
               />
               <button
                 type="button"
@@ -352,7 +352,7 @@ const Page = () => {
 
           {/* Confirm New Password */}
           <div className="flex flex-col items-start gap-[8px]">
-            <div className="text-[#333] text-2xl font-normal not-italic leading-[36px]">
+            <div className="text-[#333] text-lg md:text-2xl font-normal not-italic leading-[36px]">
               Confirm New Password
             </div>
             <div className="relative w-full">
@@ -364,7 +364,7 @@ const Page = () => {
                     val === watchPwd("new_password") ||
                     "Passwords do not match",
                 })}
-                className="flex h-[70px] p-[16px] pr-[50px] items-center gap-[13px] shrink-0 w-full rounded-[16px] border border-solid border-[#A1A1A1] text-[#6B6B6B] text-[18px] outline-none focus:border-blue-400"
+                className="flex md:h-[70px] p-3 md:p-[16px] pr-[50px] items-center gap-[13px] shrink-0 w-full rounded-[16px] border border-solid border-[#A1A1A1] text-[#6B6B6B] text-[18px] outline-none focus:border-blue-400"
               />
               <button
                 type="button"
@@ -383,18 +383,18 @@ const Page = () => {
         </div>
 
         {/* Buttons */}
-        <div className="flex justify-end items-start gap-[16px]">
+        <div className="flex justify-center md:justify-end md:items-start max-md:w-full gap-[16px]">
           <button
             type="button"
             onClick={() => resetPwd()}
-            className="flex w-[132px] py-[12px] px-[20px] justify-center items-center gap-[14px] rounded-[16px] border border-solid border-[#B6BAC3] text-[#262626] text-center text-[16px] font-medium not-italic leading-[26px] cursor-pointer hover:bg-gray-100 transition duration-300"
+            className="flex md:w-[132px] py-2 md:py-[12px] px-[20px] justify-center items-center gap-[14px] rounded-[16px] border border-solid border-[#B6BAC3] text-[#262626] text-center text-[16px] font-medium not-italic leading-[26px] cursor-pointer hover:bg-gray-100 transition duration-300"
           >
             Reset
           </button>
           <button
             type="submit"
             disabled={changePwdPending}
-            className="flex w-[167px] py-3 px-2 justify-center items-center gap-[14px] rounded-[16px] bg-[#3D8FBE] text-[#FFF] text-center text-[16px] font-medium not-italic leading-[26px] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer hover:bg-[#3D8FBE]/80 transition duration-300"
+            className="flex md:w-[167px] py-2 md:py-3 px-3 justify-center items-center gap-[14px] rounded-[16px] bg-[#3D8FBE] text-[#FFF] text-center text-[16px] font-medium not-italic leading-[26px] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer hover:bg-[#3D8FBE]/80 transition duration-300"
           >
             {changePwdPending ? "Changing..." : "Change Password"}
           </button>

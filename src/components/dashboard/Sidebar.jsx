@@ -54,7 +54,7 @@ const Sidebar = () => {
   
   const { mutateAsync: logoutMutation, isPending } = useLogout();
   return (
-    <div className="w-[80%] xs:w-[60%] sm:w-[280px] xl:w-[316px] 2xl:w-[416px] h-screen flex flex-col shrink-0 overflow-y-auto bg-white-50 max-xl:hidden">
+    <div className="w-[80%] xs:w-[60%] sm:w-[280px] xl:w-[316px] 2xl:w-[330px] h-screen flex flex-col shrink-0 overflow-y-auto bg-white-50 max-xl:hidden">
       <div className="text-[60px] font-bold text-black-500 text-left px-4 lg:px-8 xl:px-12 2xl:text-center my-5">
         LOGO
       </div>

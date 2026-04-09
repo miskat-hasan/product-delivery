@@ -74,7 +74,50 @@ const Page = () => {
   return (
     <div>
       {isLoading ? (
-        <p>Loading ...</p>
+        <div className="py-[24px] px-1 md:px-[60px] space-y-[50px] animate-pulse">
+          {/* Header Skeleton */}
+          <div className="flex max-sm:gap-4 max-lg:flex-col max-lg:items-start justify-between items-end">
+            <div className="space-y-4">
+              <div className="h-4 w-20 bg-gray-200 rounded"></div>{" "}
+              {/* Back Link */}
+              <div className="flex items-center gap-4">
+                <div className="h-10 w-48 bg-gray-200 rounded-md"></div>{" "}
+                {/* ID */}
+                <div className="h-8 w-24 bg-gray-100 rounded-full"></div>{" "}
+                {/* Status */}
+              </div>
+              <div className="h-4 w-40 bg-gray-100 rounded"></div> {/* Date */}
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="h-11 w-28 bg-gray-200 rounded-lg"></div>{" "}
+              {/* Edit btn */}
+              <div className="h-11 w-40 bg-gray-200 rounded-lg"></div>{" "}
+              {/* Download btn */}
+            </div>
+          </div>
+
+          {/* Progress Bar Skeleton */}
+          <div className="w-full h-10 md:h-12 xl:h-[65px] bg-gray-100 rounded-full"></div>
+
+          {/* Grid Skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="p-3 sm:p-6 flex flex-col gap-6 rounded-2xl sm:rounded-3xl border border-gray-100"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="size-6 bg-gray-200 rounded-full"></div>
+                  <div className="h-6 w-40 bg-gray-200 rounded"></div>
+                </div>
+                <div className="space-y-4">
+                  <div className="h-16 w-full bg-gray-50 rounded-xl"></div>
+                  <div className="h-16 w-full bg-gray-50 rounded-xl"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       ) : (
         <form
           onSubmit={handleSubmit(onSubmit)}
@@ -83,7 +126,7 @@ const Page = () => {
           <div className="flex max-sm:gap-4 max-sm:flex-col max-sm:items-start justify-between items-end">
             <div className="space-y-2">
               <Link
-                href={"/dashboard"}
+                href={`../shipment-status/${id}`}
                 className="hover:text-neutral-700 inline-flex gap-2 items-center"
               >
                 <FaArrowLeft /> Back
@@ -101,7 +144,13 @@ const Page = () => {
                 )}
               </div>
               <p className="text-black-300">
-                Created on {data?.data?.form?.created_on}
+                Created on{" "}
+                <strong>
+                  {new Date(data?.data?.form?.created_at).toLocaleDateString(
+                    "en-US",
+                    { day: "2-digit", month: "short", year: "numeric" },
+                  )}
+                </strong>
               </p>
             </div>
 
@@ -168,7 +217,7 @@ const Page = () => {
                 </div>
                 <div className="text-[#6A7282] flex items-center justify-between">
                   <p className="text-[#101828] font-medium pr-1">
-                    {data?.data?.route_information?.departure?.match(
+                    {data?.data?.form?.flights_booking?.departure?.match(
                       /\(([^)]+)\)/,
                     )?.[1] || "N/A"}
                   </p>
@@ -178,18 +227,22 @@ const Page = () => {
                     <div className="flex-1 h-[1px] bg-black-300" />
                   </div>
                   <p className="text-[#101828] font-medium pl-1">
-                    {data?.data?.route_information?.destination?.match(
+                    {data?.data?.form?.flights_booking?.destination?.match(
                       /\(([^)]+)\)/,
                     )?.[1] || "N/A"}
                   </p>
                 </div>
                 <div className="text-[#4A5565] flex items-center justify-between">
                   <p>
-                    {data?.data?.route_information?.departure?.split("/")?.[0]}
+                    {
+                      data?.data?.form?.flights_booking?.departure?.split(
+                        "/",
+                      )?.[0]
+                    }
                   </p>
                   <p>
                     {
-                      data?.data?.route_information?.destination?.split(
+                      data?.data?.form?.flights_booking?.destination?.split(
                         "/",
                       )?.[0]
                     }
@@ -201,7 +254,7 @@ const Page = () => {
                 <div>
                   <p className="text-[#28A745]">Expected Delivery</p>
                   <p className="text-[#1C7731] text-lg font-medium">
-                    {data?.data?.route_information?.date}
+                    {data?.data?.form?.flights_booking?.date}
                   </p>
                 </div>
               </div>

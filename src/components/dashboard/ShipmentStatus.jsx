@@ -43,7 +43,50 @@ const ShipmentStatus = ({ id }) => {
   return (
     <div>
       {isLoading ? (
-        <p>Loading ...</p>
+        <div className="py-[24px] px-1 md:px-[60px] space-y-[50px] animate-pulse">
+          {/* Header Skeleton */}
+          <div className="flex max-sm:gap-4 max-lg:flex-col max-lg:items-start justify-between items-end">
+            <div className="space-y-4">
+              <div className="h-4 w-20 bg-gray-200 rounded"></div>{" "}
+              {/* Back Link */}
+              <div className="flex items-center gap-4">
+                <div className="h-10 w-48 bg-gray-200 rounded-md"></div>{" "}
+                {/* ID */}
+                <div className="h-8 w-24 bg-gray-100 rounded-full"></div>{" "}
+                {/* Status */}
+              </div>
+              <div className="h-4 w-40 bg-gray-100 rounded"></div> {/* Date */}
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="h-11 w-28 bg-gray-200 rounded-lg"></div>{" "}
+              {/* Edit btn */}
+              <div className="h-11 w-40 bg-gray-200 rounded-lg"></div>{" "}
+              {/* Download btn */}
+            </div>
+          </div>
+
+          {/* Progress Bar Skeleton */}
+          <div className="w-full h-10 md:h-12 xl:h-[65px] bg-gray-100 rounded-full"></div>
+
+          {/* Grid Skeleton */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6">
+            {[1, 2, 3].map((i) => (
+              <div
+                key={i}
+                className="p-3 sm:p-6 flex flex-col gap-6 rounded-2xl sm:rounded-3xl border border-gray-100"
+              >
+                <div className="flex items-center gap-2">
+                  <div className="size-6 bg-gray-200 rounded-full"></div>
+                  <div className="h-6 w-40 bg-gray-200 rounded"></div>
+                </div>
+                <div className="space-y-4">
+                  <div className="h-16 w-full bg-gray-50 rounded-xl"></div>
+                  <div className="h-16 w-full bg-gray-50 rounded-xl"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
       ) : (
         <div className="py-[24px] px-1 md:px-[60px] space-y-[50px]">
           <div className="flex max-sm:gap-4 max-lg:flex-col max-lg:items-start justify-between items-end">
@@ -67,28 +110,23 @@ const ShipmentStatus = ({ id }) => {
                 )}
               </div>
               <p className="text-black-300">
-                Created on {data?.data?.form?.created_on}
+                Created on <strong>{new Date(data?.data?.form?.created_at).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' })}</strong>
               </p>
             </div>
 
             <div className="flex items-center gap-4  max-md:flex-wrap">
               <Link href={`edit?id=${id}`}>
-                <button
-                  // onClick={() => setIsEdit(true)}
-                  className="flex items-center justify-center px-6 py-2.5 h-fit gap-2.5 rounded-lg border border-blue-500 bg-[#ECF4F9] text-blue-500 font-medium cursor-pointer hover:bg-[#d6e9f5] transition duration-300"
-                >
+                <button className="flex items-center justify-center px-6 py-2.5 h-fit gap-2.5 rounded-lg border border-blue-500 bg-[#ECF4F9] text-blue-500 font-medium cursor-pointer hover:bg-[#d6e9f5] transition duration-300">
                   <EditPenSVG />
                   Edit
                 </button>
               </Link>
-              <button className="flex items-center justify-center px-6 py-2.5 h-fit gap-2.5 rounded-lg border border-blue-500 bg-[#ECF4F9] text-blue-500 font-medium">
-                <FileSVG />
-                Documents
-              </button>
-              <button className="flex items-center justify-center px-6 py-2.5 h-fit gap-2.5 rounded-lg border border-blue-500 bg-[#ECF4F9] text-blue-500 font-medium">
-                <DownloadSvg />
-                Download Documents
-              </button>
+              <Link href={`/print-preview?id=${id}`}>
+                <button className="flex items-center justify-center px-6 py-2.5 h-fit gap-2.5 rounded-lg border border-blue-500 bg-[#ECF4F9] text-blue-500 font-medium cursor-pointer hover:bg-[#d6e9f5]">
+                  <DownloadSvg />
+                  Download PDF
+                </button>
+              </Link>
             </div>
           </div>
           {/* Progress Bar */}
@@ -233,8 +271,8 @@ const ShipmentStatus = ({ id }) => {
                 </h5>
               </div>
               <div className="grid grid-cols-2 gap-6">
-                {data?.data?.form?.parties?.length > 0 ? (
-                  data?.data?.form?.parties?.map((item, index) => (
+                {data?.data?.parties?.length > 0 ? (
+                  data?.data?.parties?.map((item, index) => (
                     <div key={index} className="flex flex-col">
                       <p className="text-[#6A7282] mb-1">{item?.role}</p>
                       <p className="text-[#101828] font-medium">{item?.name}</p>
