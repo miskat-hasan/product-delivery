@@ -108,7 +108,7 @@ export const GetSingleShipment = (id) => {
   return useClientApi({
     method: "get",
     isPrivate: true,
-    key: ["get-single-shipment"],
+    key: ["get-single-shipment", id],
     endpoint: `/api/form-stage/${id}`,
   });
 };
@@ -167,12 +167,14 @@ export const useGetAllAirports = () => {
 
 // update form status & report
 export const useUpdateFormStatus = (id) => {
+  const queryClient = useQueryClient();
   return useClientApi({
     method: "put",
     isPrivate: true,
     endpoint: `/api/update/form/${id}`,
     onSuccess: (data) => {
       toast.success(data?.message || "Data updated successfully");
+      queryClient.invalidateQueries(["get-single-shipment", id]);
     },
     onError: (err) => {
       toast.error(err?.response?.data?.message || "something went wrong");

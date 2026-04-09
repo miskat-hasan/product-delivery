@@ -1,13 +1,10 @@
 "use client";
 import { useState } from "react";
-import { CheckMarkSvg, ThreeDotSvg, WrongSvg } from "../svg/Svg";
+import { ThreeDotSvg } from "../svg/Svg";
 import Link from "next/link";
 import { DeleteShipment, GetAllShipments } from "@/hooks/api/dashboardApi";
-import Swal from "sweetalert2";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
-import { GoArrowUpRight } from "react-icons/go";
-import { FiDownload, FiTrash2 } from "react-icons/fi";
 import { BsArrowRight } from "react-icons/bs";
 
 const ShipmentsTable = () => {
@@ -131,11 +128,11 @@ const ShipmentsTable = () => {
                   ? shipmentsData?.data?.map((item, idx) => (
                       <tr key={item?.id}>
                         <td className="px-3 py-3.5 text-blue-500 font-medium">
-                          {item?.awb_number}
+                          AWB-{item?.awb_number}
                         </td>
                         <td className="px-3 py-3.5 text-center">
                           <span
-                            className={`p-2.5 rounded-full ${item?.status === "created" ? "text-green-400 bg-green-50" : "text-[#FFC107] bg-[#FFF9E6]"} `}
+                            className={`p-2.5 capitalize rounded-full ${item?.status === "created" ? "text-gray-300 bg-gray-50" : item?.status === "delivered" ? "text-green-400 bg-green-50" : item?.status === "pending"?  "text-[#FFC107] bg-[#FFF9E6]": item?.status === "accepted" ? "text-blue-500 bg-blue-50" : item?.status === "in customs" ? "text-[#FD7E14] bg-[#FD7E141A]" : "text-[#6F42C1] bg-[#6F42C11A]"} `}
                           >
                             {item?.status}
                           </span>
@@ -145,7 +142,7 @@ const ShipmentsTable = () => {
                             <p className="flex-1 text-right">
                               {item?.routes?.departure?.match(
                                 /\(([^)]+)\)/,
-                              )?.[1] || "N/A"}{" "}
+                              )?.[1] || "N/A"}
                             </p>
                             <p className="">
                               <BsArrowRight />

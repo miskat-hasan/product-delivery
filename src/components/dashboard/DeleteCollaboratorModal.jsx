@@ -5,6 +5,7 @@ import { LuLoaderCircle } from "react-icons/lu";
 import { useState } from "react";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
+import Link from "next/link";
 
 const DeleteCollaboratorModal = ({ onClose, collaboratorData }) => {
   const { mutate, isPending } = useDeleteCollaborator();
@@ -44,16 +45,28 @@ const DeleteCollaboratorModal = ({ onClose, collaboratorData }) => {
         </div>
         <div className="divide-y border-t border-gray-200 divide-gray-200">
           {collaboratorData?.form_serial_ids?.map((item, index) => {
-            const isDeleting = deletingItem === item;
+            const isDeleting = deletingItem === item?.id;
             return (
               <div
                 key={index}
                 className="flex items-center justify-between gap-1 py-2"
               >
-                <div className="text-blue-500">AWB-{item}</div>
+                <div className="flex items-center gap-4">
+                  <div className="text-blue-500">
+                    <Link href={`dashboard/shipment-status/${item.id}`}>
+                      AWB-{item?.serial_id}
+                    </Link>
+                  </div>
+
+                  <div
+                    className={`rounded-full max-md:text-sm px-2.5 py-1 ${item?.status === "pending" ? "text-[#FFC107] bg-[#faedc3]" : item?.status === "accepted" ? "text-green-400 bg-green-100" : "text-red-500 bg-red-100"} h-fit capitalize text-nowrap`}
+                  >
+                    {item?.status}
+                  </div>
+                </div>
                 <button
                   disabled={isPending}
-                  onClick={() => handleDelete(item)}
+                  onClick={() => handleDelete(item?.id)}
                   className="text-red-400 cursor-pointer hover:text-red-500 transition duration-300 disabled:cursor-not-allowed"
                 >
                   {isDeleting ? (

@@ -145,7 +145,7 @@ const AddCollaboratorsModal = ({ onClose }) => {
               ) : collaborateContent?.data?.form_serial_id?.length > 0 ? (
                 collaborateContent?.data?.form_serial_id?.map((item, index) => (
                   <option key={index} value={item?.serial_id}>
-                    {item?.serial_id}
+                    AWB-{item?.serial_id}
                   </option>
                 ))
               ) : (

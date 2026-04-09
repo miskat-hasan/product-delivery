@@ -1,11 +1,12 @@
 "use client";
 import { useForm } from "react-hook-form";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useVerifyOTP } from "@/hooks/api/authApi";
 
 const VerifyOTP = () => {
   const searchParams = useSearchParams();
   const email = searchParams.get("email");
+  const router = useRouter();
 
   const {
     register,
@@ -20,11 +21,21 @@ const VerifyOTP = () => {
   const { mutateAsync: verifyOTPMutation, isPending } = useVerifyOTP();
   const onSubmit = (data) => {
     const payload = {
-      otp: data?.otp,
       email: email,
+      otp: data?.otp,
     };
 
-    verifyOTPMutation(payload);
+    const encodedEmail = Buffer.from(email).toString("base64");
+
+    const encodedOTP = btoa(String(data?.otp));
+
+const slug = `${encodedEmail}.${encodedOTP}`;
+
+    verifyOTPMutation(payload, {
+      onSuccess: () => {
+        router.push(`/change-password?slug=${slug}`);
+      },
+    });
   };
 
   return (

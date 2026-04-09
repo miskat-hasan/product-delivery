@@ -16,7 +16,7 @@ const Page = () => {
 
   return (
     <div>
-      <h3 className="text-[#333] text-[36px] font-medium">Templated</h3>
+      <h3 className="text-[#333] text-[36px] font-medium">All Templates</h3>
       <div className="grid grid-cols-2 xs:flex flex-wrap gap-2 md:gap-6 mt-6 items-center">
         {isLoading
           ? Array(4)

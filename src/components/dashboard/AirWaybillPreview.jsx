@@ -147,7 +147,7 @@ const AirWaybillPreview = () => {
                         {billData?.logo && (
                           <div className="absolute right-1 top-0">
                             <figure className="h-14">
-                              <Image
+                              <img
                                 src={
                                   process.env.NEXT_PUBLIC_SITE_URL +
                                   "/" +

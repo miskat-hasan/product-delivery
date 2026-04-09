@@ -2,7 +2,6 @@
 import { useRouter } from "next/navigation";
 import useAuth from "../useAuth";
 import useClientApi from "../useClientApi";
-import Swal from "sweetalert2";
 import { toast } from "sonner";
 
 // login
@@ -88,9 +87,6 @@ export const useVerifyOTP = () => {
     method: "post",
     key: ["verify-reset-otp"],
     endpoint: "/api/verify-reset-otp",
-    onSuccess: () => {
-      router.push("/change-password");
-    },
     onError: (err) => {
       toast.error(err?.response?.data?.message);
     },
@@ -103,9 +99,6 @@ export const useChangePassword = () => {
     method: "post",
     key: ["change-password"],
     endpoint: "/api/reset-password",
-    onSuccess: () => {
-      router.push("/login");
-    },
     onError: (err) => {
       toast.error(err?.response?.data?.message);
     },

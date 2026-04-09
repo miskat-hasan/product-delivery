@@ -44,7 +44,8 @@ const Page = () => {
     "delivered",
   ];
 
-  const currentStep = Math.max(0, steps.indexOf(data?.data?.form?.status)) + 1;
+  const currentStep =
+    Math.max(0, steps.indexOf(data?.data?.form?.status?.toLowerCase())) + 1;
 
   const totalPieces =
     data?.data?.form?.rate_description?.reduce((accumulator, item) => {
@@ -138,7 +139,9 @@ const Page = () => {
                   </h4>
                 )}
                 {data?.data?.form?.status && (
-                  <div className="rounded-full max-md:text-sm px-2.5 py-1 bg-[#6F42C11A] text-[#6F42C1] h-fit capitalize text-nowrap">
+                  <div
+                    className={`rounded-full max-md:text-sm px-2.5 py-1 ${data?.data?.form?.status === "created" ? "text-gray-300 bg-gray-50" : data?.data?.form?.status === "delivered" ? "text-green-400 bg-green-50" : data?.data?.form?.status === "pending" ? "text-[#FFC107] bg-[#faedc3]" : data?.data?.form?.status === "accepted" ? "text-blue-500 bg-blue-50" : data?.data?.form?.status === "in customs" ? "text-[#FD7E14] bg-[#FD7E141A]" : "text-[#6F42C1] bg-[#6F42C11A]"} h-fit capitalize text-nowrap`}
+                  >
                     {data?.data?.form?.status}
                   </div>
                 )}
@@ -162,9 +165,9 @@ const Page = () => {
               >
                 <option value={"created"}>Created</option>
                 <option value={"pending"}>Pending</option>
-                <option value={"Accepted"}>Accepted</option>
-                <option value={"in_customs"}>In Customs</option>
-                <option value={"out_for_delivery"}>Out For Delivery</option>
+                <option value={"accepted"}>Accepted</option>
+                <option value={"in customs"}>In Customs</option>
+                <option value={"out for delivery"}>Out For Delivery</option>
                 <option value={"delivered"}>Delivered</option>
               </select>
             </div>
