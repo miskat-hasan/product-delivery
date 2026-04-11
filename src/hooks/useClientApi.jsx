@@ -31,6 +31,7 @@ export default function useClientApi({
         return res.data;
       },
       enabled,
+       refetchOnWindowFocus: false,
       ...queryOptions,
     });
   }

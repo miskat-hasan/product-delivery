@@ -7,7 +7,7 @@ import Swal from "sweetalert2";
 import { useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
-const ContactFinder = ({ onClose, contactFinder, onSelect }) => {
+const   ContactFinder = ({ onClose, contactFinder, onSelect }) => {
   const [addItemModal, setAddItemModal] = useState(false);
 
   const [selectedContact, setSelectedContact] = useState(null);
@@ -224,6 +224,10 @@ const ContactFinder = ({ onClose, contactFinder, onSelect }) => {
                 cols={3}
                 {...register("name_address", {
                   required: "This field is required",
+                  maxLength: {
+                    value: 200,
+                    message: "Maximum value is 200 character.",
+                  },
                 })}
                 className="rounded-2xl p-4 border border-black-50 bg-white-500 w-full text-gray-300 outline-none"
               ></textarea>

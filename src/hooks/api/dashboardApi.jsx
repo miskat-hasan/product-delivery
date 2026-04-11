@@ -135,7 +135,7 @@ export const GetSingleTemplate = (id) => {
     method: "get",
     isPrivate: true,
     enabled: !!id,
-    key: ["get-single-template"],
+    key: ["get-single-template", id],
     endpoint: `/api/templates/${id}`,
   });
 };

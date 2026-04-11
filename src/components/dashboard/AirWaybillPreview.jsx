@@ -102,10 +102,14 @@ const AirWaybillPreview = () => {
           <div id="capture-area">
             <div className="w-full max-w-[1218px] mx-auto py-10 bg-white">
               <div className="w-full">
-                <h5 className="flex text-xl font-bold justify-end text-blue-500">
-                  {billData?.consignment_details?.airline_prefix} -{" "}
-                  {billData?.consignment_details?.serial_number}
-                </h5>
+                <div className="flex items-center justify-between">
+                  <span></span>
+                  <p className="text-red-500 font-bold text-xl -mr-20">ORIGINAL</p>
+                  <h5 className="flex text-xl font-bold justify-end text-blue-500">
+                    {billData?.consignment_details?.airline_prefix} -{" "}
+                    {billData?.consignment_details?.serial_number}
+                  </h5>
+                </div>
                 <div className="border-2 relative">
                   <div className="absolute -top-[45px] flex">
                     <p className="w-[61px] text-blue-500 flex text-xl flex-col justify-end text-end font-bold pb-2 pr-1">
@@ -134,7 +138,7 @@ const AirWaybillPreview = () => {
                             {billData?.shipper?.account_number}
                           </p>
                         </div>
-                        <div className="px-4">
+                        <div className="px-1 tracking-tight col-span-2">
                           <p className="font-medium">
                             {billData?.shipper?.name_address}
                           </p>
@@ -184,13 +188,13 @@ const AirWaybillPreview = () => {
                             Consignee&rsquo;s Name and Address
                           </p>
                         </div>
-                        <div className="text-black text-sm border-b-2 border-l-2 flex justify-between flex-col items-center h-[60px] bg-[#DFDFDF]">
+                        <div className="text-black text-sm border-b-2 border-l-2 flex justify-between flex-col items-center h-[60px] bg-[#DFDFDF">
                           <p>Consignee&rsquo;s Account Number</p>
                           <p className="text-xl pb-2">
                             {billData?.consignee?.account_number}
                           </p>
                         </div>
-                        <div className="px-4">
+                        <div className="px-1 tracking-tight col-span-2">
                           <p className="font-medium">
                             {billData?.consignee?.name_address}
                           </p>
@@ -223,7 +227,7 @@ const AirWaybillPreview = () => {
                           <p className="text-sm">
                             Issuing Carrier&rsquo;s Agent Name and City
                           </p>
-                          <p className="font-medium">
+                          <p className="font-medium tracking-tight">
                             {billData?.agent?.name_address}
                           </p>
                         </div>
@@ -248,7 +252,9 @@ const AirWaybillPreview = () => {
                           Requested Routing
                         </div>
                         <p className="pb-2 font-medium text-center">
-                          {billData?.flights_booking?.departure?.replace(/\(.*?\)$/, "").trim()}
+                          {billData?.flights_booking?.departure
+                            ?.replace(/\(.*?\)$/, "")
+                            .trim()}
                         </p>
                       </div>
                     </div>
@@ -319,7 +325,11 @@ const AirWaybillPreview = () => {
                       <div className="w-[74.814px] text-xs p-0.5 h-full border-r-2 flex flex-col">
                         <p className="text-sm px-1 font-medium">To</p>
                         <p className="leading-none uppercase">
-                          {billData?.flights_booking?.route?.to_first_carrier?.split("/")[0]}
+                          {
+                            billData?.flights_booking?.route?.to_first_carrier?.split(
+                              "/",
+                            )[0]
+                          }
                         </p>
                       </div>
                       <div>
@@ -346,31 +356,51 @@ const AirWaybillPreview = () => {
                           </div>
                         </div>
                         <div className="px-2 uppercase">
-                          {billData?.flights_booking?.route?.by_first_carrier?.split("/")[0]}
+                          {
+                            billData?.flights_booking?.route?.by_first_carrier?.split(
+                              "/",
+                            )[0]
+                          }
                         </div>
                       </div>
                       <div className="w-[60px] text-sm px-1 font-medium h-full border-l-2">
                         to
                         <p className="leading-none uppercase">
-                          {billData?.flights_booking?.route?.to_second_carrier?.split("/")[0]}
+                          {
+                            billData?.flights_booking?.route?.to_second_carrier?.split(
+                              "/",
+                            )[0]
+                          }
                         </p>
                       </div>
                       <div className="w-[55px] text-sm px-1 font-medium h-full border-l-2">
                         by
                         <p className="leading-none uppercase">
-                          {billData?.flights_booking?.route?.by_second_carrier?.split("/")[0]}
+                          {
+                            billData?.flights_booking?.route?.by_second_carrier?.split(
+                              "/",
+                            )[0]
+                          }
                         </p>
                       </div>
                       <div className="w-[60px] text-sm px-1 font-medium h-full border-l-2">
                         to
                         <p className="leading-none uppercase">
-                          {billData?.flights_booking?.route?.to_third_carrier?.split("/")[0]}
+                          {
+                            billData?.flights_booking?.route?.to_third_carrier?.split(
+                              "/",
+                            )[0]
+                          }
                         </p>
                       </div>
                       <div className="w-[55px] text-sm px-1 font-medium h-full border-l-2">
                         by
                         <p className="leading-none uppercase">
-                          {billData?.flights_booking?.route?.by_third_carrier?.split("/")[0]}
+                          {
+                            billData?.flights_booking?.route?.by_third_carrier?.split(
+                              "/",
+                            )[0]
+                          }
                         </p>
                       </div>
                     </div>
@@ -460,7 +490,9 @@ const AirWaybillPreview = () => {
                       <div className="border-2 text-sm text-center pb-2">
                         Airport of Destination
                         <p className="text-lg">
-                          {billData?.flights_booking?.destination?.replace(/\(.*?\)$/, "").trim()}
+                          {billData?.flights_booking?.destination
+                            ?.replace(/\(.*?\)$/, "")
+                            .trim()}
                         </p>
                       </div>
                       <div className="border-l-2">
@@ -520,9 +552,7 @@ const AirWaybillPreview = () => {
                     </div>
                     <div className="h-[55.602px] w-[230px] border-l-2 border-t-2 ml-auto text-center self-end-safe px-1">
                       SCI
-                      <p className="text-lg">
-                        {billData?.handling_info?.sci}
-                      </p>
+                      <p className="text-lg">{billData?.handling_info?.sci}</p>
                     </div>
                   </div>
                   {/* separator */}
@@ -998,7 +1028,7 @@ const AirWaybillPreview = () => {
                         </div>
                       </div>
                       {/* Currency */}
-                      <div className="grid grid-cols-2 divide-x-2 h-[60.602px] bg-[#D9D9D9]">
+                      <div className="grid grid-cols-2 divide-x-2 h-[60.602px] bg-[#D9D9D9">
                         <div className="relative w-full">
                           <p className="absolute top-[-2px] text-sm left-1/2 -translate-x-1/2 text-nowrap">
                             Currency Conversion Rates
@@ -1069,9 +1099,9 @@ const AirWaybillPreview = () => {
                   {/* mini left side */}
                   <div className="mini-preview-left-side shrink-0 border-r-2">
                     {/* Destination */}
-                    <div className="grid grid-cols-2 divide-x-2 border-b-2 h-[55.602px] bg-[#D9D9D9]">
+                    <div className="grid grid-cols-2 divide-x-2 border-b-2 h-[55.602px] bg-[#D9D9D9">
                       <div className="w-full flex items-center justify-center text-center">
-                        For Carrier&rsquo;s Use only at Destination 
+                        For Carrier&rsquo;s Use only at Destination
                       </div>
                       <div className="relative w-full flex flex-col items-center">
                         <p className="absolute top-[-2px] text-sm left-1/2 -translate-x-1/2 text-nowrap">
@@ -1098,7 +1128,7 @@ const AirWaybillPreview = () => {
                     </div>
                   </div>
                   {/* right side */}
-                  <div className="w-[263.622px] bg-[#D9D9D9] border-b-2 border-r-2">
+                  <div className="w-[263.622px] bg-[#D9D9D9 border-b-2 border-r-2">
                     <div className="relative w-full flex flex-col items-center">
                       <p className="absolute top-[-2px] text-sm left-1/2 -translate-x-1/2 text-nowrap">
                         Total Collect Charges
