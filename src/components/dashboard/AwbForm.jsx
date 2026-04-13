@@ -46,17 +46,40 @@ const AwbForm = () => {
   const [editingRateIndex, setEditingRateIndex] = useState(null);
   const [editingChargeIndex, setEditingChargeIndex] = useState(null);
 
-  const [selectedContacts, setSelectedContacts] = useState({
-    shipper: null,
-    consignee: null,
-    carriers_agent: null,
+  // ── Editable contact field values (free-text, synced on select) ─
+  const [contactFields, setContactFields] = useState({
+    shipper_account: "",
+    shipper_name_address: "",
+    consignee_account: "",
+    consignee_name_address: "",
+    carriers_agent_name_address: "",
+    carriers_agent_account: "",
   });
 
+  const handleContactFieldChange = (field, value) => {
+    setContactFields((prev) => ({ ...prev, [field]: value }));
+  };
+
   const handleContactSelect = (contact) => {
-    setSelectedContacts((prev) => ({
-      ...prev,
-      [isContactFinderOpen]: contact,
-    }));
+    if (isContactFinderOpen === "shipper") {
+      setContactFields((prev) => ({
+        ...prev,
+        shipper_account: contact.account_number || "",
+        shipper_name_address: contact.name_address || "",
+      }));
+    } else if (isContactFinderOpen === "consignee") {
+      setContactFields((prev) => ({
+        ...prev,
+        consignee_account: contact.account_number || "",
+        consignee_name_address: contact.name_address || "",
+      }));
+    } else if (isContactFinderOpen === "carriers_agent") {
+      setContactFields((prev) => ({
+        ...prev,
+        carriers_agent_name_address: contact.name_address || "",
+        carriers_agent_account: contact.account_number || "",
+      }));
+    }
   };
 
   // ── Combo box field states ──────────────────────────────────────
@@ -135,10 +158,13 @@ const AwbForm = () => {
   useEffect(() => {
     // Reset everything when navigating to a different record
     reset({});
-    setSelectedContacts({
-      shipper: null,
-      consignee: null,
-      carriers_agent: null,
+    setContactFields({
+      shipper_account: "",
+      shipper_name_address: "",
+      consignee_account: "",
+      consignee_name_address: "",
+      carriers_agent_name_address: "",
+      carriers_agent_account: "",
     });
     setOriginValue("");
     setDepartureValue("");
@@ -202,25 +228,13 @@ const AwbForm = () => {
     setToSecondCarrierValue(d.flights_booking?.route?.to_second_carrier || "");
     setToThirdCarrierValue(d.flights_booking?.route?.to_third_carrier || "");
 
-    setSelectedContacts({
-      shipper: d.shipper
-        ? {
-            account_number: d.shipper.account_number || "",
-            name_address: d.shipper.name_address || "",
-          }
-        : null,
-      consignee: d.consignee
-        ? {
-            account_number: d.consignee.account_number || "",
-            name_address: d.consignee.name_address || "",
-          }
-        : null,
-      carriers_agent: d.agent
-        ? {
-            account_number: d.agent.account_number || "",
-            name_address: d.agent.name_address || "",
-          }
-        : null,
+    setContactFields({
+      shipper_account: d.shipper?.account_number || "",
+      shipper_name_address: d.shipper?.name_address || "",
+      consignee_account: d.consignee?.account_number || "",
+      consignee_name_address: d.consignee?.name_address || "",
+      carriers_agent_name_address: d.agent?.name_address || "",
+      carriers_agent_account: d.agent?.account_number || "",
     });
 
     setWtVal(d.charges_declaration?.wt_val || "ppd");
@@ -354,16 +368,16 @@ const AwbForm = () => {
         origin: originValue || "",
       },
       shipper: {
-        account_number: selectedContacts.shipper?.account_number || "",
-        name_address: selectedContacts.shipper?.name_address || "",
+        account_number: contactFields.shipper_account,
+        name_address: contactFields.shipper_name_address,
       },
       consignee: {
-        account_number: selectedContacts.consignee?.account_number || "",
-        name_address: selectedContacts.consignee?.name_address || "",
+        account_number: contactFields.consignee_account,
+        name_address: contactFields.consignee_name_address,
       },
       agent: {
-        account_number: selectedContacts.carriers_agent?.account_number || "",
-        name_address: selectedContacts.carriers_agent?.name_address || "",
+        account_number: contactFields.carriers_agent_account,
+        name_address: contactFields.carriers_agent_name_address,
         iata_code: data.iata_code || "",
       },
       accounting_info: data.accounting_info || "",
@@ -515,9 +529,9 @@ const AwbForm = () => {
                 </div>
                 <input
                   type="text"
-                  value={
-                    selectedContacts.shipper &&
-                    selectedContacts.shipper.account_number
+                  value={contactFields.shipper_account}
+                  onChange={(e) =>
+                    handleContactFieldChange("shipper_account", e.target.value)
                   }
                   className={inp}
                 />
@@ -528,9 +542,12 @@ const AwbForm = () => {
                 </div>
                 <textarea
                   rows={4}
-                  value={
-                    selectedContacts.shipper &&
-                    `${selectedContacts.shipper.name_address}`
+                  value={contactFields.shipper_name_address}
+                  onChange={(e) =>
+                    handleContactFieldChange(
+                      "shipper_name_address",
+                      e.target.value,
+                    )
                   }
                   className={inp}
                 />
@@ -555,9 +572,12 @@ const AwbForm = () => {
                 </div>
                 <input
                   type="text"
-                  value={
-                    selectedContacts.consignee &&
-                    selectedContacts.consignee.account_number
+                  value={contactFields.consignee_account}
+                  onChange={(e) =>
+                    handleContactFieldChange(
+                      "consignee_account",
+                      e.target.value,
+                    )
                   }
                   className={inp}
                 />
@@ -568,9 +588,12 @@ const AwbForm = () => {
                 </div>
                 <textarea
                   rows={4}
-                  value={
-                    selectedContacts.consignee &&
-                    `${selectedContacts.consignee.name_address}`
+                  value={contactFields.consignee_name_address}
+                  onChange={(e) =>
+                    handleContactFieldChange(
+                      "consignee_name_address",
+                      e.target.value,
+                    )
                   }
                   className={inp}
                 />
@@ -595,9 +618,12 @@ const AwbForm = () => {
                 </div>
                 <textarea
                   rows={4}
-                  value={
-                    selectedContacts.carriers_agent &&
-                    `${selectedContacts.carriers_agent.name_address}`
+                  value={contactFields.carriers_agent_name_address}
+                  onChange={(e) =>
+                    handleContactFieldChange(
+                      "carriers_agent_name_address",
+                      e.target.value,
+                    )
                   }
                   className={inp}
                 />
@@ -614,9 +640,12 @@ const AwbForm = () => {
                 </div>
                 <input
                   type="text"
-                  value={
-                    selectedContacts.carriers_agent &&
-                    selectedContacts.carriers_agent.account_number
+                  value={contactFields.carriers_agent_account}
+                  onChange={(e) =>
+                    handleContactFieldChange(
+                      "carriers_agent_account",
+                      e.target.value,
+                    )
                   }
                   className={inp}
                 />
@@ -836,42 +865,40 @@ const AwbForm = () => {
                 <div className="h-40 w-full rounded-[20px] bg-gray-200 animate-pulse" />
               </div>
             ) : ( */}
-              <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
-                <label className="block text-primary-text text-xl leading-[150%] mb-1">
-                  Logo
-                </label>
+            <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
+              <label className="block text-primary-text text-xl leading-[150%] mb-1">
+                Logo
+              </label>
 
-                <input
-                  type="file"
-                  accept="image/*"
-                  id="logo"
-                  className="hidden"
-                  onChange={handleFileChange}
-                />
+              <input
+                type="file"
+                accept="image/*"
+                id="logo"
+                className="hidden"
+                onChange={handleFileChange}
+              />
 
-                <label
-                  htmlFor="logo"
-                  className={`flex flex-col items-center justify-center border border-dashed bg-gradient-to-r from-[#F9FCFF] to-[#E3F2FD]/40 border-gray-300 rounded-[20px] cursor-pointer bg-gray-50 hover:border-teal-500 transition py-10`}
-                >
-                  {preview ? (
-                    <img
-                      src={preview}
-                      alt="Uploaded preview"
-                      className="object-cover rounded-xl border border-gray-200 shadow-sm"
-                    />
-                  ) : (
-                    <>
-                      <div className="bg-white border border-[#EAECF0] w-10 h-10 rounded-[10px] flex items-center justify-center mb-3">
-                        <FiUploadCloud className="text-[#6B7280] text-xl" />
-                      </div>
-                      <p className="text-sub-text">Click to upload the Logo</p>
-                    </>
-                  )}
-                </label>
-              </div>
+              <label
+                htmlFor="logo"
+                className={`flex flex-col items-center justify-center border border-dashed bg-gradient-to-r from-[#F9FCFF] to-[#E3F2FD]/40 border-gray-300 rounded-[20px] cursor-pointer bg-gray-50 hover:border-teal-500 transition py-10`}
+              >
+                {preview ? (
+                  <img
+                    src={preview}
+                    alt="Uploaded preview"
+                    className="object-cover rounded-xl border border-gray-200 shadow-sm"
+                  />
+                ) : (
+                  <>
+                    <div className="bg-white border border-[#EAECF0] w-10 h-10 rounded-[10px] flex items-center justify-center mb-3">
+                      <FiUploadCloud className="text-[#6B7280] text-xl" />
+                    </div>
+                    <p className="text-sub-text">Click to upload the Logo</p>
+                  </>
+                )}
+              </label>
+            </div>
             {/* )} */}
-
-         
 
             {/* Issuer */}
             <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">

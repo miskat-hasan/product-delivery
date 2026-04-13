@@ -95,11 +95,11 @@ export const GetSingleAirWayBill = (id) => {
   });
 };
 
-export const GetAllShipments = () => {
+export const GetAllShipments = (page = 1) => {
   return useClientApi({
     method: "get",
     isPrivate: true,
-    key: ["get-all-shipments"],
+    key: ["get-all-shipments", page],
     endpoint: "/api/get-shipments",
   });
 };

@@ -45,7 +45,7 @@ const DeleteCollaboratorModal = ({ onClose, collaboratorData }) => {
         </div>
         <div className="divide-y border-t border-gray-200 divide-gray-200">
           {collaboratorData?.form_serial_ids?.map((item, index) => {
-            const isDeleting = deletingItem === item?.id;
+            const isDeleting = deletingItem === item?.serial_id;
             return (
               <div
                 key={index}
@@ -66,7 +66,7 @@ const DeleteCollaboratorModal = ({ onClose, collaboratorData }) => {
                 </div>
                 <button
                   disabled={isPending}
-                  onClick={() => handleDelete(item?.id)}
+                  onClick={() => handleDelete(item?.serial_id)}
                   className="text-red-400 cursor-pointer hover:text-red-500 transition duration-300 disabled:cursor-not-allowed"
                 >
                   {isDeleting ? (

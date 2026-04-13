@@ -14,8 +14,10 @@ const ShipmentsTable = () => {
 
   const [selectedItem, setSelectedItem] = useState(null);
 
+  const [page, setPage] = useState(1);
+
   // get shipment data
-  const { data: shipmentsData, isLoading } = GetAllShipments();
+  const { data: shipmentsData, isLoading } = GetAllShipments(page);
 
   // delete a shipment
   const { mutate: deleteMutation, isPending: deletePending } =
@@ -124,15 +126,15 @@ const ShipmentsTable = () => {
                         </td>
                       </tr>
                     ))
-                : shipmentsData?.data?.length > 0
-                  ? shipmentsData?.data?.map((item, idx) => (
+                : shipmentsData?.data?.data?.length > 0
+                  ? shipmentsData?.data?.data?.map((item, idx) => (
                       <tr key={item?.id}>
                         <td className="px-3 py-3.5 text-blue-500 font-medium">
                           AWB-{item?.awb_number}
                         </td>
                         <td className="px-3 py-3.5 text-center">
                           <span
-                            className={`p-2.5 capitalize rounded-full ${item?.status === "created" ? "text-gray-300 bg-gray-50" : item?.status === "delivered" ? "text-green-400 bg-green-50" : item?.status === "pending"?  "text-[#FFC107] bg-[#FFF9E6]": item?.status === "accepted" ? "text-blue-500 bg-blue-50" : item?.status === "in customs" ? "text-[#FD7E14] bg-[#FD7E141A]" : "text-[#6F42C1] bg-[#6F42C11A]"} `}
+                            className={`p-2.5 capitalize rounded-full ${item?.status === "created" ? "text-gray-300 bg-gray-50" : item?.status === "delivered" ? "text-green-400 bg-green-50" : item?.status === "pending" ? "text-[#FFC107] bg-[#FFF9E6]" : item?.status === "accepted" ? "text-blue-500 bg-blue-50" : item?.status === "in customs" ? "text-[#FD7E14] bg-[#FD7E141A]" : "text-[#6F42C1] bg-[#6F42C11A]"} `}
                           >
                             {item?.status}
                           </span>
@@ -186,7 +188,7 @@ const ShipmentsTable = () => {
                               </button>
                             </div>
                             <div
-                              className={`bg-white flex flex-col absolute w-[90px] text-sm rounded-md right-0 z-10 border overflow-hidden border-[#EBEBEB] divide-y divide-[#EBEBEB] duration-300 transition ${shipmentsData?.data?.length > 3 && idx > shipmentsData?.data?.length - 3 ? "bottom-4 origin-bottom-right" : " origin-top-right"} ${openActionBar == idx ? "opacity-100 scale-100" : "opacity-0  scale-0"}`}
+                              className={`bg-white flex flex-col absolute w-[90px] text-sm rounded-md right-0 z-10 border overflow-hidden border-[#EBEBEB] divide-y divide-[#EBEBEB] duration-300 transition ${shipmentsData?.data?.data?.length > 3 && idx > shipmentsData?.data?.data?.length - 3 ? "bottom-4 origin-bottom-right" : " origin-top-right"} ${openActionBar == idx ? "opacity-100 scale-100" : "opacity-0  scale-0"}`}
                             >
                               <button
                                 onClick={() => handleDeleteShipment(item?.id)}
@@ -215,6 +217,28 @@ const ShipmentsTable = () => {
                   : "No data found"}
             </tbody>
           </table>
+          {/* Pagination */}
+          <div className="flex flex-col md:flex-row items-center justify-end mt-3 lg:mt-6 gap-3">
+            <div className="flex items-center gap-2">
+              {shipmentsData?.data?.links?.map((link, index) => (
+                <button
+                  key={index}
+                  disabled={link.url === null || link.page === null}
+                  onClick={() => link.page && setPage(link.page)}
+                  className={`px-3 py-1 text-sm border rounded-md ${
+                    link.active
+                      ? "border-blue-500 text-blue-500 bg-blue-50"
+                      : "hover:bg-gray-100"
+                  } ${
+                    link.url === null || link.page === null
+                      ? "text-gray-400 cursor-not-allowed"
+                      : "cursor-pointer"
+                  }`}
+                  dangerouslySetInnerHTML={{ __html: link.label }}
+                />
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </div>
