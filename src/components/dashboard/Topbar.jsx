@@ -12,7 +12,9 @@ const Topbar = () => {
   const [openMobileSideBar, setOpenMobileSideBar] = useState(false);
 
   const { user } = useAuth();
-  
+
+  console.log(user, "user");
+
   return (
     <div className="bg-[#FEFEFE] h-[100px] sticky top-0 shadow-[0_4px_4px_0_rgba(0,0,0,0.04)] w-full px-3 md:pl-6 md:pr-[80px] py-7 flex items-center justify-between relative]">
       <h6 className="text-lg sm:text-xl font-medium text-black-500 flex items-center gap-1 sm:gap-4">
@@ -37,8 +39,15 @@ const Topbar = () => {
 
         <div className="flex items-center gap-2">
           <figure className="size-[44px] rounded-full overflow-hidden flex items-center justify-center border">
-            {/* <Image src={""} width={44} height={44} alt=""/> */}
-            <span>{user?.full_name.match(/\b(\w)/g).join("")}</span>
+            {user?.avatar_path ? (
+              <img
+                src={process.env.NEXT_PUBLIC_SITE_URL + "/" + user?.avatar_path}
+                alt=""
+                className="size-full object-cover"
+              />
+            ) : (
+              <span>{user?.full_name.match(/\b(\w)/g).join("")}</span>
+            )}
           </figure>
           <div className="max-sm:hidden">
             <h6 className="text-primary-black font-medium">

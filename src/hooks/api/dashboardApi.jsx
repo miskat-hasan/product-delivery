@@ -100,7 +100,7 @@ export const GetAllShipments = (page = 1) => {
     method: "get",
     isPrivate: true,
     key: ["get-all-shipments", page],
-    endpoint: "/api/get-shipments",
+    endpoint: `/api/get-shipments?page=${page}`,
   });
 };
 
