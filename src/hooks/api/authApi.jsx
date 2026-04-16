@@ -65,6 +65,9 @@ export const useResendOPT = () => {
     method: "post",
     key: ["resend-otp"],
     endpoint: "/api/resend-otp",
+     onError: (err) => {
+      toast.error(err?.response?.data?.message);
+    },
   });
 };
 
@@ -72,7 +75,7 @@ export const useResendOPT = () => {
 export const useForgotPassword = () => {
   return useClientApi({
     method: "post",
-    key: ["forgot password"],
+    key: ["forgot-password"],
     endpoint: "/api/forgot-password",
     onError: (err) => {
       toast.error(err?.response?.data?.message);
@@ -82,7 +85,6 @@ export const useForgotPassword = () => {
 
 // Verify OTP for forgot password
 export const useVerifyOTP = () => {
-  const router = useRouter();
   return useClientApi({
     method: "post",
     key: ["verify-reset-otp"],
@@ -104,6 +106,7 @@ export const useChangePassword = () => {
     },
   });
 };
+
 // get user data
 export const useGetUserData = (token) => {
   return useClientApi({

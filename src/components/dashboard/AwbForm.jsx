@@ -82,13 +82,52 @@ const AwbForm = () => {
     }
   };
 
-  // ── Combo box field states ──────────────────────────────────────
-  const [originValue, setOriginValue] = useState("");
-  const [toFirstCarrierValue, setToFirstCarrierValue] = useState("");
-  const [toSecondCarrierValue, setToSecondCarrierValue] = useState("");
-  const [toThirdCarrierValue, setToThirdCarrierValue] = useState("");
-  const [departureValue, setDepartureValue] = useState("");
-  const [destinationValue, setDestinationValue] = useState("");
+  // ── Airport field states (display = short for ComboBox, full = backend value) ──
+  const [originDisplay, setOriginDisplay] = useState("");
+  const [originFull, setOriginFull] = useState("");
+
+  const [toFirstDisplay, setToFirstDisplay] = useState("");
+  const [toFirstFull, setToFirstFull] = useState("");
+
+  const [toSecondDisplay, setToSecondDisplay] = useState("");
+  const [toSecondFull, setToSecondFull] = useState("");
+
+  const [toThirdDisplay, setToThirdDisplay] = useState("");
+  const [toThirdFull, setToThirdFull] = useState("");
+
+  const [departureDisplay, setDepartureDisplay] = useState("");
+  const [departureFull, setDepartureFull] = useState("");
+
+  const [destinationDisplay, setDestinationDisplay] = useState("");
+  const [destinationFull, setDestinationFull] = useState("");
+
+  // ── Airport change handlers — always derive a clean display value ──
+  const makeAirportHandler = (setFull, setDisplay, mode) => (val) => {
+    setFull(val);
+    if (mode === "prefix") {
+      setDisplay((val || "").split("/")[0]);
+    } else {
+      setDisplay((val || "").replace(/\(.*?\)$/, "").trim());
+    }
+  };
+
+  const handleOriginChange = makeAirportHandler(setOriginFull, setOriginDisplay, "prefix");
+  const handleToFirstChange = makeAirportHandler(setToFirstFull, setToFirstDisplay, "prefix");
+  const handleToSecondChange = makeAirportHandler(setToSecondFull, setToSecondDisplay, "prefix");
+  const handleToThirdChange = makeAirportHandler(setToThirdFull, setToThirdDisplay, "prefix");
+  const handleDepartureChange = makeAirportHandler(setDepartureFull, setDepartureDisplay, "short");
+  const handleDestinationChange = makeAirportHandler(setDestinationFull, setDestinationDisplay, "short");
+
+  // ── Helper to pre-fill both display and full airport state ──────
+  const setAirport = (val, setFull, setDisplay, mode) => {
+    const v = val || "";
+    setFull(v);
+    if (mode === "prefix") {
+      setDisplay(v.split("/")[0]);
+    } else {
+      setDisplay(v.replace(/\(.*?\)$/, "").trim());
+    }
+  };
 
   // ── Other charges ───────────────────────────────────────────────
   const [isAddChargeOpen, setIsAddChargeOpen] = useState(false);
@@ -166,12 +205,12 @@ const AwbForm = () => {
       carriers_agent_name_address: "",
       carriers_agent_account: "",
     });
-    setOriginValue("");
-    setDepartureValue("");
-    setDestinationValue("");
-    setToFirstCarrierValue("");
-    setToSecondCarrierValue("");
-    setToThirdCarrierValue("");
+    setOriginDisplay(""); setOriginFull("");
+    setDepartureDisplay(""); setDepartureFull("");
+    setDestinationDisplay(""); setDestinationFull("");
+    setToFirstDisplay(""); setToFirstFull("");
+    setToSecondDisplay(""); setToSecondFull("");
+    setToThirdDisplay(""); setToThirdFull("");
     setRateDescriptions([]);
     setOtherCharges([]);
     setPreview(null);
@@ -182,7 +221,7 @@ const AwbForm = () => {
     setPrepaidTax("");
     setCollectValuation("");
     setCollectTax("");
-  }, [id, reset]); // fires whenever the id changes
+  }, [id, reset]);
 
   // ── Pre-fill form when template data loads ──────────────────────
   useEffect(() => {
@@ -221,12 +260,12 @@ const AwbForm = () => {
       carrier_exec_signature: d.carrier_execution?.signature || "",
     });
 
-    setOriginValue(d.consignment_details?.origin || "");
-    setDepartureValue(d.flights_booking?.departure || "");
-    setDestinationValue(d.flights_booking?.destination || "");
-    setToFirstCarrierValue(d.flights_booking?.route?.to_first_carrier || "");
-    setToSecondCarrierValue(d.flights_booking?.route?.to_second_carrier || "");
-    setToThirdCarrierValue(d.flights_booking?.route?.to_third_carrier || "");
+    setAirport(d.consignment_details?.origin, setOriginFull, setOriginDisplay, "prefix");
+    setAirport(d.flights_booking?.departure, setDepartureFull, setDepartureDisplay, "short");
+    setAirport(d.flights_booking?.destination, setDestinationFull, setDestinationDisplay, "short");
+    setAirport(d.flights_booking?.route?.to_first_carrier, setToFirstFull, setToFirstDisplay, "prefix");
+    setAirport(d.flights_booking?.route?.to_second_carrier, setToSecondFull, setToSecondDisplay, "prefix");
+    setAirport(d.flights_booking?.route?.to_third_carrier, setToThirdFull, setToThirdDisplay, "prefix");
 
     setContactFields({
       shipper_account: d.shipper?.account_number || "",
@@ -274,7 +313,7 @@ const AwbForm = () => {
     if (d.logo) {
       setPreview(process.env.NEXT_PUBLIC_SITE_URL + "/" + d.logo);
     } else {
-      setPreview(null); // ← explicitly clear when new record has no logo
+      setPreview(null);
       setLogoFile(null);
     }
   }, [awbFormData, reset]);
@@ -344,7 +383,7 @@ const AwbForm = () => {
 
   const { mutate, isPending } = StoreAirWaybill();
 
-  // ── GET All Airports DATA ─────────────────────────────────────────────────
+  // ── GET All Airports DATA ───────────────────────────────────────
   const { data: airportData, isLoading: airportDataLoading } =
     useGetAllAirports();
 
@@ -352,6 +391,14 @@ const AwbForm = () => {
 
   // ── Watch is_template checkbox ──────────────────────────────────
   const isTemplate = watch("is_template");
+
+  // ── Prevent negative / minus values in number inputs ───────────
+  const noNeg = {
+    min: 0,
+    onKeyDown: (e) => {
+      if (e.key === "-" || e.key === "e") e.preventDefault();
+    },
+  };
 
   // ── Form submit ─────────────────────────────────────────────────
   const onSubmit = (data) => {
@@ -365,7 +412,7 @@ const AwbForm = () => {
       consignment_details: {
         airline_prefix: data.airline_prefix || "",
         serial_number: data.serial_number || "",
-        origin: originValue || "",
+        origin: originFull || "",
       },
       shipper: {
         account_number: contactFields.shipper_account,
@@ -382,16 +429,16 @@ const AwbForm = () => {
       },
       accounting_info: data.accounting_info || "",
       flights_booking: {
-        departure: departureValue || "",
+        departure: departureFull || "",
         route: {
-          to_first_carrier: toFirstCarrierValue || "",
+          to_first_carrier: toFirstFull || "",
           by_first_carrier: data.by_first_carrier || "",
-          to_second_carrier: toSecondCarrierValue || "",
+          to_second_carrier: toSecondFull || "",
           by_second_carrier: data.by_second_carrier || "",
-          to_third_carrier: toThirdCarrierValue || "",
+          to_third_carrier: toThirdFull || "",
           by_third_carrier: data.by_third_carrier || "",
         },
-        destination: destinationValue || "",
+        destination: destinationFull || "",
         flight: data.flight || "",
         date: data.flight_date || "",
       },
@@ -662,8 +709,8 @@ const AwbForm = () => {
                 <AirportComboBox
                   airports={airports}
                   mode="short"
-                  value={departureValue?.replace(/\(.*?\)$/, "").trim()}
-                  onChange={setDepartureValue}
+                  value={departureDisplay}
+                  onChange={handleDepartureChange}
                   className={inp}
                   placeholder="Search airport..."
                 />
@@ -680,8 +727,8 @@ const AwbForm = () => {
                     <AirportComboBox
                       airports={airports}
                       mode="prefix"
-                      value={toFirstCarrierValue?.split("/")[0]}
-                      onChange={setToFirstCarrierValue}
+                      value={toFirstDisplay}
+                      onChange={handleToFirstChange}
                       className={inp}
                     />
                   </div>
@@ -710,8 +757,8 @@ const AwbForm = () => {
                     <AirportComboBox
                       airports={airports}
                       mode="prefix"
-                      value={toSecondCarrierValue?.split("/")[0]}
-                      onChange={setToSecondCarrierValue}
+                      value={toSecondDisplay}
+                      onChange={handleToSecondChange}
                       className={inp}
                     />
                   </div>
@@ -738,8 +785,8 @@ const AwbForm = () => {
                     <AirportComboBox
                       airports={airports}
                       mode="prefix"
-                      value={toThirdCarrierValue?.split("/")[0]}
-                      onChange={setToThirdCarrierValue}
+                      value={toThirdDisplay}
+                      onChange={handleToThirdChange}
                       className={inp}
                     />
                   </div>
@@ -769,8 +816,8 @@ const AwbForm = () => {
                 <AirportComboBox
                   airports={airports}
                   mode="short"
-                  value={destinationValue?.replace(/\(.*?\)$/, "").trim()}
-                  onChange={setDestinationValue}
+                  value={destinationDisplay}
+                  onChange={handleDestinationChange}
                   className={inp}
                   placeholder="Search airport..."
                 />
@@ -817,6 +864,7 @@ const AwbForm = () => {
                 </div>
                 <input
                   type="number"
+                  {...noNeg}
                   {...register("airline_prefix", {
                     onChange: (e) => {
                       if (e.target.value.length > 3) {
@@ -833,6 +881,7 @@ const AwbForm = () => {
                 </div>
                 <input
                   type="number"
+                  {...noNeg}
                   {...register("serial_number", {
                     onChange: (e) => {
                       if (e.target.value.length > 8) {
@@ -850,21 +899,15 @@ const AwbForm = () => {
                 <AirportComboBox
                   airports={airports}
                   mode="prefix"
-                  value={originValue?.split("/")[0]}
-                  onChange={setOriginValue}
+                  value={originDisplay}
+                  onChange={handleOriginChange}
                   className={inp}
                   placeholder="Search airport..."
                 />
               </div>
             </div>
 
-            {/* air line logo */}
-            {/* {id && (awbFormDataLoading || isFetching) ? (
-              <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
-                <div className="h-6 w-16 rounded-lg bg-gray-200 animate-pulse" />
-                <div className="h-40 w-full rounded-[20px] bg-gray-200 animate-pulse" />
-              </div>
-            ) : ( */}
+            {/* airline logo */}
             <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
               <label className="block text-primary-text text-xl leading-[150%] mb-1">
                 Logo
@@ -898,7 +941,6 @@ const AwbForm = () => {
                 )}
               </label>
             </div>
-            {/* )} */}
 
             {/* Issuer */}
             <div className="bg-white rounded-[14px] p-2 lg:p-4 shadow-sm space-y-2">
@@ -998,6 +1040,7 @@ const AwbForm = () => {
                   </div>
                   <input
                     type="number"
+                    {...noNeg}
                     {...register("value_for_carriage")}
                     className={inp}
                   />
@@ -1025,6 +1068,7 @@ const AwbForm = () => {
                   </div>
                   <input
                     type="number"
+                    {...noNeg}
                     {...register("value_for_customs")}
                     className={inp}
                   />
@@ -1051,6 +1095,7 @@ const AwbForm = () => {
                 </div>
                 <input
                   type="number"
+                  {...noNeg}
                   {...register("amount_of_insurance")}
                   className={inp}
                 />
@@ -1344,6 +1389,7 @@ const AwbForm = () => {
                     </div>
                     <input
                       type="number"
+                      {...noNeg}
                       value={prepaidValuation}
                       onChange={(e) => setPrepaidValuation(e.target.value)}
                       className={inp}
@@ -1355,6 +1401,7 @@ const AwbForm = () => {
                     </div>
                     <input
                       type="number"
+                      {...noNeg}
                       value={prepaidTax}
                       onChange={(e) => setPrepaidTax(e.target.value)}
                       className={inp}
@@ -1419,6 +1466,7 @@ const AwbForm = () => {
                     </div>
                     <input
                       type="number"
+                      {...noNeg}
                       value={collectValuation}
                       onChange={(e) => setCollectValuation(e.target.value)}
                       className={inp}
@@ -1430,6 +1478,7 @@ const AwbForm = () => {
                     </div>
                     <input
                       type="number"
+                      {...noNeg}
                       value={collectTax}
                       onChange={(e) => setCollectTax(e.target.value)}
                       className={inp}
@@ -1487,6 +1536,7 @@ const AwbForm = () => {
                   </div>
                   <input
                     type="number"
+                    {...noNeg}
                     {...register("currency_conv_rates")}
                     className={inp}
                   />
@@ -1497,6 +1547,7 @@ const AwbForm = () => {
                   </div>
                   <input
                     type="number"
+                    {...noNeg}
                     {...register("cc_charges")}
                     className={inp}
                   />
@@ -1509,6 +1560,7 @@ const AwbForm = () => {
                   </div>
                   <input
                     type="number"
+                    {...noNeg}
                     {...register("charges_at_destination")}
                     className={inp}
                   />
@@ -1519,6 +1571,7 @@ const AwbForm = () => {
                   </div>
                   <input
                     type="number"
+                    {...noNeg}
                     {...register("total_collect_charges")}
                     className={inp}
                   />

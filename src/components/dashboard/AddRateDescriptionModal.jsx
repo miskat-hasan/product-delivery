@@ -44,6 +44,14 @@ const AddRateDescriptionModal = ({ onClose, onAdd, editData = null }) => {
     },
   });
 
+  // ── Prevent negative / minus values in number inputs ───────────
+  const noNeg = {
+    min: 0,
+    onKeyDown: (e) => {
+      if (e.key === "-" || e.key === "e") e.preventDefault();
+    },
+  };
+
   // Pre-fill form when editing
   useEffect(() => {
     if (editData) {
@@ -140,6 +148,7 @@ const AddRateDescriptionModal = ({ onClose, onAdd, editData = null }) => {
                 <label className={labelCls}>Pieces</label>
                 <input
                   type="number"
+                  {...noNeg}
                   {...register("pieces")}
                   placeholder="0"
                   className={inputCls}
@@ -153,6 +162,7 @@ const AddRateDescriptionModal = ({ onClose, onAdd, editData = null }) => {
                   <input
                     type="number"
                     step="0.01"
+                    {...noNeg}
                     {...register("grossWeight")}
                     placeholder="0.00"
                     className={inputCls}
@@ -196,6 +206,7 @@ const AddRateDescriptionModal = ({ onClose, onAdd, editData = null }) => {
                 <input
                   type="number"
                   step="0.01"
+                  {...noNeg}
                   {...register("chargeableWeight")}
                   placeholder="0.00"
                   disabled={hasGrossWeight}
@@ -208,9 +219,10 @@ const AddRateDescriptionModal = ({ onClose, onAdd, editData = null }) => {
                 <label className={labelCls}>Rate / Charge</label>
                 <input
                   type="number"
-                  step="0.0001"
+                  step="0.01"
+                  {...noNeg}
                   {...register("rateCharge")}
-                  placeholder="0.0000"
+                  placeholder="0.00"
                   className={inputCls}
                 />
               </div>
@@ -241,16 +253,6 @@ const AddRateDescriptionModal = ({ onClose, onAdd, editData = null }) => {
               />
             </div>
           </div>
-
-          {/* Dimensions — commented out for now */}
-          {/* <div className="border border-gray-200 rounded-2xl p-4 bg-gray-50 space-y-3">
-            ...
-          </div> */}
-
-          {/* Extra description — commented out for now */}
-          {/* <div className="border border-gray-200 rounded-2xl p-4 bg-gray-50 space-y-2">
-            ...
-          </div> */}
 
           {/* Actions */}
           <div className="flex items-center justify-end gap-2 pt-1">

@@ -6,6 +6,8 @@ import { GetSingleAirWayBill } from "@/hooks/api/dashboardApi";
 import useAuth from "@/hooks/useAuth";
 import { IoMdCheckmark } from "react-icons/io";
 import Image from "next/image";
+import { PiArrowBendDoubleUpLeftBold } from "react-icons/pi";
+import Link from "next/link";
 
 const AirWaybillPreview = () => {
   const searchParams = useSearchParams();
@@ -93,9 +95,14 @@ const AirWaybillPreview = () => {
         <p className="text-center py-5">Loading Preview ...</p>
       ) : (
         <div className="w-[1500px] mx-auto">
+          <Link href={'/dashboard'}
+            className="top-6 transition size-12 text-2xl flex items-center justify-center bg-white border-black border-2 hover:bg-black hover:text-white rounded cursor-pointer absolute z-99 left-5"
+          >
+            <PiArrowBendDoubleUpLeftBold />
+          </Link>
           <button
             onClick={captureForm}
-            className="top-6 transition size-12 text-2xl flex items-center justify-center bg-white border-black border-2 hover:bg-black hover:text-white rounded cursor-pointer absolute right-10"
+            className="top-20 2xl:top-6 transition size-12 text-2xl flex items-center justify-center bg-white border-black border-2 hover:bg-black hover:text-white rounded cursor-pointer absolute z-99 max-2xl:left-5 2xl:right-10"
           >
             <FiDownload />
           </button>

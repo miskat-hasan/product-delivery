@@ -68,7 +68,7 @@ const Page = () => {
     reset,
     formState: { errors },
   } = useForm({
-    defaultValues: { full_name: "", email: "" },
+    defaultValues: { full_name: "", email: "", role: "" },
   });
 
   // ── Password form ─────────────────────────────────────────
@@ -98,6 +98,7 @@ const Page = () => {
       reset({
         full_name: data.data.full_name || "",
         email: data.data.email || "",
+        role: data.data.roles[0]?.name || "",
       });
       if (data?.data?.avatar_path) {
         setAvatarPreview(
@@ -140,7 +141,9 @@ const Page = () => {
       email: data?.data?.email || "",
     });
     setAvatarFile(null);
-    setAvatarPreview(data?.data?.avatar_path || null);
+    setAvatarPreview(
+      process.env.NEXT_PUBLIC_SITE_URL + "/" + data?.data?.avatar_path || null,
+    );
   };
 
   // Submit password change
@@ -253,6 +256,22 @@ const Page = () => {
                   type="text"
                   disabled
                   {...register("email")}
+                  className="rounded-[16px] border border-solid border-[#A1A1A1] bg-[#F5F5F5] flex w-full md:h-[70px] py-3 px-2 md:p-[16px] items-center gap-[13px] shrink-0 text-[#6B6B6B] text-[18px] font-normal not-italic leading-[27px] cursor-not-allowed"
+                />
+              )}
+            </div>
+            {/* role */}
+            <div className="flex flex-col items-start gap-[8px] w-full">
+              <div className="text-[#333] text-lg md:text-2xl font-normal not-italic leading-[36px]">
+                Role
+              </div>
+              {isLoading ? (
+                <div className="w-full h-[70px] bg-gray-200 animate-pulse rounded-[16px]" />
+              ) : (
+                <input
+                  type="text"
+                  disabled
+                  {...register("role")}
                   className="rounded-[16px] border border-solid border-[#A1A1A1] bg-[#F5F5F5] flex w-full md:h-[70px] py-3 px-2 md:p-[16px] items-center gap-[13px] shrink-0 text-[#6B6B6B] text-[18px] font-normal not-italic leading-[27px] cursor-not-allowed"
                 />
               )}
