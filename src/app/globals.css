@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+
 @import "tailwindcss";
 
 :root {
@@ -11,12 +13,13 @@
   --font-mono: var(--font-geist-mono);
   /* blue */
   --color-primary-blue: #3d8fbe;
-  --color-blue-50: #EBF2F8;
-  --color-blue-500: #337BB6;
-  --color-blue-900: #15344C;
+  --color-blue-50: #ebf2f8;
+  --color-blue-500: #3d8fbe;
+  --color-blue-900: #15344c;
   /* black */
   --color-primary-black: #333333;
   --color-black-50: #ebebeb;
+  --color-black-100: #c0c0c0;
   --color-black-300: #767676;
   --color-black-400: #5c5c5c;
   --color-black-500: #222222;
@@ -26,14 +29,96 @@
   /* white */
   --color-white-50: #fefefe;
   --color-white-500: #f5f5f5;
+
+  --breakpoint-xs: 425px;
 }
 
 body {
   background-color: var(--background);
+  font-family: "Inter", sans-serif;
 }
 
 @layer base {
   .form-input {
-    @apply p-4 w-full flex items-center justify-between gap-5 rounded-2xl border border-black-50 bg-white-500 focus:outline-1 focus:outline-primary-blue;
+    @apply p-2.5 xs:p-4 w-full flex items-center justify-between gap-5 rounded-lg xs:rounded-2xl border border-black-50 bg-white-500 focus:outline-1 focus:outline-primary-blue;
+  }
+  .left-side {
+    @apply w-[680.417px];
+  }
+  .right-side {
+    @apply w-[738.299px];
+  }
+  .mini-left-side {
+    @apply w-[533.151px];
+  }
+  .preview_left_side {
+    @apply w-[3456px] shrink-0;
+  }
+  .preview_right_side {
+    @apply w-[3740px] shrink-0;
+  }
+  .preview_mini_left_side {
+    @apply w-[2708px] shrink-0;
+  }
+  .preview-left-side {
+    @apply w-[580px] shrink-0;
+  }
+  .preview-right-side {
+    @apply w-[636px] shrink-0;
+  }
+  .mini-preview-left-side{
+    @apply w-[536px];
+
+  }
+}
+
+/* @media print {
+  @page {
+    size: Latter portrait;
+    margin: 0;
+  }
+
+  body {
+    margin: 0;
+    padding: 0;
+  }
+} */
+svg {
+  shape-rendering: geometricPrecision;
+  text-rendering: geometricPrecision;
+}
+
+#capture-area text,
+#capture-area p,
+#capture-area span {
+  line-height: none;
+}
+
+@media print {
+  /* Hide everything except the capture area */
+  body * {
+    visibility: hidden;
+  }
+
+  #capture-area,
+  #capture-area * {
+    visibility: visible;
+  }
+
+  /* Hide the download button */
+  button {
+    display: none !important;
+  }
+
+  #capture-area {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+
+  @page {
+    size: A2 portrait;   /* Paper size: A2, Layout: Portrait */
+    margin: default;     /* Margins: Default */
   }
 }

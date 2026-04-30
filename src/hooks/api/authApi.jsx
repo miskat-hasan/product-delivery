@@ -1,8 +1,10 @@
+"use client";
 import { useRouter } from "next/navigation";
 import useAuth from "../useAuth";
 import useClientApi from "../useClientApi";
-import Swal from "sweetalert2";
+import { toast } from "sonner";
 
+// login
 export const useLogin = () => {
   const router = useRouter();
   const { setToken } = useAuth();
@@ -10,40 +12,113 @@ export const useLogin = () => {
   return useClientApi({
     method: "post",
     key: ["login"],
-    endpoint: "/api/users/login",
+    endpoint: "/api/login",
     onSuccess: (data) => {
       if (data?.success) {
         setToken(data?.data?.token);
 
-        Swal.fire({
-          title: data?.message || "Login Successful",
-          icon: "success",
-          confirmButtonText: "Go To Dashboard",
-          allowOutsideClick: true,
-        }).then(() => {
-          router.push("/admin/class_and_students/upcoming_classes");
-        });
+        toast.success(data?.message || "Login Successful");
+
+        router.push("/dashboard");
       }
     },
     onError: (err) => {
-      Swal.fire({
-        title: err?.response?.data?.message || "Something went wrong",
-        icon: "error",
-      });
+      toast.error(err?.response?.data?.message);
     },
   });
 };
 
+// register
+export const useRegister = () => {
+  return useClientApi({
+    method: "post",
+    key: ["register"],
+    endpoint: "/api/register",
+    onError: (err) => {
+      toast.error(err?.response?.data?.message);
+    },
+  });
+};
+
+// Verify OTP for registration
+export const useVerifyCode = () => {
+  const { setToken } = useAuth();
+  const router = useRouter();
+  return useClientApi({
+    method: "post",
+    key: ["verify-otp"],
+    endpoint: "/api/verify-otp",
+    onSuccess: (data) => {
+      setToken(data?.data?.token);
+      toast.success(data?.message);
+      router.push("/on-boarding");
+    },
+    onError: (err) => {
+      toast.error(err?.response?.data?.message);
+    },
+  });
+};
+
+// resend OTP
+export const useResendOPT = () => {
+  return useClientApi({
+    method: "post",
+    key: ["resend-otp"],
+    endpoint: "/api/resend-otp",
+     onError: (err) => {
+      toast.error(err?.response?.data?.message);
+    },
+  });
+};
+
+// forget password
+export const useForgotPassword = () => {
+  return useClientApi({
+    method: "post",
+    key: ["forgot-password"],
+    endpoint: "/api/forgot-password",
+    onError: (err) => {
+      toast.error(err?.response?.data?.message);
+    },
+  });
+};
+
+// Verify OTP for forgot password
+export const useVerifyOTP = () => {
+  return useClientApi({
+    method: "post",
+    key: ["verify-reset-otp"],
+    endpoint: "/api/verify-reset-otp",
+    onError: (err) => {
+      toast.error(err?.response?.data?.message);
+    },
+  });
+};
+
+// change/reset password
+export const useChangePassword = () => {
+  return useClientApi({
+    method: "post",
+    key: ["change-password"],
+    endpoint: "/api/reset-password",
+    onError: (err) => {
+      toast.error(err?.response?.data?.message);
+    },
+  });
+};
+
+// get user data
 export const useGetUserData = (token) => {
   return useClientApi({
     method: "get",
     key: ["user", token],
     enabled: !!token,
-    endpoint: "/api/users/data",
+    endpoint: "/api/profile",
     isPrivate: true,
   });
 };
 
+// log out
 export const useLogout = () => {
   const router = useRouter();
   const { clearToken } = useAuth();
@@ -52,7 +127,7 @@ export const useLogout = () => {
     method: "post",
     key: ["logout"],
     isPrivate: true,
-    endpoint: "/api/users/logout",
+    endpoint: "/api/logout",
     onSuccess: (data) => {
       clearToken();
       router.push("/login");
